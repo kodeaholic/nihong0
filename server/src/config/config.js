@@ -2,7 +2,6 @@ const dotenv = require('dotenv');
 const path = require('path');
 const Joi = require('joi');
 const PORT = process.env.PORT || 9000
-console.log(PORT)
 if (process.env.HOSTED_PLATFORM && process.env.HOSTED_PLATFORM === 'heroku') dotenv.config({ path: path.join(__dirname, '../../.heroku.env') });
 else dotenv.config({ path: path.join(__dirname, '../../.env') });
 if (!process.env.PORT) process.env.PORT = PORT
@@ -30,11 +29,10 @@ const envVarsSchema = Joi.object()
   .unknown();
 
 const { value: envVars, error } = envVarsSchema.prefs({ errors: { label: 'key' } }).validate(process.env);
-
+if (!envVars.MONGODB_URL) envVars.MONGODB_URL = process.env.MONGODB_URL
 if (error) {
   throw new Error(`Config validation error: ${error.message}`);
 }
-console.log(envVars.port)
 module.exports = {
   env: envVars.NODE_ENV,
   port: envVars.PORT,
