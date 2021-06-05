@@ -2,7 +2,7 @@
     "name": "nihongo-admin",
     "version": "1.0.0",
     "scripts": {
-      "heroku-postbuild": "concurrently --kill-others-on-fail \"npm install -g react-app-rewired\" \"yarn client-build\" \"yarn server-build\"",
+      "heroku-postbuild": "concurrently --kill-others-on-fail \"yarn global add react-app-rewired\" \"yarn client-build\" \"yarn server-build\"",
       "client-build": "cd client && yarn && yarn build",
       "server-build": "cd server && yarn",
       "server-dev": "cd server && yarn dev",
