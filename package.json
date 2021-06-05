@@ -6,7 +6,8 @@
       "server-dev": "cd server && yarn && yarn dev",
       "server-prod": "cd server && yarn && yarn start",
       "dev": "concurrently --kill-others-on-fail \"yarn client-build\" \"yarn server-dev\"",
-      "prod": "concurrently --kill-others-on-fail \"yarn client-build\" \"yarn server-prod\""
+      "prod": "concurrently --kill-others-on-fail \"yarn client-build\" \"yarn server-prod\"",
+      "heroku-postbuild": "yarn && yarn prod"
     },
     "devDependencies": {
       "concurrently": "^6.2.0"
