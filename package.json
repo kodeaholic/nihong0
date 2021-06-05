@@ -2,11 +2,13 @@
     "name": "nihongo-admin",
     "version": "1.0.0",
     "scripts": {
+      "heroku-postbuild": "concurrently --kill-others-on-fail \"yarn client-build\" \"yarn server-build\"",
       "client-build": "cd client && yarn && yarn build",
-      "server-dev": "cd server && yarn && yarn dev",
-      "server-prod": "cd server && yarn && yarn start",
-      "dev": "concurrently --kill-others-on-fail \"yarn client-build\" \"yarn server-dev\"",
-      "prod": "concurrently --kill-others-on-fail \"yarn client-build\" \"yarn server-prod\""
+      "server-build": "cd server && yarn",
+      "server-dev": "cd server && yarn dev",
+      "server-prod": "cd server && yarn start",
+      "dev": "yarn server-dev",
+      "prod": "yarn server-prod"
     },
     "dependencies": {
       "concurrently": "^6.2.0"
