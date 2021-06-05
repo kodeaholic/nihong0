@@ -1,2 +1,0 @@
-(this["webpackJsonpnihongo-admin"]=this["webpackJsonpnihongo-admin"]||[]).push([[50],{1931:function(e,t,a){"use strict";a.r(t);var n=a(262);t.default=Object(n.a)({namespace:"form",state:{treeData:[]},subscriptions:{setup:function(e){var t=e.dispatch;e.history.listen((function(e){"/form"===e.pathname&&t({type:"@request",afterResponse:function(e){return e.data},payload:{valueField:"treeData",url:"/tree/getAsyncTreeSelect"}})}))}}})}}]);
-//# sourceMappingURL=50.9d8d744a.chunk.js.map

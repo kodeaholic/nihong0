@@ -1,1 +1,0 @@
-{"version":3,"sources":["routes/Widgets/Toolbar/model/index.js"],"names":["modelEnhance","namespace"],"mappings":"wHAAA,oBAEeA,sBAAa,CAC1BC,UAAW","file":"static/js/54.351f3997.chunk.js","sourcesContent":["import modelEnhance from '@/utils/modelEnhance';\r\n\r\nexport default modelEnhance({\r\n  namespace: 'toolbar',\r\n});"],"sourceRoot":""}

@@ -1,2 +1,0 @@
-(this["webpackJsonpnihongo-admin"]=this["webpackJsonpnihongo-admin"]||[]).push([[52],{1918:function(n,a,s){"use strict";s.r(a);var e=s(262);a.default=Object(e.a)({namespace:"subRoute"})}}]);
-//# sourceMappingURL=52.fb7efb2f.chunk.js.map
