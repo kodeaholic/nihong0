@@ -28,9 +28,14 @@ const AppSidebar = () => {
       selfHiding="md"
       unfoldable={unfoldable}
       show={sidebarShow}
-      onShow={() => console.log('show')}
-      onHide={() => {
-        dispatch({ type: 'set', sidebarShow: false })
+      // onShow={() => {
+      //   dispatch({ type: 'set', sidebarShow: true })
+      // }}
+      // onHide={() => {
+      //   dispatch({ type: 'set', sidebarShow: false })
+      // }}
+      onClick={() => {
+        dispatch({ type: 'set', sidebarShow: !sidebarShow })
       }}
     >
       <CSidebarBrand className="d-none d-md-flex" to="/">
