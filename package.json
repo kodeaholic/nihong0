@@ -5,11 +5,10 @@
       "client-build": "cd client && yarn && yarn build",
       "server-dev": "cd server && yarn && yarn dev",
       "server-prod": "cd server && yarn && yarn start",
-      "dev": "concurrently --kill-others-on-fail \"yarn \" \"yarn client-build\" \"yarn server-dev\"",
-      "prod": "concurrently --kill-others-on-fail \"yarn \" \"yarn client-build\" \"yarn server-prod\""
+      "dev": "concurrently --kill-others-on-fail \"yarn client-build\" \"yarn server-dev\"",
+      "prod": "concurrently --kill-others-on-fail \"yarn client-build\" \"yarn server-prod\""
     },
     "devDependencies": {
-      "concurrently": "^6.2.0",
-      "nodemon": "^2.0.7"
+      "concurrently": "^6.2.0"
     }
   }
