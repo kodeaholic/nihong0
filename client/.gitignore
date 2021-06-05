@@ -7,7 +7,7 @@
 /coverage
 
 # production
-/build
+# /build # comment this to deploy to heroku
 
 # misc
 .DS_Store

@@ -1,0 +1,2 @@
+(this["webpackJsonpnihongo-admin"]=this["webpackJsonpnihongo-admin"]||[]).push([[49],{1930:function(a,t,e){"use strict";e.r(t);var n=e(262),s=e(135);t.default=Object(n.a)({namespace:"datatable",state:{pageData:s.a.create(),pageDataSort:s.a.create(),deptTreeData:[],dataList:{list:[]}}})}}]);
+//# sourceMappingURL=49.dc136bcf.chunk.js.map
