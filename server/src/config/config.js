@@ -3,7 +3,7 @@ const path = require('path');
 const Joi = require('joi');
 const PORT = process.env.PORT || 9000
 console.log(PORT)
-if (process.env.HOSTED_PLATFORM && process.env.HOSTED_PLATFORM === 'heroku') dotenv.config({ path: path.join(__dirname, '../../.env.heroku') });
+if (process.env.HOSTED_PLATFORM && process.env.HOSTED_PLATFORM === 'heroku') dotenv.config({ path: path.join(__dirname, '../../.heroku.env') });
 else dotenv.config({ path: path.join(__dirname, '../../.env') });
 if (!process.env.PORT) process.env.PORT = PORT
 
