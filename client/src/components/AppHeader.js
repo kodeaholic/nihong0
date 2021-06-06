@@ -16,17 +16,18 @@ import CIcon from '@coreui/icons-react'
 import { AppBreadcrumb } from './index'
 
 import { AppHeaderDropdown } from './header/index'
-
+import { sidebarActions } from '../redux/actions/sidebar.action'
 const AppHeader = () => {
   const dispatch = useDispatch()
-  const sidebarShow = useSelector((state) => state.sidebarShow)
-
+  const sidebarShow = useSelector((state) => state.sidebar.sideBarShow)
   return (
     <CHeader position="sticky" className="mb-4">
       <CContainer fluid>
         <CHeaderToggler
           className="ms-md-3 d-lg-none"
-          onClick={() => dispatch({ type: 'set', sidebarShow: !sidebarShow })}
+          onClick={() => {
+            dispatch(sidebarActions.setSidebarShow(!sidebarShow))
+          }}
         >
           <CIcon name="cil-menu" size="lg" />
         </CHeaderToggler>
@@ -75,4 +76,4 @@ const AppHeader = () => {
   )
 }
 
-export default AppHeader
+export default React.memo(AppHeader)

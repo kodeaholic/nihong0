@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -16,24 +17,18 @@ import 'simplebar/dist/simplebar.min.css'
 
 // sidebar nav config
 import navigation from '../_nav'
-
 const AppSidebar = () => {
+  const sidebarShow = useSelector((state) => state.sidebar.sideBarShow)
+  const sidebarUnfodable = useSelector((state) => state.sidebar.sidebarUnfodable)
   const dispatch = useDispatch()
-  const unfoldable = useSelector((state) => state.sidebarUnfoldable)
-  const sidebarShow = useSelector((state) => state.sidebarShow)
-
   return (
     <CSidebar
       position="fixed"
       selfHiding="md"
-      unfoldable={unfoldable}
+      unfoldable={false}
       show={sidebarShow}
-      onShow={() => {
-        dispatch({ type: 'set', sidebarShow: true })
-      }}
-      onHide={() => {
-        dispatch({ type: 'set', sidebarShow: false })
-      }}
+      onShow={() => {}}
+      onHide={() => {}}
       // onClick={() => {
       //   dispatch({ type: 'set', sidebarShow: !sidebarShow })
       // }}
@@ -49,7 +44,12 @@ const AppSidebar = () => {
       </CSidebarNav>
       <CSidebarToggler
         className="d-none d-lg-flex"
-        onClick={() => dispatch({ type: 'set', sidebarUnfoldable: !unfoldable })}
+        onClick={() => {
+          dispatch({
+            type: 'SET_SIDEBAR_UNFOLDABLE',
+            payload: { sidebarUnfodable: !sidebarUnfodable },
+          })
+        }}
       />
     </CSidebar>
   )

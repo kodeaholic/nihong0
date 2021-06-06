@@ -1,0 +1,10 @@
+{
+    "production": {
+        "baseUrl": "https://nihong0.herokuapp.com/",
+        "apiEndpoint": "https://nihong0.herokuapp.com/v1"
+    },
+    "local": {
+        "baseUrl": "http://localhost:9000/",
+        "apiEndpoint": "http://localhost:9000/v1"
+    }
+}
