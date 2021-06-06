@@ -28,15 +28,15 @@ const AppSidebar = () => {
       selfHiding="md"
       unfoldable={unfoldable}
       show={sidebarShow}
-      // onShow={() => {
-      //   dispatch({ type: 'set', sidebarShow: true })
-      // }}
-      // onHide={() => {
-      //   dispatch({ type: 'set', sidebarShow: false })
-      // }}
-      onClick={() => {
-        dispatch({ type: 'set', sidebarShow: !sidebarShow })
+      onShow={() => {
+        dispatch({ type: 'set', sidebarShow: true })
       }}
+      onHide={() => {
+        dispatch({ type: 'set', sidebarShow: false })
+      }}
+      // onClick={() => {
+      //   dispatch({ type: 'set', sidebarShow: !sidebarShow })
+      // }}
     >
       <CSidebarBrand className="d-none d-md-flex" to="/">
         <CIcon className="sidebar-brand-full" name="logo-negative" height={35} />
