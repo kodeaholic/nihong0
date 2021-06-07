@@ -14,13 +14,13 @@ const getSvg = catchAsync(async (req, res) => {
     const svgCode = req.params.svgCode
     const fileName = `${svgCode}.svg`
     let found = false;
-    directories.every((dir) => {
-        let files = fs.readdirSync(path.join(svgSourceFolder, dir))
+    for (let i = 0; i < directories.length; i++) {
+        let files = fs.readdirSync(path.join(svgSourceFolder, directories[i]))
         if (files.includes(fileName)) {
-            found = { path: '/svg/' + dir + '/' + fileName, subDir: dir }
-            return true
+            found = { path: '/svg/' + directories[i] + '/' + fileName, subDir: directories[i] }
+            break;
         }
-    })
+    }
     if (found) {
         res.send(found);
     } else {
