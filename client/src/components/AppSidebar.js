@@ -19,13 +19,13 @@ import 'simplebar/dist/simplebar.min.css'
 import navigation from '../_nav'
 const AppSidebar = () => {
   const sidebarShow = useSelector((state) => state.sidebar.sideBarShow)
-  const sidebarUnfodable = useSelector((state) => state.sidebar.sidebarUnfodable)
+  const sideBarUnfoldable = useSelector((state) => state.sidebar.sideBarUnfoldable)
   const dispatch = useDispatch()
   return (
     <CSidebar
       position="fixed"
       selfHiding="md"
-      unfoldable={false}
+      unfoldable={sideBarUnfoldable}
       show={sidebarShow}
       onShow={() => {}}
       onHide={() => {}}
@@ -47,7 +47,7 @@ const AppSidebar = () => {
         onClick={() => {
           dispatch({
             type: 'SET_SIDEBAR_UNFOLDABLE',
-            payload: { sidebarUnfodable: !sidebarUnfodable },
+            payload: { sideBarUnfoldable: !sideBarUnfoldable },
           })
         }}
       />

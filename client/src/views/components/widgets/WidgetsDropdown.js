@@ -20,7 +20,7 @@ const WidgetsDropdown = () => {
           className="mb-4"
           color="primary"
           value="9.823"
-          title="Members online"
+          title="Học viên mới"
           action={
             <CDropdown alignment="end">
               <CDropdownToggle color="transparent" caret={false} className="p-0">
@@ -100,7 +100,7 @@ const WidgetsDropdown = () => {
           className="mb-4"
           color="info"
           value="9.823"
-          title="Members online"
+          title="Học viên mới"
           action={
             <CDropdown alignment="end">
               <CDropdownToggle color="transparent" caret={false} className="p-0">
@@ -179,7 +179,7 @@ const WidgetsDropdown = () => {
           className="mb-4"
           color="warning"
           value="9.823"
-          title="Members online"
+          title="Học viên mới"
           action={
             <CDropdown alignment="end">
               <CDropdownToggle color="transparent" caret={false} className="p-0">
@@ -245,7 +245,7 @@ const WidgetsDropdown = () => {
           className="mb-4"
           color="danger"
           value="9.823"
-          title="Members online"
+          title="Học viên mới"
           action={
             <CDropdown alignment="end">
               <CDropdownToggle color="transparent" caret={false} className="p-0">
