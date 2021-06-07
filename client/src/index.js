@@ -9,12 +9,14 @@ import { icons } from './assets/icons'
 
 import { Provider } from 'react-redux'
 import store from './store'
-
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 React.icons = icons
 
 ReactDOM.render(
   <Provider store={store}>
     <App />
+    <ToastContainer />
   </Provider>,
   document.getElementById('root'),
 )

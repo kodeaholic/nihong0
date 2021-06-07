@@ -1,2 +1,3 @@
-import config from './server.json'
-export const conf = process.env.NODE_ENV === 'production' ? config['production'] : config['local']
+import dataConfig from './server.json'
+export const config =
+  process.env.NODE_ENV === 'production' ? dataConfig['production'] : dataConfig['local']

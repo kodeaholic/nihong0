@@ -1,17 +1,22 @@
 import React from 'react'
-import { Route, Redirect } from 'react-router-dom'
-
-// eslint-disable-next-line react/prop-types
-export const AuthRoute = ({ component: Component, ...rest }) => (
+import { Route } from 'react-router-dom'
+import { Redirect } from 'react-router-dom'
+import PropTypes from 'prop-types'
+export const AuthRoute = ({ children, ...rest }) => (
   <Route
     {...rest}
-    render={(props) =>
-      !localStorage.getItem('user') ? (
-        <Component {...props} />
+    render={({ location }) =>
+      localStorage.getItem('user') ? (
+        children
       ) : (
-        // eslint-disable-next-line react/prop-types
-        <Redirect to={{ pathname: '/login', state: { from: props.location } }} />
+        <Redirect to={{ pathname: '/login', state: { from: location } }} />
       )
     }
   />
 )
+AuthRoute.propTypes = {
+  children: PropTypes.any, // to-do specify this proptype
+  location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired,
+  }),
+}
