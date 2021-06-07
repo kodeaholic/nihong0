@@ -54,10 +54,12 @@ const Widgets = React.lazy(() => import('./views/components/widgets/Widgets'))
 
 const Charts = React.lazy(() => import('./views/components/charts/Charts'))
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
-
+const Kana = React.lazy(() => import('./views/characters/kana/kana'))
+const Joyokanji = React.lazy(() => import('./views/characters/joyokanji/joyokanji'))
+const Jinmeiyo = React.lazy(() => import('./views/characters/jinmeiyo/jinmeiyo'))
 const routes = [
   { path: '/', exact: true, name: 'Home' },
-  { path: '/dashboard', name: 'Dashboard', component: Dashboard },
+  { path: '/dashboard', name: 'Tổng quan', component: Dashboard },
   { path: '/theme', name: 'Theme', component: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', component: Colors },
   { path: '/theme/typography', name: 'Typography', component: Typography },
@@ -103,6 +105,10 @@ const routes = [
   // { path: '/404', name: '404', component: Page404 },
   // { path: '/500', name: '500', component: Page500 },
   { path: '/widgets', name: 'Widgets', component: Widgets },
+  { path: '/characters', name: 'Bảng chữ cái', component: Kana, exact: true },
+  { path: '/characters/kana', name: 'Kana', component: Kana },
+  { path: '/characters/joyokanji', name: 'Joyokanji', component: Joyokanji },
+  { path: '/characters/jinmeiyo', name: 'Jinmeiyo', component: Jinmeiyo },
 ]
 
 export default routes
