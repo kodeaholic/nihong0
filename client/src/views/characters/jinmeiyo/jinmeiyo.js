@@ -80,7 +80,7 @@ const Jinmeiyo = () => {
     <>
       <CCard className="mb-4">
         <CCardBody>
-          <CCardTitle className="text-center">HƯỚNG DẪN</CCardTitle>
+          <CCardTitle className="text-center">HƯỚNG DẪN VIẾT</CCardTitle>
           <CRow className="align-items-center">
             <CCol sm="4"></CCol>
             <CCol sm="4">

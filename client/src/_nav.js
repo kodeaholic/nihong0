@@ -318,7 +318,7 @@ const _nav = [
   // },
   {
     _component: 'CNavTitle',
-    anchor: 'Bảng chữ',
+    anchor: 'Bảng chữ động',
   },
   {
     _component: 'CNavItem',
