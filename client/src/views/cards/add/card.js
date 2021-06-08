@@ -185,6 +185,16 @@ const Card = () => {
                 className="px-4"
                 onClick={() => {
                   console.log(searchKey, srcSvg, meaning, onField, onExample, kunField, kunExample)
+                  if (searchKey)
+                    toast.success(`Tạo thành công  “${searchKey}”`, {
+                      position: 'top-right',
+                      autoClose: 5000,
+                      hideProgressBar: true,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: true,
+                      progress: undefined,
+                    })
                 }}
                 disabled={disabledSearch}
               >
