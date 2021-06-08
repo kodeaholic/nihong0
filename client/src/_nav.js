@@ -323,6 +323,13 @@ const _nav = [
   {
     _component: 'CNavItem',
     as: NavLink,
+    anchor: 'Tra cứu',
+    to: '/characters/search',
+    icon: <i className="nav-icon">🔍</i>,
+  },
+  {
+    _component: 'CNavItem',
+    as: NavLink,
     anchor: 'Kana (177)',
     to: '/characters/kana',
     icon: <CIcon name="cil-pencil" customClasses="nav-icon" />,
