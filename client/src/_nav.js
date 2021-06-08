@@ -9,10 +9,10 @@ const _nav = [
     anchor: 'Tổng quan',
     to: '/dashboard',
     icon: <CIcon name="cil-speedometer" customClasses="nav-icon" />,
-    badge: {
-      color: 'info',
-      text: 'NEW',
-    },
+    // badge: {
+    //   color: 'info',
+    //   text: 'NEW',
+    // },
   },
   // {
   //   _component: 'CNavTitle',
@@ -325,7 +325,6 @@ const _nav = [
     as: NavLink,
     anchor: 'Tra cứu',
     to: '/characters/search',
-    icon: <i className="nav-icon">🔍</i>,
   },
   {
     _component: 'CNavItem',
@@ -347,6 +346,16 @@ const _nav = [
     anchor: 'Jinmeiyō (862)',
     to: '/characters/jinmeiyo',
     icon: <CIcon name="cil-pencil" customClasses="nav-icon" />,
+  },
+  {
+    _component: 'CNavTitle',
+    anchor: 'Thẻ từ vựng',
+  },
+  {
+    _component: 'CNavItem',
+    as: NavLink,
+    anchor: 'Thêm thẻ',
+    to: '/cards/add',
   },
 ]
 

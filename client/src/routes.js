@@ -58,6 +58,8 @@ const Kana = React.lazy(() => import('./views/characters/kana/kana'))
 const Joyokanji = React.lazy(() => import('./views/characters/joyokanji/joyokanji'))
 const Jinmeiyo = React.lazy(() => import('./views/characters/jinmeiyo/jinmeiyo'))
 const SearchCharacter = React.lazy(() => import('./views/characters/search/searchCharacter'))
+
+const Card = React.lazy(() => import('./views/cards/add/card'))
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Tổng quan', component: Dashboard },
@@ -111,6 +113,8 @@ const routes = [
   { path: '/characters/joyokanji', name: 'Joyokanji', component: Joyokanji },
   { path: '/characters/jinmeiyo', name: 'Jinmeiyo', component: Jinmeiyo },
   { path: '/characters/search', name: 'Tìm kiếm', component: SearchCharacter },
+  { path: '/cards', name: 'Thẻ từ vựng', component: Card, exact: true },
+  { path: '/cards/add', name: 'Thêm thẻ', component: Card },
 ]
 
 export default routes
