@@ -30,6 +30,7 @@ const Card = () => {
   const [kunField, setKunField] = useState('')
   const [onExample, setOnExample] = useState('')
   const [kunExample, setKunExample] = useState('')
+  const [note, setNote] = useState('')
   useEffect(() => {
     // fetch svg src
     if (searchKey) {
@@ -134,6 +135,17 @@ const Card = () => {
                 id="meaning"
                 placeholder="Bán ( Một nửa )"
                 onChange={(e) => setMeaning(e.target.value)}
+              />
+            </div>
+            <div className="mb-3">
+              <CFormLabel htmlFor="note" style={{ marginTop: '5px' }}>
+                Mẹo nhớ
+              </CFormLabel>
+              <CFormControl
+                type="text"
+                id="note"
+                placeholder="Mẹo để nhớ"
+                onChange={(e) => setNote(e.target.value)}
               />
             </div>
             <div className="mb-3">
