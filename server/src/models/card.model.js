@@ -65,8 +65,8 @@ cardSchema.plugin(paginate);
  * @param {ObjectId} [excludeCardId] - The id of the card to be excluded
  * @returns {Promise<boolean>}
  */
- cardSchema.statics.isCodeTaken = async function (code, excludeCardId) {
-  const card = await this.findOne({ code, _id: { $ne: excludeCardId } });
+ cardSchema.statics.isCodeTaken = async function (code, excludeCardId = undefined) {
+  const card = excludeCardId ? await this.findOne({ code, _id: { $ne: excludeCardId } }) : await this.findOne({ code });
   return !!card;
 };
 
@@ -76,8 +76,8 @@ cardSchema.plugin(paginate);
  * @param {ObjectId} [excludeCardId] - The id of the card to be excluded
  * @returns {Promise<boolean>}
  */
- cardSchema.statics.isLetterTaken = async function (letter, excludeCardId) {
-  const card = await this.findOne({ letter, _id: { $ne: excludeCardId } });
+ cardSchema.statics.isLetterTaken = async function (letter, excludeCardId = undefined) {
+  const card = excludeCardId ? await this.findOne({ letter, _id: { $ne: excludeCardId } }) : await this.findOne({ letter });
   return !!card;
 };
 

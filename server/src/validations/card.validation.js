@@ -5,12 +5,12 @@ const createCard = {
   body: Joi.object().keys({
     letter: Joi.string().required(),
     meaning: Joi.string().required(),
-    note: Joi.string(),
-    onText: Joi.string(),
-    onTextExample: Joi.string(),
-    kunText: Joi.string(),
-    kunTextExample: Joi.string(),
-    svgSrc: Joi.string(),
+    note: Joi.string().allow(null, ''),
+    onText: Joi.string().allow(null, ''),
+    onTextExample: Joi.string().allow(null, ''),
+    kunText: Joi.string().allow(null, ''),
+    kunTextExample: Joi.string().allow(null, ''),
+    svgSrc: Joi.string().allow(null, ''),
     code: Joi.string()
   }),
 };
@@ -37,15 +37,15 @@ const updateCard = {
   }),
   body: Joi.object()
     .keys({
-        letter: Joi.string().required(),
-        meaning: Joi.string().required(),
-        note: Joi.string(),
-        onText: Joi.string(),
-        onTextExample: Joi.string(),
-        kunText: Joi.string(),
-        kunTextExample: Joi.string(),
-        svgSrc: Joi.string(),
-        code: Joi.string()
+      letter: Joi.string().required(),
+      meaning: Joi.string().required(),
+      note: Joi.string().allow(null, ''),
+      onText: Joi.string().allow(null, ''),
+      onTextExample: Joi.string().allow(null, ''),
+      kunText: Joi.string().allow(null, ''),
+      kunTextExample: Joi.string().allow(null, ''),
+      svgSrc: Joi.string().allow(null, ''),
+      code: Joi.string()
     })
     .min(1),
 };
