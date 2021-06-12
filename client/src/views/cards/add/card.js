@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
+import PropTypes from 'prop-types'
 import {
   CCard,
   CCardBody,
@@ -14,10 +15,12 @@ import {
   CFormLabel,
   CFormControl,
   CButton,
+  CSpinner,
 } from '@coreui/react'
 import { getHtmlEntityCodeFromDecodedString } from '../../../helpers/htmlentities'
 import { svgService } from '../../../services/api/svgService'
-const Card = () => {
+import { cardService } from '../../../services/api/cardService'
+const Card = ({ props }) => {
   const [input, setInput] = useState('')
   const [searchKey, setSearchKey] = useState('')
   const [disabledSearch, setDisabledSearch] = useState(true)
@@ -31,6 +34,11 @@ const Card = () => {
   const [onExample, setOnExample] = useState('')
   const [kunExample, setKunExample] = useState('')
   const [note, setNote] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  // const [cards, setCards] = useState([])
+  // useEffect(() => {
+  //   cardService.getCards()
+  // }, [cards])
   useEffect(() => {
     // fetch svg src
     if (searchKey) {
@@ -196,21 +204,46 @@ const Card = () => {
                 color="primary"
                 className="px-4"
                 onClick={() => {
-                  console.log(searchKey, srcSvg, meaning, onField, onExample, kunField, kunExample)
-                  if (searchKey)
-                    toast.success(`Tạo thành công  “${searchKey}”`, {
-                      position: 'top-right',
-                      autoClose: 5000,
-                      hideProgressBar: true,
-                      closeOnClick: true,
-                      pauseOnHover: true,
-                      draggable: true,
-                      progress: undefined,
-                    })
+                  setIsSubmitting(true)
+                  const data = {
+                    letter: searchKey,
+                    meaning: meaning,
+                    onText: onField,
+                    onTextExample: onExample,
+                    kunText: kunField,
+                    kunTextExample: kunExample,
+                    svgSrc: srcSvg,
+                    code: svgCode,
+                  }
+                  cardService.createCard(data).then((res) => {
+                    setIsSubmitting(false)
+                    if (res && res.ok) {
+                      console.log(res)
+                      toast.success(`Tạo thành công  “${searchKey}”`, {
+                        position: 'top-right',
+                        autoClose: 5000,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                      })
+                    } else {
+                      toast.error(`Có lỗi xảy ra khi tạo mới thẻ  “${searchKey}”`, {
+                        position: 'top-right',
+                        autoClose: 5000,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                      })
+                    }
+                  })
                 }}
                 disabled={disabledSearch}
               >
-                TẠO THẺ
+                {isSubmitting ? <CSpinner /> : 'TẠO THẺ'}
               </CButton>
             </div>
           </CRow>
@@ -218,6 +251,10 @@ const Card = () => {
       </CRow>
     </>
   )
+}
+
+Card.propTypes = {
+  props: PropTypes.any,
 }
 
 export default Card

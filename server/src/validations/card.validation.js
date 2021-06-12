@@ -10,7 +10,7 @@ const createCard = {
     onTextExample: Joi.string(),
     kunText: Joi.string(),
     kunTextExample: Joi.string(),
-    svgSrc: Joi.string().required(),
+    svgSrc: Joi.string(),
     code: Joi.string()
   }),
 };
@@ -44,7 +44,7 @@ const updateCard = {
         onTextExample: Joi.string(),
         kunText: Joi.string(),
         kunTextExample: Joi.string(),
-        svgSrc: Joi.string().required(),
+        svgSrc: Joi.string(),
         code: Joi.string()
     })
     .min(1),

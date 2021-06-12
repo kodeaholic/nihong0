@@ -41,7 +41,8 @@ const cardSchema = mongoose.Schema(
     },
     svgSrc: {
         type: String,
-        required: true,
+        required: false,
+        trim: false,
     },
     code: {
         type: String,

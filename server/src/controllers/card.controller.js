@@ -30,8 +30,9 @@ const updateCard = catchAsync(async (req, res) => {
 });
 
 const deleteCard = catchAsync(async (req, res) => {
-  await cardService.deleteCardById(req.params.cardId);
-  res.status(httpStatus.NO_CONTENT).send();
+  const card = await cardService.deleteCardById(req.params.cardId);
+  // res.status(httpStatus.NO_CONTENT).send(card);
+  res.send(card);
 });
 
 module.exports = {
