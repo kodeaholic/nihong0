@@ -5,6 +5,7 @@ export const cardService = {
   createCard,
   getCard,
   updateCard,
+  deleteCard,
 }
 
 async function getCards(filter, options = { sortBy: 'letter:desc', limit: 40, page: 1 }) {
@@ -55,6 +56,20 @@ async function updateCard(data, cardId) {
 async function getCard(cardId) {
   const requestOptions = {
     method: 'GET',
+    headers: authHeader(),
+  }
+
+  const response = await fetch(`${config.apiEndpoint}/cards/${cardId}`, requestOptions)
+  const card = await response.json()
+  if (response.status === 200 && response.ok) return card
+  else {
+    return response
+  }
+}
+
+async function deleteCard(cardId) {
+  const requestOptions = {
+    method: 'DELETE',
     headers: authHeader(),
   }
 

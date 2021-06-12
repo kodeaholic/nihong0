@@ -6,17 +6,19 @@ import {
   CCard,
   CCardBody,
   CRow,
-  CCardFooter,
   CImage,
   CCol,
   CCardText,
   CBadge,
-  CCardTitle,
-  CForm,
   CFormLabel,
   CFormControl,
   CButton,
   CSpinner,
+  CModal,
+  CModalFooter,
+  CModalHeader,
+  CModalBody,
+  CModalTitle,
 } from '@coreui/react'
 import { getHtmlEntityCodeFromDecodedString } from '../../../helpers/htmlentities'
 import { svgService } from '../../../services/api/svgService'
@@ -42,10 +44,8 @@ const Card = (props) => {
   const [note, setNote] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [redirectTo, setRedirecTo] = useState({ isRedirected: false, redirectedPath: '' })
-  // const [cards, setCards] = useState([])
-  // useEffect(() => {
-  //   cardService.getCards()
-  // }, [cards])
+  const [visible, setVisible] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   useEffect(() => {
     // fetch svg src
     if (searchKey) {
@@ -88,7 +88,7 @@ const Card = (props) => {
     if (cardId) {
       cardService.getCard(cardId).then((res) => {
         if (res) {
-          if (res.status === 401) {
+          if (res.status === 401 || res.status === 404) {
             toast.error(`Thẻ không tồn tại`, {
               position: 'top-right',
               autoClose: 3000,
@@ -98,6 +98,7 @@ const Card = (props) => {
               draggable: true,
               progress: undefined,
             })
+            setRedirecTo({ isRedirected: true, redirectedPath: '/cards' })
           } else {
             setData(res)
             setInput(res.letter)
@@ -324,20 +325,67 @@ const Card = (props) => {
                 </div>
               )}
               {viewAction === 'get' && (
-                <div className="mb-3">
-                  <CButton
-                    color="primary"
-                    className="px-4"
-                    onClick={() => {
-                      setRedirecTo({
-                        isRedirected: true,
-                        redirectedPath: `/cards/editCard/${cardId}`,
-                      })
-                    }}
-                  >
-                    SỬA THẺ NÀY
-                  </CButton>
-                </div>
+                <>
+                  <div className="mb-3">
+                    <CButton
+                      color="primary"
+                      className="px-4"
+                      onClick={() => {
+                        setRedirecTo({
+                          isRedirected: true,
+                          redirectedPath: `/cards/editCard/${cardId}`,
+                        })
+                      }}
+                    >
+                      SỬA THẺ NÀY
+                    </CButton>
+                    &nbsp;
+                    <CButton onClick={() => setVisible(!visible)} color="danger">
+                      XOÁ THẺ NÀY
+                    </CButton>
+                    <CModal visible={visible} onDismiss={() => setVisible(false)}>
+                      <CModalHeader onDismiss={() => setVisible(false)}>
+                        <CModalTitle>XÁC NHẬN XOÁ THẺ NÀY</CModalTitle>
+                      </CModalHeader>
+                      <CModalBody>
+                        Bạn chắc chắn muốn xoá{' '}
+                        <CBadge color="success">
+                          {data.letter} - {data.meaning}
+                        </CBadge>{' '}
+                        ?
+                      </CModalBody>
+                      <CModalFooter>
+                        <CButton color="secondary" onClick={() => setVisible(false)}>
+                          HUỶ BỎ
+                        </CButton>
+                        {deleting && <CSpinner />}
+                        {!deleting && (
+                          <CButton
+                            color="danger"
+                            onClick={() => {
+                              setDeleting(true)
+                              cardService.deleteCard(cardId).then((res) => {
+                                setDeleting(false)
+                              })
+                              toast.success(`Xoá thành công`, {
+                                position: 'top-right',
+                                autoClose: 2500,
+                                hideProgressBar: true,
+                                closeOnClick: true,
+                                pauseOnHover: true,
+                                draggable: true,
+                                progress: undefined,
+                              })
+                              setRedirecTo({ isRedirected: true, redirectedPath: '/cards' })
+                            }}
+                          >
+                            XOÁ
+                          </CButton>
+                        )}
+                      </CModalFooter>
+                    </CModal>
+                  </div>
+                </>
               )}
             </CRow>
           </CCol>
