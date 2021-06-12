@@ -55,12 +55,15 @@ const updateCardById = async (cardId, updateBody) => {
   if (!card) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Thẻ không tồn tại hoặc đã bị xoá');
   }
-  if (updateBody.email && (await User.isEmailTaken(updateBody.email, userId))) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
+  if (updateBody.code && (await Card.isCodeTaken(updateBody.code, cardId))) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Code đã tồn tại');
   }
-  Object.assign(user, updateBody);
-  await user.save();
-  return user;
+  if (updateBody.letter && (await Card.isLetterTaken(updateBody.letter, cardId))) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Chữ này đã tồn tại');
+  }
+  Object.assign(card, updateBody);
+  await card.save();
+  return card;
 };
 
 /**
@@ -82,5 +85,6 @@ module.exports = {
   queryCards,
   deleteCardById,
   getCardById,
-  getCardByCode
+  getCardByCode,
+  updateCardById
 };

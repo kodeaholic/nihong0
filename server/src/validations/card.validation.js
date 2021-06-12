@@ -31,15 +31,21 @@ const getCard = {
   }),
 };
 
-const updateUser = {
+const updateCard = {
   params: Joi.object().keys({
-    userId: Joi.required().custom(objectId),
+    cardId: Joi.required().custom(objectId),
   }),
   body: Joi.object()
     .keys({
-      email: Joi.string().email(),
-      password: Joi.string(),
-      name: Joi.string(),
+        letter: Joi.string().required(),
+        meaning: Joi.string().required(),
+        note: Joi.string(),
+        onText: Joi.string(),
+        onTextExample: Joi.string(),
+        kunText: Joi.string(),
+        kunTextExample: Joi.string(),
+        svgSrc: Joi.string().required(),
+        code: Joi.string()
     })
     .min(1),
 };
@@ -54,5 +60,6 @@ module.exports = {
   getCards,
   createCard,
   getCard,
+  updateCard,
   deleteCard
 };

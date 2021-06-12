@@ -14,6 +14,7 @@ router
 router
   .route('/:cardId')
   .get(auth('getCards'), validate(cardValidation.getCard), cardController.getCard)
+  .patch(auth('manageCards'), validate(cardValidation.updateCard), cardController.updateCard)
   .delete(auth('manageCards'), validate(cardValidation.deleteCard), cardController.deleteCard);
 
 module.exports = router;
