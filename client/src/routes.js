@@ -114,7 +114,14 @@ const routes = [
   { path: '/characters/jinmeiyo', name: 'Jinmeiyo', component: Jinmeiyo },
   { path: '/characters/search', name: 'Tìm kiếm', component: SearchCharacter },
   { path: '/cards', name: 'Thẻ từ vựng', component: Card, exact: true },
-  { path: '/cards/add', name: 'Thêm thẻ', component: Card },
+  { path: '/cards/addCard', name: 'Thêm mới', component: Card, specificName: 'addCard' },
+  {
+    path: '/cards/getCard/:cardId',
+    name: 'Thông tin thẻ',
+    component: Card,
+    specificName: 'getCard',
+  },
+  { path: '/cards/editCard/:cardId', name: 'Sửa', component: Card, specificName: 'editCard' },
 ]
 
 export default routes

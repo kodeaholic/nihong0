@@ -355,7 +355,7 @@ const _nav = [
     _component: 'CNavItem',
     as: NavLink,
     anchor: 'Thêm thẻ',
-    to: '/cards/add',
+    to: '/cards/addCard',
   },
 ]
 
