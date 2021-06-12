@@ -276,7 +276,7 @@ const Card = (props) => {
                       }
                       const callback = (res) => {
                         setIsSubmitting(false)
-                        if (res && res.code !== 400) {
+                        if (res && res.code !== 400 && res.code !== 403) {
                           toast.success(`Lưu thành công  “${searchKey}”`, {
                             position: 'top-right',
                             autoClose: 2500,
