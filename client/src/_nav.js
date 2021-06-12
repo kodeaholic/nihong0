@@ -354,6 +354,12 @@ const _nav = [
   {
     _component: 'CNavItem',
     as: NavLink,
+    anchor: 'Thẻ từ vựng',
+    to: '/cards',
+  },
+  {
+    _component: 'CNavItem',
+    as: NavLink,
     anchor: 'Thêm thẻ',
     to: '/cards/addCard',
   },

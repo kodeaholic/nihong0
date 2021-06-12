@@ -10,7 +10,7 @@ const createCard = catchAsync(async (req, res) => {
 });
 
 const getCards = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['name', 'role']);
+  const filter = pick(req.query, ['letter', 'code']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const result = await cardService.queryCards(filter, options);
   res.send(result);

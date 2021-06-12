@@ -7,17 +7,25 @@ export const cardService = {
   updateCard,
 }
 
-async function getCards() {
+async function getCards(filter, options = { sortBy: 'letter:desc', limit: 40, page: 1 }) {
   const requestOptions = {
     method: 'GET',
     headers: authHeader(),
   }
-
-  const response = await fetch(`${config.apiEndpoint}/cards`, requestOptions)
+  let url = `${config.apiEndpoint}/cards?`
+  if (filter) {
+    for (const [key, value] of Object.entries(filter)) {
+      url += `&${key}=${value}`
+    }
+  }
+  for (const [key, value] of Object.entries(options)) {
+    url += `&${key}=${value}`
+  }
+  const response = await fetch(url, requestOptions)
   const res = await response.json()
   if (response.status === 200 && response.ok) {
     return res
-  } else return undefined
+  } else return []
 }
 
 async function createCard(data) {

@@ -7,7 +7,7 @@ const Typography = React.lazy(() => import('./views/theme/typography/Typography'
 
 const Accordion = React.lazy(() => import('./views/components/base/accordion/Accordion'))
 const Breadcrumbs = React.lazy(() => import('./views/components/base/breadcrumbs/Breadcrumbs'))
-const Cards = React.lazy(() => import('./views/components/base/cards/Cards'))
+// const Cards = React.lazy(() => import('./views/components/base/cards/Cards'))
 const Carousels = React.lazy(() => import('./views/components/base/carousels/Carousels'))
 const Collapses = React.lazy(() => import('./views/components/base/collapses/Collapses'))
 const ListGroups = React.lazy(() => import('./views/components/base/list-groups/ListGroups'))
@@ -59,7 +59,8 @@ const Joyokanji = React.lazy(() => import('./views/characters/joyokanji/joyokanj
 const Jinmeiyo = React.lazy(() => import('./views/characters/jinmeiyo/jinmeiyo'))
 const SearchCharacter = React.lazy(() => import('./views/characters/search/searchCharacter'))
 
-const Card = React.lazy(() => import('./views/cards/add/card'))
+const Card = React.lazy(() => import('./views/cards/detail/card'))
+const Cards = React.lazy(() => import('./views/cards/list/cards'))
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Tổng quan', component: Dashboard },
@@ -113,7 +114,7 @@ const routes = [
   { path: '/characters/joyokanji', name: 'Joyokanji', component: Joyokanji },
   { path: '/characters/jinmeiyo', name: 'Jinmeiyo', component: Jinmeiyo },
   { path: '/characters/search', name: 'Tìm kiếm', component: SearchCharacter },
-  { path: '/cards', name: 'Thẻ từ vựng', component: Card, exact: true },
+  { path: '/cards', name: 'Thẻ từ vựng', component: Cards, exact: true },
   { path: '/cards/addCard', name: 'Thêm mới', component: Card, specificName: 'addCard' },
   {
     path: '/cards/getCard/:cardId',
