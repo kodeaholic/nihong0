@@ -60,7 +60,9 @@ const Jinmeiyo = React.lazy(() => import('./views/characters/jinmeiyo/jinmeiyo')
 const SearchCharacter = React.lazy(() => import('./views/characters/search/searchCharacter'))
 
 const Card = React.lazy(() => import('./views/cards/detail/card'))
-const Cards = React.lazy(() => import('./views/cards/list/cards'))
+const Cards = React.lazy(() => import('./views/cards/master/cards'))
+const Board = React.lazy(() => import('./views/cards/detail/card'))
+const Boards = React.lazy(() => import('./views/boards/master/boards'))
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Tổng quan', component: Dashboard },
@@ -123,6 +125,15 @@ const routes = [
     specificName: 'getCard',
   },
   { path: '/cards/editCard/:cardId', name: 'Sửa', component: Card, specificName: 'editCard' },
+  { path: '/boards', name: 'Bài học từ vựng', component: Boards, exact: true },
+  { path: '/boards/addBoard', name: 'Thêm mới', component: Board, specificName: 'addBoard' },
+  {
+    path: '/boards/getBoard/:cardId',
+    name: 'Thông tin thẻ',
+    component: Board,
+    specificName: 'getBoard',
+  },
+  { path: '/boards/editBoard/:cardId', name: 'Sửa', component: Board, specificName: 'editBoard' },
 ]
 
 export default routes

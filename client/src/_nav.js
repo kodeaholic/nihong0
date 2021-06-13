@@ -363,6 +363,22 @@ const _nav = [
     anchor: 'Thêm thẻ',
     to: '/cards/addCard',
   },
+  {
+    _component: 'CNavTitle',
+    anchor: 'Bài học từ vựng',
+  },
+  {
+    _component: 'CNavItem',
+    as: NavLink,
+    anchor: 'Bài học từ vựng',
+    to: '/boards',
+  },
+  {
+    _component: 'CNavItem',
+    as: NavLink,
+    anchor: 'Thêm bài học',
+    to: '/boards/addBoard',
+  },
 ]
 
 export default _nav
