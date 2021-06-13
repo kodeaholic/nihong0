@@ -10,7 +10,7 @@ import {
   CForm,
   CFormCheck,
   CRow,
-  CImage,
+  CBadge,
   CCol,
   CFormLabel,
   CFormControl,
@@ -50,6 +50,8 @@ const Board = (props) => {
   const [data, setData] = useState({})
   const [saving, setSaving] = useState(false)
   const [checkingTags, setCheckingTags] = useState(false)
+  const [visible, setVisible] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const handleCheckTags = () => {
     if (cardsString.length) {
       let letters = cardsString.split(',')
@@ -302,17 +304,25 @@ const Board = (props) => {
             )}
             <CRow>
               {viewAction !== 'get' && (
-                <CCol className="col-sm-3">
-                  <CButton onClick={handleSubmit} disabled={!tags.length || !title.length}>
+                <CCol className="col-sm-6">
+                  <CButton
+                    onClick={handleSubmit}
+                    disabled={!tags.length || !title.length}
+                    // style={{ color: 'white'}}
+                  >
                     LƯU BÀI HỌC
                   </CButton>
                 </CCol>
               )}
-              {viewAction === 'get' && (
-                <CCol className="col-sm-2">
+            </CRow>
+
+            {viewAction === 'get' && (
+              <CRow>
+                <CCol className="col-sm-3">
                   {saving && <CSpinner />}
                   {!saving && (
                     <CButton
+                      style={{ color: 'white', marginBottom: '10px' }}
                       onClick={() => {
                         setRedirecTo({
                           isRedirected: true,
@@ -324,15 +334,59 @@ const Board = (props) => {
                     </CButton>
                   )}
                 </CCol>
-              )}
-              {viewAction === 'get' && (
-                <CCol className="col-sm-2">
-                  <CButton color="danger" style={{ color: 'white' }}>
+              </CRow>
+            )}
+
+            {viewAction === 'get' && (
+              <CRow>
+                <CCol className="col-sm-3">
+                  <CButton
+                    color="danger"
+                    style={{ color: 'white' }}
+                    onClick={() => setVisible(!visible)}
+                  >
                     XOÁ BÀI NÀY
                   </CButton>
+                  <CModal visible={visible} onDismiss={() => setVisible(false)}>
+                    <CModalHeader onDismiss={() => setVisible(false)}>
+                      <CModalTitle>XÁC NHẬN XOÁ THẺ NÀY</CModalTitle>
+                    </CModalHeader>
+                    <CModalBody>
+                      Bạn chắc chắn muốn xoá <CBadge color="success">{title}</CBadge> ?
+                    </CModalBody>
+                    <CModalFooter>
+                      <CButton color="secondary" onClick={() => setVisible(false)}>
+                        HUỶ BỎ
+                      </CButton>
+                      {deleting && <CSpinner />}
+                      {!deleting && (
+                        <CButton
+                          color="danger"
+                          onClick={() => {
+                            setDeleting(true)
+                            boardService.deleteBoard(boardId).then((res) => {
+                              setDeleting(false)
+                            })
+                            toast.success(`Xoá thành công`, {
+                              position: 'top-right',
+                              autoClose: 2500,
+                              hideProgressBar: true,
+                              closeOnClick: true,
+                              pauseOnHover: true,
+                              draggable: true,
+                              progress: undefined,
+                            })
+                            setRedirecTo({ isRedirected: true, redirectedPath: '/boards' })
+                          }}
+                        >
+                          XOÁ
+                        </CButton>
+                      )}
+                    </CModalFooter>
+                  </CModal>
                 </CCol>
-              )}
-            </CRow>
+              </CRow>
+            )}
           </CForm>
         </CRow>
       </>

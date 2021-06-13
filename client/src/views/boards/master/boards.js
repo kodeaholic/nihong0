@@ -12,6 +12,7 @@ import {
   CCardSubtitle,
   CCardTitle,
   CCardText,
+  CBadge,
 } from '@coreui/react'
 import { toast } from 'react-toastify'
 import { boardService } from '../../../services/api/boardService'
@@ -122,11 +123,15 @@ const Boards = () => {
                     setRedirect({ redirect: true, path: `/boards/getBoard/${item.id}` })
                   }}
                 >
-                  <CCard style={{ width: '18rem' }}>
+                  <CCard style={{ width: '18rem', marginBottom: '5px' }}>
                     <CCardBody>
                       <CCardTitle>{item.title}</CCardTitle>
-                      <CCardSubtitle className="mb-2 text-muted">{item.level}</CCardSubtitle>
-                      <CCardText>{item.description}</CCardText>
+                      <CCardSubtitle className="mb-2 text-muted">
+                        <CBadge color="success">{item.free ? 'Free' : 'Trả phí'}</CBadge>{' '}
+                        <CBadge color="primary">{item.level}</CBadge>{' '}
+                        <CBadge color="info">{item.cards.length} chữ</CBadge>
+                      </CCardSubtitle>
+                      {/* <CCardText>{item.description}</CCardText> */}
                     </CCardBody>
                   </CCard>
                 </CCol>
