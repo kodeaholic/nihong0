@@ -61,7 +61,7 @@ const SearchCharacter = React.lazy(() => import('./views/characters/search/searc
 
 const Card = React.lazy(() => import('./views/cards/detail/card'))
 const Cards = React.lazy(() => import('./views/cards/master/cards'))
-const Board = React.lazy(() => import('./views/cards/detail/card'))
+const Board = React.lazy(() => import('./views/boards/detail/board'))
 const Boards = React.lazy(() => import('./views/boards/master/boards'))
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -129,7 +129,7 @@ const routes = [
   { path: '/boards/addBoard', name: 'Thêm mới', component: Board, specificName: 'addBoard' },
   {
     path: '/boards/getBoard/:cardId',
-    name: 'Thông tin thẻ',
+    name: 'Thông tin bài học',
     component: Board,
     specificName: 'getBoard',
   },
