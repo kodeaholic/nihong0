@@ -43,7 +43,7 @@ const Board = (props) => {
   const [title, setTitle] = useState('')
   const [level, setLevel] = useState('')
   const [description, setDescription] = useState('')
-  const [free, setFree] = useState(0)
+  const [free, setFree] = useState(1)
   const [cardsString, setCardsString] = useState('')
   const [cards, setCards] = useState([])
   const [tags, setTags] = useState([])
@@ -229,29 +229,12 @@ const Board = (props) => {
             </CRow>
             <fieldset className="row mb-3">
               <legend className="col-form-label col-sm-2 pt-0">Loại bài</legend>
-              <CCol
-                sm="10"
-                onChange={(e) => {
-                  let value = e.target.value
-                  value = value === 0 ? false : true
-                  setFree(value)
-                }}
-              >
+              <CCol sm="10">
                 <CFormCheck
-                  type="radio"
-                  name="free"
-                  value="0"
+                  id="free"
                   label="Miễn phí"
-                  defaultChecked={data ? data.free : true}
-                  disabled={viewAction === 'get'}
-                />
-                <CFormCheck
-                  type="radio"
-                  name="free"
-                  value="1"
-                  label="Thu phí"
-                  defaultChecked={data ? !data.free : false}
-                  disabled={viewAction === 'get'}
+                  checked={free === 1}
+                  onChange={() => setFree(1 - free)}
                 />
               </CCol>
             </fieldset>

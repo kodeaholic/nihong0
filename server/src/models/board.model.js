@@ -26,9 +26,9 @@ const BoardSchema = mongoose.Schema(
             required: true
         },
         free: {
-            type: Boolean,
+            type: Number,
             required: true,
-            default: false
+            default: 1
         }
     },
     {

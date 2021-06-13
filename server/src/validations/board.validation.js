@@ -7,7 +7,7 @@ const createBoard = {
     description: Joi.string().allow(null, ''),
     level: Joi.string().allow(null, ''),
     cards: Joi.array().required(),
-    free: Joi.boolean().required()
+    free: Joi.number().required()
   }),
 };
 
@@ -37,7 +37,7 @@ const updateBoard = {
       description: Joi.string().allow(null, ''),
       level: Joi.string().allow(null, ''),
       cards: Joi.array().required(),
-      free: Joi.boolean().required()
+      free: Joi.number().required()
     })
     .min(1),
 };
