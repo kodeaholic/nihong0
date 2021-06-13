@@ -379,6 +379,18 @@ const _nav = [
     anchor: 'Thêm bài học',
     to: '/boards/addBoard',
   },
+  {
+    _component: 'CNavTitle',
+    anchor: 'Bài học nghe (đang xây dựng)',
+  },
+  {
+    _component: 'CNavTitle',
+    anchor: 'Bài học ngữ pháp (đang xây dựng)',
+  },
+  {
+    _component: 'CNavTitle',
+    anchor: 'Bài test trắc nghiệm tổng hợp (đang xây dựng)',
+  },
 ]
 
 export default _nav
