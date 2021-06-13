@@ -4,7 +4,8 @@ const roleRights = new Map();
 roleRights.set(roles[0], []);
 roleRights.set(roles[1], [
   'getUsers', 'manageUsers',
-  'getCards', 'manageCards'
+  'getCards', 'manageCards',
+  'getBoards', 'manageBoards'
 ]);
 module.exports = {
   roles,
