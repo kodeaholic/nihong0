@@ -49,6 +49,37 @@ const Board = (props) => {
   const [tags, setTags] = useState([])
   const [data, setData] = useState({})
   const [saving, setSaving] = useState(false)
+  const [checkingTags, setCheckingTags] = useState(false)
+  const handleCheckTags = () => {
+    if (cardsString.length) {
+      let letters = cardsString.split(',')
+      letters = letters.filter((e) => {
+        return e.length !== 0
+      })
+      setCheckingTags(true)
+      boardService.checkTagsForCards({ letters: letters }).then((res) => {
+        setCheckingTags(false)
+        if (res && res.length === letters.length) {
+          setTags(res)
+        } else {
+          let found = res.map((item) => item.content)
+          let miss = []
+          letters.forEach((item) => {
+            if (!found.includes(item)) miss.push(item)
+          })
+          toast.error(`${miss.toString()} chưa được tạo thẻ. Vui lòng tạo trước`, {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          })
+        }
+      })
+    }
+  }
   const savingCallback = (res) => {
     setSaving(false)
     if (res && res.code !== 400 && res.code !== 403 && res.code !== 401) {
@@ -198,7 +229,14 @@ const Board = (props) => {
             </CRow>
             <fieldset className="row mb-3">
               <legend className="col-form-label col-sm-2 pt-0">Loại bài</legend>
-              <CCol sm="10">
+              <CCol
+                sm="10"
+                onChange={(e) => {
+                  let value = e.target.value
+                  value = value === 0 ? false : true
+                  setFree(value)
+                }}
+              >
                 <CFormCheck
                   type="radio"
                   name="free"
@@ -206,9 +244,6 @@ const Board = (props) => {
                   label="Miễn phí"
                   defaultChecked={data ? data.free : true}
                   disabled={viewAction === 'get'}
-                  onChange={(e) => {
-                    setFree(!free)
-                  }}
                 />
                 <CFormCheck
                   type="radio"
@@ -217,9 +252,6 @@ const Board = (props) => {
                   label="Thu phí"
                   defaultChecked={data ? !data.free : false}
                   disabled={viewAction === 'get'}
-                  onChange={(e) => {
-                    setFree(!free)
-                  }}
                 />
               </CCol>
             </fieldset>
@@ -244,6 +276,7 @@ const Board = (props) => {
                       color="info"
                       style={{ color: 'white' }}
                       disabled={!cardsString}
+                      onClick={handleCheckTags}
                     >
                       KIỂM TRA VÀ SẮP XẾP
                     </CButton>

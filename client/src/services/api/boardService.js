@@ -6,6 +6,7 @@ export const boardService = {
   getBoard,
   updateBoard,
   deleteBoard,
+  checkTagsForCards,
 }
 
 async function getBoards(
@@ -82,4 +83,16 @@ async function deleteBoard(boardId) {
   else {
     return response
   }
+}
+
+async function checkTagsForCards(data) {
+  const requestOptions = {
+    method: 'POST',
+    headers: authHeader(),
+    body: JSON.stringify(data),
+  }
+
+  const response = await fetch(`${config.apiEndpoint}/boards/checkTagsForCards`, requestOptions)
+  const found = await response.json()
+  return found
 }
