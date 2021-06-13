@@ -30,6 +30,11 @@ const updateBoard = catchAsync(async (req, res) => {
   res.send(board);
 });
 
+const checkTagsForCards = catchAsync(async (req, res) => {
+  const result = await boardService.checkTagsForCards(req.body.letters);
+  res.send(result);
+});
+
 const deleteBoard = catchAsync(async (req, res) => {
   await boardService.deleteBoardById(req.params.boardId);
   res.status(httpStatus.NO_CONTENT).send();
@@ -41,4 +46,5 @@ module.exports = {
   getBoard,
   updateBoard,
   deleteBoard,
+  checkTagsForCards
 };

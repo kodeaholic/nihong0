@@ -17,4 +17,7 @@ router
   .patch(auth('manageBoards'), validate(boardValidation.updateBoard), boardController.updateBoard)
   .delete(auth('manageBoards'), validate(boardValidation.deleteBoard), boardController.deleteBoard);
 
+router
+  .route('/checkTagsForCards')
+  .post(auth('getBoards'), validate(boardValidation.checkTagsForCards), boardController.checkTagsForCards);
 module.exports = router;

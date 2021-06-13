@@ -48,10 +48,16 @@ const deleteBoard = {
   }),
 };
 
+const checkTagsForCards = {
+  body: Joi.object().keys({
+    letters: Joi.array().required()
+  })
+}
 module.exports = {
   createBoard,
   getBoards,
   getBoard,
   updateBoard,
   deleteBoard,
+  checkTagsForCards
 };

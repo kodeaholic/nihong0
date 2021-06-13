@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Board } = require('../models');
+const { Board, Card } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 /**
@@ -72,10 +72,23 @@ const deleteBoardById = async (boardId) => {
   return board;
 };
 
+const checkTagsForCards = async (letters) => {
+  const result = await Card.find({letter: { $in: letters }}).select("_id, letter");
+  let found = []
+  if (result.length) {
+    result.forEach((item) => {
+      if (letters.includes(item.letter)) found.push({id: item.id, content: item.letter})
+      else miss.push(item)
+    })
+  }
+  return found;
+};
+
 module.exports = {
   createBoard,
   queryBoards,
   getBoardById,
   updateBoardById,
   deleteBoardById,
+  checkTagsForCards
 };
