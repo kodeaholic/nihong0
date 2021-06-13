@@ -8,6 +8,7 @@ import {
   CSidebarNav,
   CSidebarToggler,
   CCreateNavItem,
+  CImage,
 } from '@coreui/react'
 
 import CIcon from '@coreui/icons-react'
@@ -34,8 +35,12 @@ const AppSidebar = () => {
       // }}
     >
       <CSidebarBrand className="d-none d-md-flex" to="/">
-        <CIcon className="sidebar-brand-full" name="logo-negative" height={35} />
-        <CIcon className="sidebar-brand-narrow" name="sygnet" height={35} />
+        <CImage
+          className="sidebar-brand-full"
+          src="avatars/logo.jpg"
+          height={90}
+          style={{ marginBottom: '5px', marginTop: '5px' }}
+        />
       </CSidebarBrand>
       <CSidebarNav>
         <SimpleBar>
