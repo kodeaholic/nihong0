@@ -5,6 +5,7 @@ const docsRoute = require('./docs.route');
 const svgRoute = require('./svg.route');
 const cardRoute = require('./card.route');
 const boardRoute = require('./board.route');
+const topicRoute = require('./topic.route');
 const config = require('../../config/config');
 
 const router = express.Router();
@@ -29,6 +30,11 @@ const defaultRoutes = [
   { 
     path: '/boards',
     route: boardRoute
+  }
+  ,
+  {
+    path: '/topics',
+    route: topicRoute
   }
 ];
 
