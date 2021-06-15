@@ -97,6 +97,52 @@ const updateChapterByTopicIdChapterId = {
 };
 
 
+const getLessonsByChapterId = {
+  params: Joi.object().keys({
+    chapterId: Joi.required().custom(objectId)
+  }),
+  // query: Joi.object().keys({
+  //   name: Joi.string(),
+  //   sortBy: Joi.string(),
+  //   limit: Joi.number().integer(),
+  //   page: Joi.number().integer(),
+  // }),
+};
+
+const deleteLessonByChapterIdLessonId = {
+  params: Joi.object().keys({
+    chapterId: Joi.string().custom(objectId),
+    lessonId: Joi.string().custom(objectId),
+  }),
+};
+
+const createLessonByChapterId = {
+  params: Joi.object().keys({
+      chapterId: Joi.required().custom(objectId)
+  }),
+  body: Joi.object().keys({
+      title: Joi.string().required(),
+      description: Joi.string().allow(null, ''),
+      meaning: Joi.string().allow(null, ''),
+      audioSrc: Joi.string().allow(null, ''),
+      vocab: Joi.array().items(vocabSchemaValidation)
+  }),
+};
+
+const updateLessonByChapterIdLessonId = {
+  params: Joi.object().keys({
+      chapterId: Joi.required().custom(objectId),
+      lessonId: Joi.required().custom(objectId)
+  }),
+  body: Joi.object().keys({
+      title: Joi.string().required(),
+      description: Joi.string().allow(null, ''),
+      meaning: Joi.string().allow(null, ''),
+      audioSrc: Joi.string().allow(null, ''),
+      vocab: Joi.array().items(vocabSchemaValidation)
+  }),
+};
+
 module.exports = {
   createTopic,
   getTopics,
@@ -105,6 +151,10 @@ module.exports = {
   deleteTopic,
   deleteChapterByTopicIdChapterId,
   createChapterByTopicId,
-  updateChapterByTopicIdChapterId
+  updateChapterByTopicIdChapterId,
+  deleteLessonByChapterIdLessonId,
+  createLessonByChapterId,
+  updateLessonByChapterIdLessonId,
+  getLessonsByChapterId
 };
 

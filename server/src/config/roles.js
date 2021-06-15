@@ -6,7 +6,8 @@ roleRights.set(roles[1], [
   'getUsers', 'manageUsers',
   'getCards', 'manageCards',
   'getBoards', 'manageBoards',
-  'getTopics', 'manageTopics'
+  'getTopics', 'manageTopics',
+  'admin'
 ]);
 module.exports = {
   roles,

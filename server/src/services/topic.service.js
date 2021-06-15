@@ -100,6 +100,96 @@ const updateChapterByTopicIdChapterId = async (topicId, chapterId, chapterData) 
     return topic.chapters[index]
 };
 
+const deleteLessonByChapterIdLessonId = async (chapterId, lessonId) => {
+    const { topic , chapters, chapterIndex, lessonIndex } = await getIndexes(chapterId, lessonId);
+    validateResult(topic, chapters, chapterIndex, lessonIndex);
+    const lesson = topic["chapters"][chapterIndex]["lessons"][lessonIndex]
+    await topic.updateOne(
+        { $pull: { "chapters.$[chapter].lessons" : {_id: lessonId} }},
+        { arrayFilters: [{"chapter._id": chapterId}]},
+        (err) => {
+            if (err) {
+                console.log(err)
+                throw new ApiError(httpStatus.NOT_FOUND, 'Bài học không tồn tại hoặc đã bị xoá');
+            }
+            return topic
+        }
+    )
+    
+    return { deleted: lesson }
+};
+
+const createLessonByChapterId = async (chapterId, lessonData) => {
+    const { topic , chapters, chapterIndex } = await getIndexes(chapterId);
+    validateResult(topic, chapters, chapterIndex);
+    await topic.updateOne(
+        { $push: { "chapters.$[chapter].lessons" : lessonData }},
+        { arrayFilters: [{"chapter._id": chapterId}]},
+        (err) => {
+            if (err) {
+                console.log(err)
+                throw new ApiError(httpStatus.NOT_FOUND, 'Không tạo mới được bài học');
+            }
+        }
+    )
+    // let res = await Topic.findById(topic._id);
+    return {updatedChapter: true}
+};
+
+const updateLessonByChapterIdLessonId = async (chapterId, lessonId, lessonData) => {
+    const { topic , chapters, chapterIndex, lessonIndex } = await getIndexes(chapterId, lessonId);
+    validateResult(topic, chapters, chapterIndex, lessonIndex);
+    const res = await Topic.findOne({
+        'chapters._id' : chapterId,
+        'chapters.lessons._id' : lessonId
+    });
+    if (_.isEmpty(res)) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Bài học không tồn tại hoặc đã bị xoá');
+    }
+    Object.assign(topic["chapters"][chapterIndex]["lessons"][lessonIndex], lessonData)
+    await topic.save()
+    return topic["chapters"][chapterIndex]["lessons"][lessonIndex]    
+};
+
+const getIndexes = async (chapterId, lessonId , vocabId ) => {
+    let lessons, vocabs, lessonIndex, vocabIndex
+    const topic = await Topic.findOne({"chapters._id": chapterId});
+    if (!topic) {
+        return {topic: undefined, chapters: [], index: -1 }
+    }
+    const chapters = _.get(topic, "chapters")
+    const chapterIndex = _.findIndex(chapters, function(item){ return item._id == chapterId})
+    if (chapterIndex < 0) throw new ApiError(httpStatus.NOT_FOUND, 'Chapter không tồn tại hoặc đã bị xoá');
+
+    if (lessonId) {
+        lessons = chapters[chapterIndex]["lessons"]
+        lessonIndex = _.findIndex(lessons, function(item){ return item._id == lessonId})
+        if (chapterIndex < 0) throw new ApiError(httpStatus.NOT_FOUND, 'Bài học không tồn tại hoặc đã bị xoá');
+    }
+
+    if (lessonIndex >= 0 && !_.isEmpty(vocabId)) {
+        vocabs = lessons[lessonIndex]["vocabs"]
+        vocabIndex = _.findIndex(vocabs, function(item){ return item._id == vocabId})
+        if (vocabIndex < 0) throw new ApiError(httpStatus.NOT_FOUND, 'Từ vựng không tồn tại hoặc đã bị xoá');
+    }
+
+    return { topic, chapters, chapterIndex, lessonIndex, vocabIndex }
+}
+
+const validateResult = (topic, chapters, chapterIndex, lessonIndex, vocabIndex) => {
+    if (_.isEmpty(topic)) throw new ApiError(httpStatus.NOT_FOUND, 'Chủ đề không tồn tại hoặc đã bị xoá');
+    if (_.isEmpty(chapters)) throw new ApiError(httpStatus.NOT_FOUND, 'Chapter không tồn tại hoặc đã bị xoá');
+    if (chapterIndex < 0) throw new ApiError(httpStatus.NOT_FOUND, 'Chapter không tồn tại hoặc đã bị xoá');
+    if (lessonIndex !== undefined && lessonIndex < 0) throw new ApiError(httpStatus.NOT_FOUND, 'Bài học không tồn tại hoặc đã bị xoá');
+    if (vocabIndex !== undefined || vocabIndex < 0) throw new ApiError(httpStatus.NOT_FOUND, 'Từ vựng không tồn tại hoặc đã bị xoá');
+}
+
+const getLessonsByChapterId = async (chapterId) => {
+    const { topic , chapters, chapterIndex } = await getIndexes(chapterId);
+    validateResult(topic, chapters, chapterIndex);
+    return {lessons: _.get(chapters[chapterIndex], "lessons"), chapterId: chapterId}
+};
+
 module.exports = {
   createTopic,
   updateTopicById,
@@ -108,5 +198,9 @@ module.exports = {
   getChaptersByTopicId,
   deleteChapterByTopicIdChapterId,
   createChapterByTopicId,
-  updateChapterByTopicIdChapterId
+  updateChapterByTopicIdChapterId,
+  deleteLessonByChapterIdLessonId,
+  createLessonByChapterId,
+  updateLessonByChapterIdLessonId,
+  getLessonsByChapterId
 };

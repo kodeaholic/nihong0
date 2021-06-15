@@ -28,4 +28,19 @@ router
 router
     .route('/:topicId/chapters')
     .post(auth('manageTopics'), validate(topicValidation.createChapterByTopicId), topicController.createChapterByTopicId);
+
+/** Lesson */
+router
+    .route('/chapters/:chapterId/lessons')
+    .get(auth('admin'), validate(topicValidation.getLessonsByChapterId), topicController.getLessonsByChapterId);
+router
+    .route('/delete-lesson/:chapterId/:lessonId')
+    .delete(auth('admin'), validate(topicValidation.deleteLessonByChapterIdLessonId), topicController.deleteLessonByChapterIdLessonId);
+router
+    .route('/create-lesson/:chapterId/')
+    .post(auth('admin'), validate(topicValidation.createLessonByChapterId), topicController.createLessonByChapterId);
+router
+    .route('/update-lesson/:chapterId/:lessonId')
+    .patch(auth('admin'), validate(topicValidation.updateLessonByChapterIdLessonId), topicController.updateLessonByChapterIdLessonId);
+
 module.exports = router;

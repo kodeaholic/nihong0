@@ -48,6 +48,27 @@ const updateChapterByTopicIdChapterId = catchAsync(async (req, res) => {
     const chapter = await topicService.updateChapterByTopicIdChapterId(req.params.topicId, req.params.chapterId, req.body);
     res.send(chapter)
 })
+
+const deleteLessonByChapterIdLessonId = catchAsync(async (req, res) => {
+    const resultTopic = await topicService.deleteLessonByChapterIdLessonId(req.params.chapterId, req.params.lessonId);
+    res.send(resultTopic)
+})
+
+const createLessonByChapterId = catchAsync(async (req, res) => {
+    const updatedChapter = await topicService.createLessonByChapterId(req.params.chapterId, req.body);
+    res.send(updatedChapter)
+})
+
+const updateLessonByChapterIdLessonId = catchAsync(async (req, res) => {
+    const chapter = await topicService.updateLessonByChapterIdLessonId(req.params.chapterId, req.params.lessonId, req.body);
+    res.send(chapter)
+})
+
+const getLessonsByChapterId = catchAsync(async (req, res) => {
+    const chapter = await topicService.getLessonsByChapterId(req.params.chapterId);
+    res.send(chapter)
+})
+
 module.exports = {
   createTopic,
   updateTopic,
@@ -56,5 +77,9 @@ module.exports = {
   getChaptersByTopicId,
   deleteChapterByTopicIdChapterId,
   createChapterByTopicId,
-  updateChapterByTopicIdChapterId
+  updateChapterByTopicIdChapterId,
+  deleteLessonByChapterIdLessonId,
+  createLessonByChapterId,
+  updateLessonByChapterIdLessonId,
+  getLessonsByChapterId
 };
