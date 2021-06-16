@@ -7,6 +7,8 @@ export const topicService = {
   deleteTopic,
   getTopic,
   deleteChapter,
+  createChapter,
+  updateChapter,
 }
 
 async function getTopics(filter, options = { sortBy: 'name:desc', limit: 40, page: 1 }) {
@@ -98,14 +100,31 @@ async function deleteChapter(topicId, chapterId) {
   }
 }
 
-async function checkTagsForCards(data) {
+async function createChapter(topicId, data) {
   const requestOptions = {
     method: 'POST',
     headers: authHeader(),
     body: JSON.stringify(data),
   }
+  const response = await fetch(`${config.apiEndpoint}/topics/${topicId}/chapters`, requestOptions)
+  const topic = await response.json()
+  if (response.status === 200 && response.ok) return topic
+  else {
+    return response
+  }
+}
 
-  const response = await fetch(`${config.apiEndpoint}/topics/checkTagsForCards`, requestOptions)
-  const found = await response.json()
-  return found
+async function updateChapter(topicId, chapterId, data) {
+  const requestOptions = {
+    method: 'PATCH',
+    headers: authHeader(),
+    body: JSON.stringify(data),
+  }
+
+  const response = await fetch(
+    `${config.apiEndpoint}/topics/${topicId}/chapters/${chapterId}`,
+    requestOptions,
+  )
+  const topic = await response.json()
+  return topic
 }

@@ -26,10 +26,11 @@ import { toast } from 'react-toastify'
 import { topicService } from '../../services/api/topicService'
 import { pluralize, sleep } from '../../helpers/common'
 import { getLastPartFromPathName } from 'src/services/helpers/routeHelper'
-const AddModal = ({ visible, setVisible, onSuccess }) => {
+const AddModal = ({ visible, setVisible, refresh, setRefresh, topicId }) => {
   const [saving, setSaving] = useState(false)
   const [name, setName] = useState('')
   const [desc, setDesc] = useState('')
+  const [meaning, setMeaning] = useState('')
   const isDisabled = name.length > 0 ? false : true
   return (
     <CModal visible={visible} onDismiss={() => setVisible(false)}>
@@ -48,7 +49,7 @@ const AddModal = ({ visible, setVisible, onSuccess }) => {
               type="text"
               id="name"
               required
-              placeholder="Ví dụ: 3000 từ vựng JPLT"
+              placeholder="Ví dụ: Chapter 01"
               onChange={(e) => setName(e.target.value)}
             />
           </CCol>
@@ -63,8 +64,24 @@ const AddModal = ({ visible, setVisible, onSuccess }) => {
               component="textarea"
               id="description"
               required
-              placeholder="Mô tả ngắn gọn"
+              placeholder="Mối quan hệ giữa người với người"
               onChange={(e) => setDesc(e.target.value)}
+              rows={3}
+            />
+          </CCol>
+        </CRow>
+        <CRow>
+          <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
+            <CFormLabel htmlFor="description">Mô tả (JP)</CFormLabel>
+          </CCol>
+          <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
+            <CFormControl
+              type="text"
+              component="textarea"
+              id="meaning"
+              required
+              placeholder="人と人との関係"
+              onChange={(e) => setMeaning(e.target.value)}
               rows={3}
             />
           </CCol>
@@ -81,27 +98,18 @@ const AddModal = ({ visible, setVisible, onSuccess }) => {
             color="success"
             onClick={() => {
               setSaving(true)
-              topicService.createTopic({ name: name, description: desc }).then((res) => {
-                setSaving(false)
-                if (
-                  res.ok ||
-                  (res.status !== 404 && res.status !== 400 && res.code !== 500 && res.code !== 400)
-                ) {
-                  const toAdd = res
-                  toast.success(`Tạo mới chapter thành công`, {
-                    position: 'top-right',
-                    autoClose: 2500,
-                    hideProgressBar: true,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                  })
-                  setVisible(false)
-                  onSuccess(toAdd)
-                } else {
-                  if (res.code === 400) {
-                    toast.error(`${res.message}`, {
+              topicService
+                .createChapter(topicId, { name: name, description: desc, meaning: meaning })
+                .then((res) => {
+                  setSaving(false)
+                  if (
+                    res.ok ||
+                    (res.status !== 404 &&
+                      res.status !== 400 &&
+                      res.code !== 500 &&
+                      res.code !== 400)
+                  ) {
+                    toast.success(`Tạo mới chapter thành công`, {
                       position: 'top-right',
                       autoClose: 2500,
                       hideProgressBar: true,
@@ -110,10 +118,11 @@ const AddModal = ({ visible, setVisible, onSuccess }) => {
                       draggable: true,
                       progress: undefined,
                     })
-                  } else
-                    toast.error(
-                      `Không thể tạo được chapter này. Liên hệ web developer để biết thêm chi tiết`,
-                      {
+                    setVisible(false)
+                    setRefresh(refresh + 1)
+                  } else {
+                    if (res.code === 400) {
+                      toast.error(`${res.message}`, {
                         position: 'top-right',
                         autoClose: 2500,
                         hideProgressBar: true,
@@ -121,10 +130,22 @@ const AddModal = ({ visible, setVisible, onSuccess }) => {
                         pauseOnHover: true,
                         draggable: true,
                         progress: undefined,
-                      },
-                    )
-                }
-              })
+                      })
+                    } else
+                      toast.error(
+                        `Không thể tạo được chapter này. Liên hệ web developer để biết thêm chi tiết`,
+                        {
+                          position: 'top-right',
+                          autoClose: 2500,
+                          hideProgressBar: true,
+                          closeOnClick: true,
+                          pauseOnHover: true,
+                          draggable: true,
+                          progress: undefined,
+                        },
+                      )
+                  }
+                })
             }}
           >
             LƯU
@@ -135,10 +156,20 @@ const AddModal = ({ visible, setVisible, onSuccess }) => {
   )
 }
 
-const EditModal = ({ visible, setVisible, onSuccess, item, setItem, loading }) => {
+const EditModal = ({
+  visible,
+  setVisible,
+  refresh,
+  setRefresh,
+  item,
+  setItem,
+  loading,
+  topicId,
+}) => {
   const [saving, setSaving] = useState(false)
   const [name, setName] = useState(item.name)
   const [desc, setDesc] = useState(item.description)
+  const [meaning, setMeaning] = useState(item.meaning)
   const isDisabled = name.length > 0 ? false : true
   return (
     <CModal
@@ -185,11 +216,26 @@ const EditModal = ({ visible, setVisible, onSuccess, item, setItem, loading }) =
                   type="text"
                   component="textarea"
                   id="description"
-                  required
                   placeholder="Mô tả ngắn gọn"
                   onChange={(e) => setDesc(e.target.value)}
                   rows={3}
                   defaultValue={desc}
+                />
+              </CCol>
+            </CRow>
+            <CRow>
+              <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
+                <CFormLabel htmlFor="description">Mô tả (JP)</CFormLabel>
+              </CCol>
+              <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
+                <CFormControl
+                  type="text"
+                  component="textarea"
+                  id="meaning"
+                  placeholder="Mô tả ngắn gọn bằng tiếng Nhật"
+                  onChange={(e) => setMeaning(e.target.value)}
+                  rows={3}
+                  defaultValue={meaning}
                 />
               </CCol>
             </CRow>
@@ -215,31 +261,22 @@ const EditModal = ({ visible, setVisible, onSuccess, item, setItem, loading }) =
               color="success"
               onClick={() => {
                 setSaving(true)
-                topicService.updateTopic(item.id, { name: name, description: desc }).then((res) => {
-                  setSaving(false)
-                  if (
-                    res.ok ||
-                    (res.status !== 404 &&
-                      res.status !== 400 &&
-                      res.code !== 500 &&
-                      res.code !== 400)
-                  ) {
-                    const toAdd = res
-                    toast.success(`Lưu chapter thành công`, {
-                      position: 'top-right',
-                      autoClose: 2500,
-                      hideProgressBar: true,
-                      closeOnClick: true,
-                      pauseOnHover: true,
-                      draggable: true,
-                      progress: undefined,
-                    })
-                    setVisible(false)
-                    setItem({})
-                    onSuccess(toAdd)
-                  } else {
-                    if (res.code === 400) {
-                      toast.error(`${res.message}`, {
+                topicService
+                  .updateChapter(topicId, item._id, {
+                    name: name,
+                    description: desc,
+                    meaning: meaning,
+                  })
+                  .then((res) => {
+                    setSaving(false)
+                    if (
+                      res.ok ||
+                      (res.status !== 404 &&
+                        res.status !== 400 &&
+                        res.code !== 500 &&
+                        res.code !== 400)
+                    ) {
+                      toast.success(`Lưu chapter thành công`, {
                         position: 'top-right',
                         autoClose: 2500,
                         hideProgressBar: true,
@@ -248,10 +285,12 @@ const EditModal = ({ visible, setVisible, onSuccess, item, setItem, loading }) =
                         draggable: true,
                         progress: undefined,
                       })
-                    } else
-                      toast.error(
-                        `Không thể lưu được chapter này. Liên hệ web developer để biết thêm chi tiết`,
-                        {
+                      setVisible(false)
+                      setItem({})
+                      setRefresh(refresh + 1)
+                    } else {
+                      if (res.code === 400) {
+                        toast.error(`${res.message}`, {
                           position: 'top-right',
                           autoClose: 2500,
                           hideProgressBar: true,
@@ -259,10 +298,22 @@ const EditModal = ({ visible, setVisible, onSuccess, item, setItem, loading }) =
                           pauseOnHover: true,
                           draggable: true,
                           progress: undefined,
-                        },
-                      )
-                  }
-                })
+                        })
+                      } else
+                        toast.error(
+                          `Không thể lưu được chapter này. Liên hệ web developer để biết thêm chi tiết`,
+                          {
+                            position: 'top-right',
+                            autoClose: 2500,
+                            hideProgressBar: true,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                          },
+                        )
+                    }
+                  })
               }}
             >
               LƯU
@@ -278,6 +329,9 @@ AddModal.propTypes = {
   visible: PropTypes.bool,
   setVisible: PropTypes.func,
   onSuccess: PropTypes.func,
+  refresh: PropTypes.number,
+  setRefresh: PropTypes.func,
+  topicId: PropTypes.string,
 }
 EditModal.propTypes = {
   visible: PropTypes.bool,
@@ -286,6 +340,9 @@ EditModal.propTypes = {
   item: PropTypes.object,
   setItem: PropTypes.func,
   loading: PropTypes.bool,
+  topicId: PropTypes.string,
+  refresh: PropTypes.number,
+  setRefresh: PropTypes.func,
 }
 const TopicDetails = (props) => {
   const pathName = props.location.pathname
@@ -312,9 +369,6 @@ const TopicDetails = (props) => {
       newTopics[index] = item
       setChapters(newTopics)
     }
-  }
-  const addNewToTopics = (item) => {
-    setChapters(chapters.concat(item))
   }
   const refreshChapters = () => {
     topicService.getTopic(topicId).then((res) => {
@@ -471,7 +525,7 @@ const TopicDetails = (props) => {
             </CInputGroup> */}
             <CButton
               color="info"
-              style={{ color: 'white' }}
+              style={{ color: 'white', marginBottom: '5px' }}
               onClick={() => {
                 setVisibleModalAdd(true)
               }}
@@ -483,16 +537,21 @@ const TopicDetails = (props) => {
             <AddModal
               visible={visibleModalAdd}
               setVisible={setVisibleModalAdd}
-              onSuccess={addNewToTopics}
+              onSuccess={setRefresh}
+              refresh={refresh}
+              topicId={topicId}
+              setRefresh={setRefresh}
             />
             {!_.isEmpty(itemToEdit) && (
               <EditModal
                 visible={visibleModalEdit}
                 setVisible={setVisibleModalEdit}
-                onSuccess={updateItemInTopics}
                 setItem={setItemToEdit}
                 item={itemToEdit}
                 loading={loadingEditModal}
+                refresh={refresh}
+                setRefresh={setRefresh}
+                topicId={topicId}
               />
             )}
           </CCol>
@@ -544,7 +603,11 @@ const TopicDetails = (props) => {
                         // setRedirectTo({ redirect: true, path: `/chapters/topicDetail/${item._id}` })
                       }}
                     >
-                      <CCardTitle>{item.description}</CCardTitle>
+                      <CCardTitle>
+                        {item.description}
+                        <span> / </span>
+                        {item.meaning}
+                      </CCardTitle>
                       <CCardSubtitle className="mb-2 text-muted">
                         {/* <CBadge color="success">{item.free ? 'Free' : 'Trả phí'}</CBadge>{' '} */}
                         {!_.isEmpty(item['lessons']) && (
