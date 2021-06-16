@@ -135,6 +135,8 @@ const AddModal = ({ visible, setVisible, onSuccess }) => {
   )
 }
 
+const EditModal = ({ visible, setVisible, onSuccess, item }) => {}
+
 AddModal.propTypes = {
   visible: PropTypes.bool,
   setVisible: PropTypes.func,
@@ -228,6 +230,7 @@ const Topics = () => {
                             },
                           )
                         }
+                        setItemToDelete({})
                       })
                     }}
                   >
