@@ -347,37 +347,47 @@ const _nav = [
     to: '/characters/jinmeiyo',
     icon: <CIcon name="cil-pencil" customClasses="nav-icon" />,
   },
+  // {
+  //   _component: 'CNavTitle',
+  //   anchor: 'Thẻ từ vựng',
+  // },
+  // {
+  //   _component: 'CNavItem',
+  //   as: NavLink,
+  //   anchor: 'Thẻ từ vựng',
+  //   to: '/cards',
+  // },
+  // {
+  //   _component: 'CNavItem',
+  //   as: NavLink,
+  //   anchor: 'Thêm thẻ',
+  //   to: '/cards/addCard',
+  // },
+  // {
+  //   _component: 'CNavTitle',
+  //   anchor: 'Bài học từ vựng',
+  // },
+  // {
+  //   _component: 'CNavItem',
+  //   as: NavLink,
+  //   anchor: 'Bài học từ vựng',
+  //   to: '/boards',
+  // },
+  // {
+  //   _component: 'CNavItem',
+  //   as: NavLink,
+  //   anchor: 'Thêm bài học',
+  //   to: '/boards/addBoard',
+  // },
   {
     _component: 'CNavTitle',
-    anchor: 'Thẻ từ vựng',
+    anchor: 'Chủ đề từ vựng',
   },
   {
     _component: 'CNavItem',
     as: NavLink,
-    anchor: 'Thẻ từ vựng',
-    to: '/cards',
-  },
-  {
-    _component: 'CNavItem',
-    as: NavLink,
-    anchor: 'Thêm thẻ',
-    to: '/cards/addCard',
-  },
-  {
-    _component: 'CNavTitle',
-    anchor: 'Bài học từ vựng',
-  },
-  {
-    _component: 'CNavItem',
-    as: NavLink,
-    anchor: 'Bài học từ vựng',
-    to: '/boards',
-  },
-  {
-    _component: 'CNavItem',
-    as: NavLink,
-    anchor: 'Thêm bài học',
-    to: '/boards/addBoard',
+    anchor: 'Quản lý chủ đề',
+    to: '/topics',
   },
   {
     _component: 'CNavTitle',

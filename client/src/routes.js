@@ -63,6 +63,7 @@ const Card = React.lazy(() => import('./views/cards/detail/card'))
 const Cards = React.lazy(() => import('./views/cards/master/cards'))
 const Board = React.lazy(() => import('./views/boards/detail/board'))
 const Boards = React.lazy(() => import('./views/boards/master/boards'))
+const Topics = React.lazy(() => import('./views/topics/index'))
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Tổng quan', component: Dashboard },
@@ -134,6 +135,8 @@ const routes = [
     specificName: 'getBoard',
   },
   { path: '/boards/editBoard/:cardId', name: 'Sửa', component: Board, specificName: 'editBoard' },
+  /** Topics */
+  { path: '/topics', name: 'Quản lý chủ đề từ vựng', component: Topics, exact: true },
 ]
 
 export default routes

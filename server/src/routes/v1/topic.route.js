@@ -8,6 +8,7 @@ const router = express.Router();
 
 router
     .route('/')
+    .get(auth('admin'), validate(topicValidation.getTopics), topicController.getTopics)
     .post(auth('manageTopics'), validate(topicValidation.createTopic), topicController.createTopic)
 
 router

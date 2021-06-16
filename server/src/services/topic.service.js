@@ -3,6 +3,11 @@ const { Topic, Chapter, Lesson, Vocab } = require('../models');
 const ApiError = require('../utils/ApiError');
 const _ = require('lodash')
 
+const queryTopics = async (filter, options) => {
+    const topics = await Topic.paginate(filter, options);
+    return topics;
+};
+
 /**
  * Get topic by id
  * @param {ObjectId} id
@@ -202,5 +207,6 @@ module.exports = {
   deleteLessonByChapterIdLessonId,
   createLessonByChapterId,
   updateLessonByChapterIdLessonId,
-  getLessonsByChapterId
+  getLessonsByChapterId,
+  queryTopics
 };

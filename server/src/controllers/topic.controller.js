@@ -21,9 +21,17 @@ const getTopic = catchAsync(async (req, res) => {
     }
     res.send(topic);
 });
+
+const getTopics = catchAsync(async (req, res) => {
+    const filter = pick(req.query, ['name']);
+    if (filter.name) filter.name = new RegExp(filter.name) // this will add {name: /name/i} to filter to search by regex, not search by identical string comparison
+    const options = pick(req.query, ['sortBy', 'limit', 'page']);
+    const result = await topicService.queryTopics(filter, options);
+    res.send(result);
+});
 const deleteTopic = catchAsync(async (req, res) => {
-    await topicService.deleteTopicById(req.params.topicId);
-    res.status(httpStatus.NO_CONTENT).send();
+    const topic = await topicService.deleteTopicById(req.params.topicId);
+    res.send(topic);
 });
 
 /**
@@ -81,5 +89,6 @@ module.exports = {
   deleteLessonByChapterIdLessonId,
   createLessonByChapterId,
   updateLessonByChapterIdLessonId,
-  getLessonsByChapterId
+  getLessonsByChapterId,
+  getTopics
 };
