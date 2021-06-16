@@ -71,7 +71,7 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, chapterId }) => {
         </CRow>
         <CRow>
           <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
-            <CFormLabel htmlFor="description">Tiêu đề trong tiếng Nhật</CFormLabel>
+            <CFormLabel htmlFor="meaning">Tiêu đề trong tiếng Nhật</CFormLabel>
           </CCol>
           <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
             <CFormControl
@@ -86,7 +86,7 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, chapterId }) => {
         </CRow>
         <CRow>
           <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
-            <CFormLabel htmlFor="description">URL file audio</CFormLabel>
+            <CFormLabel htmlFor="audioSrc">URL file audio</CFormLabel>
           </CCol>
           <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
             <CFormControl
@@ -182,12 +182,14 @@ const EditModal = ({
   item,
   setItem,
   loading,
-  topicId,
+  chapterId,
+  lessonId,
 }) => {
   const [saving, setSaving] = useState(false)
-  const [name, setName] = useState(item.name)
+  const [name, setName] = useState(item.title)
   const [desc, setDesc] = useState(item.description)
   const [meaning, setMeaning] = useState(item.meaning)
+  const [audioSrc, setAudioSrc] = useState(item.audioSrc)
   const isDisabled = name.length > 0 ? false : true
   return (
     <CModal
@@ -219,7 +221,7 @@ const EditModal = ({
                   type="text"
                   id="name"
                   required
-                  placeholder="Ví dụ: 3000 từ vựng JPLT"
+                  placeholder="Ví dụ: Gia đình"
                   onChange={(e) => setName(e.target.value)}
                   defaultValue={name}
                 />
@@ -243,7 +245,7 @@ const EditModal = ({
             </CRow>
             <CRow>
               <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
-                <CFormLabel htmlFor="description">Mô tả (JP)</CFormLabel>
+                <CFormLabel htmlFor="meaning">Tiêu đề trong tiếng Nhật</CFormLabel>
               </CCol>
               <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
                 <CFormControl
@@ -254,6 +256,22 @@ const EditModal = ({
                   onChange={(e) => setMeaning(e.target.value)}
                   rows={3}
                   defaultValue={meaning}
+                />
+              </CCol>
+            </CRow>
+            <CRow>
+              <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
+                <CFormLabel htmlFor="audioSrc">URL file audio</CFormLabel>
+              </CCol>
+              <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
+                <CFormControl
+                  type="text"
+                  component="textarea"
+                  id="audioSrc"
+                  placeholder="https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3"
+                  onChange={(e) => setAudioSrc(e.target.value)}
+                  rows={3}
+                  defaultValue={audioSrc}
                 />
               </CCol>
             </CRow>
@@ -280,10 +298,11 @@ const EditModal = ({
               onClick={() => {
                 setSaving(true)
                 topicService
-                  .updateChapter(topicId, item._id, {
-                    name: name,
+                  .updateLesson(chapterId, lessonId, {
+                    title: name,
                     description: desc,
                     meaning: meaning,
+                    audioSrc: audioSrc,
                   })
                   .then((res) => {
                     setSaving(false)
@@ -294,7 +313,7 @@ const EditModal = ({
                         res.code !== 500 &&
                         res.code !== 400)
                     ) {
-                      toast.success(`Lưu chapter thành công`, {
+                      toast.success(`Lưu bài học thành công`, {
                         position: 'top-right',
                         autoClose: 2500,
                         hideProgressBar: true,
@@ -319,7 +338,7 @@ const EditModal = ({
                         })
                       } else
                         toast.error(
-                          `Không thể lưu được chapter này. Liên hệ web developer để biết thêm chi tiết`,
+                          `Không thể lưu được bài học này. Liên hệ web developer để biết thêm chi tiết`,
                           {
                             position: 'top-right',
                             autoClose: 2500,
@@ -361,6 +380,8 @@ EditModal.propTypes = {
   topicId: PropTypes.string,
   refresh: PropTypes.number,
   setRefresh: PropTypes.func,
+  chapterId: PropTypes.string,
+  lessonId: PropTypes.string,
 }
 const ChapterDetails = (props) => {
   const { topicId, chapterId } = useParams()
@@ -573,7 +594,8 @@ const ChapterDetails = (props) => {
                 loading={loadingEditModal}
                 refresh={refresh}
                 setRefresh={setRefresh}
-                topicId={topicId}
+                chapterId={chapterId}
+                lessonId={itemToEdit._id}
               />
             )}
           </CCol>

@@ -12,6 +12,7 @@ export const topicService = {
   getChapter,
   deleteLesson,
   createLesson,
+  updateLesson,
 }
 
 async function getTopics(filter, options = { sortBy: 'name:desc', limit: 40, page: 1 }) {
@@ -173,6 +174,23 @@ async function createLesson(chapterId, data) {
   }
   const response = await fetch(
     `${config.apiEndpoint}/topics/create-lesson/${chapterId}`,
+    requestOptions,
+  )
+  const topic = await response.json()
+  if (response.status === 200 && response.ok) return topic
+  else {
+    return response
+  }
+}
+
+async function updateLesson(chapterId, lessonId, data) {
+  const requestOptions = {
+    method: 'PATCH',
+    headers: authHeader(),
+    body: JSON.stringify(data),
+  }
+  const response = await fetch(
+    `${config.apiEndpoint}/topics/update-lesson/${chapterId}/${lessonId}`,
     requestOptions,
   )
   const topic = await response.json()
