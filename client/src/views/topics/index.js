@@ -13,7 +13,6 @@ import {
   CSpinner,
   CCardSubtitle,
   CCardTitle,
-  CCardText,
   CBadge,
   CCardHeader,
   CModal,
@@ -25,7 +24,7 @@ import {
 } from '@coreui/react'
 import { toast } from 'react-toastify'
 import { topicService } from '../../services/api/topicService'
-import { pluralize } from '../../helpers/common'
+import { pluralize, sleep } from '../../helpers/common'
 const AddModal = ({ visible, setVisible, onSuccess }) => {
   const [saving, setSaving] = useState(false)
   const [name, setName] = useState('')
@@ -135,12 +134,157 @@ const AddModal = ({ visible, setVisible, onSuccess }) => {
   )
 }
 
-const EditModal = ({ visible, setVisible, onSuccess, item }) => {}
+const EditModal = ({ visible, setVisible, onSuccess, item, setItem, loading }) => {
+  const [saving, setSaving] = useState(false)
+  const [name, setName] = useState(item.name)
+  const [desc, setDesc] = useState(item.description)
+  const isDisabled = name.length > 0 ? false : true
+  return (
+    <CModal
+      visible={visible}
+      onDismiss={() => {
+        setVisible(false)
+        setItem({})
+      }}
+    >
+      <CModalHeader
+        onDismiss={() => {
+          setVisible(false)
+          setItem({})
+        }}
+      >
+        <CModalTitle>SỬA CHỦ ĐỀ</CModalTitle>
+      </CModalHeader>
+      <CModalBody className="text-center">
+        {!loading && (
+          <>
+            <CRow>
+              <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
+                <CFormLabel htmlFor="name">
+                  Tiêu đề <span style={{ color: 'red' }}>*</span>
+                </CFormLabel>
+              </CCol>
+              <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
+                <CFormControl
+                  type="text"
+                  id="name"
+                  required
+                  placeholder="Ví dụ: 3000 từ vựng JPLT"
+                  onChange={(e) => setName(e.target.value)}
+                  defaultValue={name}
+                />
+              </CCol>
+            </CRow>
+            <CRow>
+              <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
+                <CFormLabel htmlFor="description">Mô tả</CFormLabel>
+              </CCol>
+              <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
+                <CFormControl
+                  type="text"
+                  component="textarea"
+                  id="description"
+                  required
+                  placeholder="Mô tả ngắn gọn"
+                  onChange={(e) => setDesc(e.target.value)}
+                  rows={3}
+                  defaultValue={desc}
+                />
+              </CCol>
+            </CRow>
+          </>
+        )}
+        {loading && <CSpinner />}
+      </CModalBody>
+      {!loading && (
+        <CModalFooter>
+          <CButton
+            color="secondary"
+            onClick={() => {
+              setVisible(false)
+              setItem({})
+            }}
+          >
+            HUỶ BỎ
+          </CButton>
+          {saving && <CSpinner />}
+          {!saving && (
+            <CButton
+              disabled={isDisabled}
+              color="success"
+              onClick={() => {
+                setSaving(true)
+                topicService.updateTopic(item.id, { name: name, description: desc }).then((res) => {
+                  setSaving(false)
+                  if (
+                    res.ok ||
+                    (res.status !== 404 &&
+                      res.status !== 400 &&
+                      res.code !== 500 &&
+                      res.code !== 400)
+                  ) {
+                    const toAdd = res
+                    toast.success(`Lưu chủ đề thành công`, {
+                      position: 'top-right',
+                      autoClose: 2500,
+                      hideProgressBar: true,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: true,
+                      progress: undefined,
+                    })
+                    setVisible(false)
+                    setItem({})
+                    onSuccess(toAdd)
+                  } else {
+                    if (res.code === 400) {
+                      toast.error(`${res.message}`, {
+                        position: 'top-right',
+                        autoClose: 2500,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                      })
+                    } else
+                      toast.error(
+                        `Không thể lưu được chủ đề này. Liên hệ web developer để biết thêm chi tiết`,
+                        {
+                          position: 'top-right',
+                          autoClose: 2500,
+                          hideProgressBar: true,
+                          closeOnClick: true,
+                          pauseOnHover: true,
+                          draggable: true,
+                          progress: undefined,
+                        },
+                      )
+                  }
+                })
+              }}
+            >
+              LƯU
+            </CButton>
+          )}
+        </CModalFooter>
+      )}
+    </CModal>
+  )
+}
 
 AddModal.propTypes = {
   visible: PropTypes.bool,
   setVisible: PropTypes.func,
   onSuccess: PropTypes.func,
+}
+EditModal.propTypes = {
+  visible: PropTypes.bool,
+  setVisible: PropTypes.func,
+  onSuccess: PropTypes.func,
+  item: PropTypes.object,
+  setItem: PropTypes.func,
+  loading: PropTypes.bool,
 }
 const Topics = () => {
   const [topics, setTopics] = useState([])
@@ -150,8 +294,21 @@ const Topics = () => {
   //   const [lessonCounter, setLessonCounter] = useState(0)
   const [visibleModalDelete, setVisibleModalDelete] = useState(false)
   const [visibleModalAdd, setVisibleModalAdd] = useState(false)
+  const [visibleModalEdit, setVisibleModalEdit] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [itemToDelete, setItemToDelete] = useState({})
+  const [itemToEdit, setItemToEdit] = useState({})
+  const [loadingEditModal, setLoadingEditModal] = useState(false)
+  const updateItemInTopics = (item) => {
+    let index = _.findIndex(topics, function (el) {
+      return el.id === item.id
+    })
+    if (index >= 0) {
+      let newTopics = [...topics]
+      newTopics[index] = item
+      setTopics(newTopics)
+    }
+  }
   const addNewToTopics = (item) => {
     setTopics(topics.concat(item))
   }
@@ -307,6 +464,16 @@ const Topics = () => {
               setVisible={setVisibleModalAdd}
               onSuccess={addNewToTopics}
             />
+            {!_.isEmpty(itemToEdit) && (
+              <EditModal
+                visible={visibleModalEdit}
+                setVisible={setVisibleModalEdit}
+                onSuccess={updateItemInTopics}
+                setItem={setItemToEdit}
+                item={itemToEdit}
+                loading={loadingEditModal}
+              />
+            )}
             <CButton
               color="info"
               style={{ color: 'white' }}
@@ -347,6 +514,14 @@ const Topics = () => {
                         }}
                         color="success"
                         shape="rounded-pill"
+                        onClick={() => {
+                          setItemToEdit(item)
+                          setLoadingEditModal(true)
+                          setVisibleModalEdit(true)
+                          sleep(200).then(() => {
+                            setLoadingEditModal(false)
+                          })
+                        }}
                       >
                         SỬA
                       </CBadge>
