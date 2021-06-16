@@ -83,7 +83,10 @@ const AddModal = ({ visible, setVisible, onSuccess }) => {
               setSaving(true)
               topicService.createTopic({ name: name, description: desc }).then((res) => {
                 setSaving(false)
-                if (res.ok || (res.status !== 404 && res.status !== 400)) {
+                if (
+                  res.ok ||
+                  (res.status !== 404 && res.status !== 400 && res.code !== 500 && res.code !== 400)
+                ) {
                   const toAdd = res
                   toast.success(`Tạo mới chủ đề thành công`, {
                     position: 'top-right',
@@ -97,9 +100,8 @@ const AddModal = ({ visible, setVisible, onSuccess }) => {
                   setVisible(false)
                   onSuccess(toAdd)
                 } else {
-                  toast.error(
-                    `Không thể tạo được chủ đề này. Liên hệ web developer để biết thêm chi tiết`,
-                    {
+                  if (res.code === 400) {
+                    toast.error(`${res.message}`, {
                       position: 'top-right',
                       autoClose: 2500,
                       hideProgressBar: true,
@@ -107,8 +109,20 @@ const AddModal = ({ visible, setVisible, onSuccess }) => {
                       pauseOnHover: true,
                       draggable: true,
                       progress: undefined,
-                    },
-                  )
+                    })
+                  } else
+                    toast.error(
+                      `Không thể tạo được chủ đề này. Liên hệ web developer để biết thêm chi tiết`,
+                      {
+                        position: 'top-right',
+                        autoClose: 2500,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                      },
+                    )
                 }
               })
             }}
@@ -343,10 +357,13 @@ const Topics = () => {
                       <CCardTitle>{item.description}</CCardTitle>
                       <CCardSubtitle className="mb-2 text-muted">
                         {/* <CBadge color="success">{item.free ? 'Free' : 'Trả phí'}</CBadge>{' '} */}
-                        <CBadge color="primary">
-                          {item['chapters'].length}{' '}
-                          {pluralize(item['chapters'].length, 'chapter', 'chapters')}
-                        </CBadge>{' '}
+                        {!_.isEmpty(item['chapters']) && (
+                          <CBadge color="primary">
+                            {item['chapters'].length}{' '}
+                            {pluralize(item['chapters'].length, 'chapter', 'chapters')}
+                          </CBadge>
+                        )}
+                        {_.isEmpty(item['chapters']) && <CBadge color="primary">0 chapters</CBadge>}
                         {/* <CBadge color="info">{item.cards.length} chữ</CBadge> */}
                       </CCardSubtitle>
                       {/* <CCardText>{item.description}</CCardText> */}

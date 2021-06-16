@@ -3,7 +3,7 @@ import { authHeader } from '../helpers/authHelper'
 export const topicService = {
   getTopics,
   createTopic,
-  updateBoard,
+  updateTopic,
   deleteTopic,
 }
 
@@ -40,7 +40,7 @@ async function createTopic(data) {
   return topic
 }
 
-async function updateBoard(data, topicId) {
+async function updateTopic(topicId, data) {
   const requestOptions = {
     method: 'PATCH',
     headers: authHeader(),

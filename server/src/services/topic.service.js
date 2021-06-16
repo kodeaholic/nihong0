@@ -23,7 +23,7 @@ const getTopicById = async (id) => {
  * @returns {Promise<Topic>}
  */
 const createTopic = async (topicBody) => {
-  if (await Topic.isNameTaken(topicBody.title)) {
+  if (await Topic.isNameTaken(topicBody.name)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Tên chủ đề đã tồn tại');
   }
   const topic = await Topic.create(topicBody);
