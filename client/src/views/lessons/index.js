@@ -26,16 +26,17 @@ import { toast } from 'react-toastify'
 import { topicService } from '../../services/api/topicService'
 import { pluralize, sleep } from '../../helpers/common'
 import RedirectButton from '../components/back-navigation'
-const AddModal = ({ visible, setVisible, refresh, setRefresh, topicId }) => {
+const AddModal = ({ visible, setVisible, refresh, setRefresh, chapterId }) => {
   const [saving, setSaving] = useState(false)
   const [name, setName] = useState('')
   const [desc, setDesc] = useState('')
   const [meaning, setMeaning] = useState('')
+  const [audioSrc, setAudioSrc] = useState('')
   const isDisabled = name.length > 0 ? false : true
   return (
     <CModal visible={visible} onDismiss={() => setVisible(false)}>
       <CModalHeader onDismiss={() => setVisible(false)}>
-        <CModalTitle>THÊM MỚI CHAPTER</CModalTitle>
+        <CModalTitle>THÊM MỚI BÀI HỌC</CModalTitle>
       </CModalHeader>
       <CModalBody>
         <CRow>
@@ -48,8 +49,7 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, topicId }) => {
             <CFormControl
               type="text"
               id="name"
-              required
-              placeholder="Ví dụ: Chapter 01"
+              placeholder="Ví dụ: Gia đình"
               onChange={(e) => setName(e.target.value)}
             />
           </CCol>
@@ -63,7 +63,6 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, topicId }) => {
               type="text"
               component="textarea"
               id="description"
-              required
               placeholder="Mối quan hệ giữa người với người"
               onChange={(e) => setDesc(e.target.value)}
               rows={3}
@@ -72,16 +71,30 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, topicId }) => {
         </CRow>
         <CRow>
           <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
-            <CFormLabel htmlFor="description">Mô tả (JP)</CFormLabel>
+            <CFormLabel htmlFor="description">Tiêu đề trong tiếng Nhật</CFormLabel>
           </CCol>
           <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
             <CFormControl
               type="text"
               component="textarea"
               id="meaning"
-              required
-              placeholder="人と人との関係"
+              placeholder="家族"
               onChange={(e) => setMeaning(e.target.value)}
+              rows={3}
+            />
+          </CCol>
+        </CRow>
+        <CRow>
+          <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
+            <CFormLabel htmlFor="description">URL file audio</CFormLabel>
+          </CCol>
+          <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
+            <CFormControl
+              type="text"
+              component="textarea"
+              id="audioSrc"
+              placeholder="https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3"
+              onChange={(e) => setAudioSrc(e.target.value)}
               rows={3}
             />
           </CCol>
@@ -99,7 +112,12 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, topicId }) => {
             onClick={() => {
               setSaving(true)
               topicService
-                .createChapter(topicId, { name: name, description: desc, meaning: meaning })
+                .createLesson(chapterId, {
+                  title: name,
+                  description: desc,
+                  meaning: meaning,
+                  audioSrc: audioSrc,
+                })
                 .then((res) => {
                   setSaving(false)
                   if (
@@ -109,7 +127,7 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, topicId }) => {
                       res.code !== 500 &&
                       res.code !== 400)
                   ) {
-                    toast.success(`Tạo mới chapter thành công`, {
+                    toast.success(`Tạo mới bài học thành công`, {
                       position: 'top-right',
                       autoClose: 2500,
                       hideProgressBar: true,
@@ -133,7 +151,7 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, topicId }) => {
                       })
                     } else
                       toast.error(
-                        `Không thể tạo được chapter này. Liên hệ web developer để biết thêm chi tiết`,
+                        `Không thể tạo được bài học này. Liên hệ web developer để biết thêm chi tiết`,
                         {
                           position: 'top-right',
                           autoClose: 2500,
@@ -331,7 +349,7 @@ AddModal.propTypes = {
   onSuccess: PropTypes.func,
   refresh: PropTypes.number,
   setRefresh: PropTypes.func,
-  topicId: PropTypes.string,
+  chapterId: PropTypes.string,
 }
 EditModal.propTypes = {
   visible: PropTypes.bool,
@@ -543,7 +561,7 @@ const ChapterDetails = (props) => {
               setVisible={setVisibleModalAdd}
               onSuccess={setRefresh}
               refresh={refresh}
-              topicId={topicId}
+              chapterId={chapterId}
               setRefresh={setRefresh}
             />
             {!_.isEmpty(itemToEdit) && (
