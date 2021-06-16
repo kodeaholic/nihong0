@@ -23,6 +23,7 @@ router
 
 router
     .route('/:topicId/chapters/:chapterId')
+    .get(auth('admin'), validate(topicValidation.getChapter), topicController.getChapter)
     .delete(auth('manageTopics'), validate(topicValidation.deleteChapterByTopicIdChapterId), topicController.deleteChapterByTopicIdChapterId)
     .patch(auth('manageTopics'), validate(topicValidation.updateChapterByTopicIdChapterId), topicController.updateChapterByTopicIdChapterId);
 

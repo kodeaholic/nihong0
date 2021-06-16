@@ -346,13 +346,10 @@ EditModal.propTypes = {
 }
 const ChapterDetails = (props) => {
   const { topicId, chapterId } = useParams()
-  // const pathName = props.location.pathname
-  // const topicId = getLastPartFromPathName(pathName)
-  const [chapters, setChapters] = useState([])
+  const [lessons, setLessons] = useState([])
   const [searchKey, setSearchKey] = useState('')
   const [searching, setSearching] = useState(false)
   const [redirect, setRedirectTo] = useState({ redirect: false, path: '' })
-  //   const [lessonCounter, setLessonCounter] = useState(0)
   const [visibleModalDelete, setVisibleModalDelete] = useState(false)
   const [visibleModalAdd, setVisibleModalAdd] = useState(false)
   const [visibleModalEdit, setVisibleModalEdit] = useState(false)
@@ -361,10 +358,12 @@ const ChapterDetails = (props) => {
   const [itemToEdit, setItemToEdit] = useState({})
   const [loadingEditModal, setLoadingEditModal] = useState(false)
   const [refresh, setRefresh] = useState(0)
-  const refreshChapters = () => {
-    topicService.getTopic(topicId).then((res) => {
+  const [chapter, setChapter] = useState({})
+  const [topicName, setTopicName] = useState('')
+  const refreshList = () => {
+    topicService.getChapter(topicId, chapterId).then((res) => {
       if (res.status === 404) {
-        toast.error(`Chủ đề không tồn tại hoặc đã bị xoá`, {
+        toast.error(`Chapter không tồn tại hoặc đã bị xoá`, {
           position: 'top-right',
           autoClose: 2500,
           hideProgressBar: true,
@@ -373,12 +372,13 @@ const ChapterDetails = (props) => {
           draggable: true,
           progress: undefined,
         })
-        setRedirectTo({ redirect: true, path: '/topics' })
+        setRedirectTo({ redirect: true, path: '/topics/topicDetail/' + topicId })
       }
-
-      setChapters(res['chapters'])
-      if (!res['chapters'].length)
-        toast.success(`Hiện tại chưa có chapter nào nào được thêm`, {
+      setChapter(res['chapter'])
+      setLessons(res['chapter']['lessons'])
+      setTopicName(res['topicName'])
+      if (!res['chapter']['lessons'].length)
+        toast.success(`Hiện tại chưa có bài học nào nào được thêm`, {
           position: 'top-right',
           autoClose: 2500,
           hideProgressBar: true,
@@ -390,7 +390,7 @@ const ChapterDetails = (props) => {
     })
   }
   useEffect(() => {
-    refreshChapters()
+    refreshList()
   }, [refresh])
   const isDisabledSearch = searchKey.length === 0
   if (redirect.redirect) return <Redirect to={redirect.path} />
@@ -398,13 +398,14 @@ const ChapterDetails = (props) => {
     return (
       <>
         <CRow>
-          <CCol xs="12" sm="6" lg="3">
+          <CCol xs="12" sm="12" lg="12" md="12">
             <CModal visible={visibleModalDelete} onDismiss={() => setVisibleModalDelete(false)}>
               <CModalHeader onDismiss={() => setVisibleModalDelete(false)}>
-                <CModalTitle>XÁC NHẬN XOÁ CHAPTER NÀY</CModalTitle>
+                <CModalTitle>XÁC NHẬN XOÁ BÀI HỌC NÀY</CModalTitle>
               </CModalHeader>
               <CModalBody>
-                Bạn chắc chắn muốn xoá <CBadge color="success">{itemToDelete.name}</CBadge> ?
+                Bạn chắc chắn muốn xoá bài học <CBadge color="success">{itemToDelete.title}</CBadge>{' '}
+                ?
               </CModalBody>
               <CModalFooter>
                 <CButton color="secondary" onClick={() => setVisibleModalDelete(false)}>
@@ -416,7 +417,7 @@ const ChapterDetails = (props) => {
                     color="danger"
                     onClick={() => {
                       setDeleting(true)
-                      topicService.deleteChapter(topicId, itemToDelete._id).then((res) => {
+                      topicService.deleteLesson(chapterId, itemToDelete._id).then((res) => {
                         setDeleting(false)
                         if (res.ok || (res.status !== 404 && res.status !== 400)) {
                           toast.success(`Xoá thành công`, {
@@ -432,7 +433,7 @@ const ChapterDetails = (props) => {
                           setRefresh(refresh + 1)
                         } else {
                           toast.error(
-                            `Không thể xoá được chapter này. Liên hệ web developer để biết thêm chi tiết`,
+                            `Không thể xoá được bài học này. Liên hệ web developer để biết thêm chi tiết`,
                             {
                               position: 'top-right',
                               autoClose: 2500,
@@ -505,7 +506,7 @@ const ChapterDetails = (props) => {
                 color="danger"
                 onClick={() => {
                   setSearchKey('')
-                  refreshChapters()
+                  refreshList()
                   // remove search
                   document.getElementById('search-key').value = ''
                 }}
@@ -520,6 +521,11 @@ const ChapterDetails = (props) => {
                 path={`/topics/topicDetail/${topicId}`}
                 styles={{ color: 'white', marginBottom: '5px' }}
               />
+              {chapter && (
+                <CButton disabled color="primary" style={{ color: 'white', marginBottom: '5px' }}>
+                  {topicName} - {chapter.name}
+                </CButton>
+              )}
               <CButton
                 color="info"
                 style={{ color: 'white', marginBottom: '5px' }}
@@ -527,7 +533,7 @@ const ChapterDetails = (props) => {
                   setVisibleModalAdd(true)
                 }}
               >
-                Thêm chapter
+                &#x2B; Thêm bài học
               </CButton>
             </CButtonGroup>
           </CCol>
@@ -556,12 +562,12 @@ const ChapterDetails = (props) => {
         </CRow>
         {!searching && (
           <CRow>
-            {chapters &&
-              chapters.map((item) => (
+            {lessons &&
+              lessons.map((item, index) => (
                 <CCol key={item._id} xs="12" sm="6" lg="3">
-                  <CCard style={{ width: '18rem', marginBottom: '5px' }}>
+                  <CCard style={{ width: 'auto', marginBottom: '5px' }}>
                     <CCardHeader>
-                      {item.name}
+                      Bài {index + 1}: {item.title}
                       <CBadge
                         style={{ float: 'right', marginTop: '2px', cursor: 'pointer' }}
                         color="danger"
@@ -598,7 +604,6 @@ const ChapterDetails = (props) => {
                     <CCardBody
                       style={{ cursor: 'pointer' }}
                       onClick={() => {
-                        // console.log(`/topics/${topicId}/chapterDetail/${item._id}`)
                         // setRedirectTo({
                         //   redirect: true,
                         //   path: `/topics/${topicId}/chapterDetail/${item._id}`,
@@ -606,19 +611,19 @@ const ChapterDetails = (props) => {
                       }}
                     >
                       <CCardTitle>
-                        {item.description}
+                        {item.title}
                         <span> / </span>
                         {item.meaning}
                       </CCardTitle>
                       <CCardSubtitle className="mb-2 text-muted">
                         {/* <CBadge color="success">{item.free ? 'Free' : 'Trả phí'}</CBadge>{' '} */}
-                        {!_.isEmpty(item['lessons']) && (
+                        {!_.isEmpty(item['vocab']) && (
                           <CBadge color="primary">
-                            {item['lessons'].length}{' '}
-                            {pluralize(item['lessons'].length, 'lesson', 'lessons')}
+                            {item['vocab'].length}{' '}
+                            {pluralize(item['vocab'].length, 'từ vựng', 'từ vựng')}
                           </CBadge>
                         )}
-                        {_.isEmpty(item['lessons']) && <CBadge color="primary">0 lessons</CBadge>}
+                        {_.isEmpty(item['vocab']) && <CBadge color="primary">0 từ vựng</CBadge>}
                         {/* <CBadge color="info">{item.cards.length} chữ</CBadge> */}
                       </CCardSubtitle>
                       {/* <CCardText>{item.description}</CCardText> */}

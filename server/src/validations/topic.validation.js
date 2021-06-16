@@ -70,7 +70,12 @@ const deleteChapterByTopicIdChapterId = {
       chapterId: Joi.string().custom(objectId),
     }),
   };
-
+const getChapter = {
+  params: Joi.object().keys({
+    topicId: Joi.string().custom(objectId),
+    chapterId: Joi.string().custom(objectId),
+  }),
+};
 const createChapterByTopicId = {
     params: Joi.object().keys({
         topicId: Joi.required().custom(objectId)
@@ -155,6 +160,7 @@ module.exports = {
   deleteLessonByChapterIdLessonId,
   createLessonByChapterId,
   updateLessonByChapterIdLessonId,
-  getLessonsByChapterId
+  getLessonsByChapterId,
+  getChapter,
 };
 

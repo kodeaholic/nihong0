@@ -9,6 +9,8 @@ export const topicService = {
   deleteChapter,
   createChapter,
   updateChapter,
+  getChapter,
+  deleteLesson,
 }
 
 async function getTopics(filter, options = { sortBy: 'name:desc', limit: 40, page: 1 }) {
@@ -127,4 +129,37 @@ async function updateChapter(topicId, chapterId, data) {
   )
   const topic = await response.json()
   return topic
+}
+
+async function getChapter(topicId, chapterId) {
+  const requestOptions = {
+    method: 'GET',
+    headers: authHeader(),
+  }
+
+  const response = await fetch(
+    `${config.apiEndpoint}/topics/${topicId}/chapters/${chapterId}`,
+    requestOptions,
+  )
+  const topic = await response.json()
+  if (response.status === 200 && response.ok) return topic
+  else {
+    return response
+  }
+}
+
+async function deleteLesson(chapterId, lessonId) {
+  const requestOptions = {
+    method: 'DELETE',
+    headers: authHeader(),
+  }
+  const response = await fetch(
+    `${config.apiEndpoint}/topics/delete-lesson/${chapterId}/${lessonId}`,
+    requestOptions,
+  )
+  const topic = await response.json()
+  if (response.status === 200 && response.ok) return topic
+  else {
+    return response
+  }
 }

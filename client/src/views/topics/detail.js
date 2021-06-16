@@ -361,6 +361,7 @@ const TopicDetails = (props) => {
   const [itemToEdit, setItemToEdit] = useState({})
   const [loadingEditModal, setLoadingEditModal] = useState(false)
   const [refresh, setRefresh] = useState(0)
+  const [topic, setTopic] = useState({})
   const refreshChapters = () => {
     topicService.getTopic(topicId).then((res) => {
       if (res.status === 404) {
@@ -375,7 +376,7 @@ const TopicDetails = (props) => {
         })
         setRedirectTo({ redirect: true, path: '/topics' })
       }
-
+      setTopic(res)
       setChapters(res['chapters'])
       if (!res['chapters'].length)
         toast.success(`Hiện tại chưa có chapter nào nào được thêm`, {
@@ -398,7 +399,7 @@ const TopicDetails = (props) => {
     return (
       <>
         <CRow>
-          <CCol xs="12" sm="6" lg="3">
+          <CCol xs="12" sm="12" lg="6" md="8">
             <CModal visible={visibleModalDelete} onDismiss={() => setVisibleModalDelete(false)}>
               <CModalHeader onDismiss={() => setVisibleModalDelete(false)}>
                 <CModalTitle>XÁC NHẬN XOÁ CHAPTER NÀY</CModalTitle>
@@ -520,6 +521,11 @@ const TopicDetails = (props) => {
                 path="/topics"
                 styles={{ color: 'white', marginBottom: '5px' }}
               />
+              {topic && (
+                <CButton disabled color="primary" style={{ color: 'white', marginBottom: '5px' }}>
+                  {topic.name}
+                </CButton>
+              )}
               <CButton
                 color="info"
                 style={{ color: 'white', marginBottom: '5px' }}
@@ -527,7 +533,7 @@ const TopicDetails = (props) => {
                   setVisibleModalAdd(true)
                 }}
               >
-                Thêm chapter
+                &#x2B; Thêm chapter
               </CButton>
             </CButtonGroup>
           </CCol>
@@ -558,8 +564,8 @@ const TopicDetails = (props) => {
           <CRow>
             {chapters &&
               chapters.map((item) => (
-                <CCol key={item._id} xs="12" sm="6" lg="3">
-                  <CCard style={{ width: '18rem', marginBottom: '5px' }}>
+                <CCol key={item._id} xs="12" sm="6" md="4" lg="3">
+                  <CCard style={{ width: 'auto', marginBottom: '5px' }}>
                     <CCardHeader>
                       {item.name}
                       <CBadge
@@ -610,14 +616,13 @@ const TopicDetails = (props) => {
                         {item.meaning}
                       </CCardTitle>
                       <CCardSubtitle className="mb-2 text-muted">
-                        {/* <CBadge color="success">{item.free ? 'Free' : 'Trả phí'}</CBadge>{' '} */}
                         {!_.isEmpty(item['lessons']) && (
                           <CBadge color="primary">
                             {item['lessons'].length}{' '}
-                            {pluralize(item['lessons'].length, 'lesson', 'lessons')}
+                            {pluralize(item['lessons'].length, 'bài học', 'bài học')}
                           </CBadge>
                         )}
-                        {_.isEmpty(item['lessons']) && <CBadge color="primary">0 lessons</CBadge>}
+                        {_.isEmpty(item['lessons']) && <CBadge color="primary">0 bài học</CBadge>}
                         {/* <CBadge color="info">{item.cards.length} chữ</CBadge> */}
                       </CCardSubtitle>
                       {/* <CCardText>{item.description}</CCardText> */}

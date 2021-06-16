@@ -68,6 +68,18 @@ const getChaptersByTopicId = async (topicId) => {
     return {chapters: _.get(topic, "chapters"), topicId: topicId}
 };
 
+const getChapter = async (topicId, chapterId) => {
+    const topic = await Topic.findById(topicId);
+    if (!topic) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Chủ đề không tồn tại hoặc đã bị xoá');
+    }
+    const chapters = _.get(topic, 'chapters')
+    const index = _.findIndex(chapters, function(item) { return item._id == chapterId })
+    if (index < 0) throw new ApiError(httpStatus.NOT_FOUND, 'Chapter không tồn tại hoặc đã bị xoá');
+    let chapter = topic.chapters[index]
+    return { chapter: chapter , topicName: topic.name, topicId: topicId }
+};
+
 const deleteChapterByTopicIdChapterId = async (topicId, chapterId) => {
     const topic = await Topic.findById(topicId);
     if (!topic) {
@@ -210,5 +222,6 @@ module.exports = {
   createLessonByChapterId,
   updateLessonByChapterIdLessonId,
   getLessonsByChapterId,
-  queryTopics
+  queryTopics,
+  getChapter,
 };
