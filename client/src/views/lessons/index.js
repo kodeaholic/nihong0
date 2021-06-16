@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Redirect } from 'react-router-dom'
+import { Redirect, useParams } from 'react-router-dom'
 import _ from 'lodash'
 import PropTypes from 'prop-types'
 import {
@@ -25,7 +25,6 @@ import {
 import { toast } from 'react-toastify'
 import { topicService } from '../../services/api/topicService'
 import { pluralize, sleep } from '../../helpers/common'
-import { getLastPartFromPathName } from 'src/services/helpers/routeHelper'
 import RedirectButton from '../components/back-navigation'
 const AddModal = ({ visible, setVisible, refresh, setRefresh, topicId }) => {
   const [saving, setSaving] = useState(false)
@@ -345,9 +344,10 @@ EditModal.propTypes = {
   refresh: PropTypes.number,
   setRefresh: PropTypes.func,
 }
-const TopicDetails = (props) => {
-  const pathName = props.location.pathname
-  const topicId = getLastPartFromPathName(pathName)
+const ChapterDetails = (props) => {
+  const { topicId, chapterId } = useParams()
+  // const pathName = props.location.pathname
+  // const topicId = getLastPartFromPathName(pathName)
   const [chapters, setChapters] = useState([])
   const [searchKey, setSearchKey] = useState('')
   const [searching, setSearching] = useState(false)
@@ -517,7 +517,7 @@ const TopicDetails = (props) => {
             <CButtonGroup>
               <RedirectButton
                 buttonColor="secondary"
-                path="/topics"
+                path={`/topics/topicDetail/${topicId}`}
                 styles={{ color: 'white', marginBottom: '5px' }}
               />
               <CButton
@@ -598,10 +598,11 @@ const TopicDetails = (props) => {
                     <CCardBody
                       style={{ cursor: 'pointer' }}
                       onClick={() => {
-                        setRedirectTo({
-                          redirect: true,
-                          path: `/topics/${topicId}/chapterDetail/${item._id}`,
-                        })
+                        // console.log(`/topics/${topicId}/chapterDetail/${item._id}`)
+                        // setRedirectTo({
+                        //   redirect: true,
+                        //   path: `/topics/${topicId}/chapterDetail/${item._id}`,
+                        // })
                       }}
                     >
                       <CCardTitle>
@@ -632,4 +633,4 @@ const TopicDetails = (props) => {
     )
 }
 
-export default TopicDetails
+export default ChapterDetails
