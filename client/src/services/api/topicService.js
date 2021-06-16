@@ -2,7 +2,7 @@ import { config } from './config'
 import { authHeader } from '../helpers/authHelper'
 export const topicService = {
   getTopics,
-  createBoard,
+  createTopic,
   updateBoard,
   deleteTopic,
 }
@@ -28,7 +28,7 @@ async function getTopics(filter, options = { sortBy: 'name:desc', limit: 40, pag
   } else return []
 }
 
-async function createBoard(data) {
+async function createTopic(data) {
   const requestOptions = {
     method: 'POST',
     headers: authHeader(),

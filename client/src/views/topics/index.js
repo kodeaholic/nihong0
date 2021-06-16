@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Redirect } from 'react-router-dom'
 import _ from 'lodash'
+import PropTypes from 'prop-types'
 import {
   CCol,
   CCardBody,
@@ -20,10 +21,111 @@ import {
   CModalHeader,
   CModalBody,
   CModalTitle,
+  CFormLabel,
 } from '@coreui/react'
 import { toast } from 'react-toastify'
 import { topicService } from '../../services/api/topicService'
-import { pluralize, sleep } from '../../helpers/common'
+import { pluralize } from '../../helpers/common'
+const AddModal = ({ visible, setVisible, onSuccess }) => {
+  const [saving, setSaving] = useState(false)
+  const [name, setName] = useState('')
+  const [desc, setDesc] = useState('')
+  const isDisabled = name.length > 0 ? false : true
+  return (
+    <CModal visible={visible} onDismiss={() => setVisible(false)}>
+      <CModalHeader onDismiss={() => setVisible(false)}>
+        <CModalTitle>THÊM MỚI CHỦ ĐỀ</CModalTitle>
+      </CModalHeader>
+      <CModalBody>
+        <CRow>
+          <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
+            <CFormLabel htmlFor="name">
+              Tiêu đề <span style={{ color: 'red' }}>*</span>
+            </CFormLabel>
+          </CCol>
+          <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
+            <CFormControl
+              type="text"
+              id="name"
+              required
+              placeholder="Ví dụ: 3000 từ vựng JPLT"
+              onChange={(e) => setName(e.target.value)}
+            />
+          </CCol>
+        </CRow>
+        <CRow>
+          <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
+            <CFormLabel htmlFor="description">Mô tả</CFormLabel>
+          </CCol>
+          <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
+            <CFormControl
+              type="text"
+              component="textarea"
+              id="description"
+              required
+              placeholder="Mô tả ngắn gọn"
+              onChange={(e) => setDesc(e.target.value)}
+              rows={3}
+            />
+          </CCol>
+        </CRow>
+      </CModalBody>
+      <CModalFooter>
+        <CButton color="secondary" onClick={() => setVisible(false)}>
+          HUỶ BỎ
+        </CButton>
+        {saving && <CSpinner />}
+        {!saving && (
+          <CButton
+            disabled={isDisabled}
+            color="success"
+            onClick={() => {
+              setSaving(true)
+              topicService.createTopic({ name: name, description: desc }).then((res) => {
+                setSaving(false)
+                if (res.ok || (res.status !== 404 && res.status !== 400)) {
+                  const toAdd = res
+                  toast.success(`Tạo mới chủ đề thành công`, {
+                    position: 'top-right',
+                    autoClose: 2500,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                  })
+                  setVisible(false)
+                  onSuccess(toAdd)
+                } else {
+                  toast.error(
+                    `Không thể tạo được chủ đề này. Liên hệ web developer để biết thêm chi tiết`,
+                    {
+                      position: 'top-right',
+                      autoClose: 2500,
+                      hideProgressBar: true,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: true,
+                      progress: undefined,
+                    },
+                  )
+                }
+              })
+            }}
+          >
+            LƯU
+          </CButton>
+        )}
+      </CModalFooter>
+    </CModal>
+  )
+}
+
+AddModal.propTypes = {
+  visible: PropTypes.bool,
+  setVisible: PropTypes.func,
+  onSuccess: PropTypes.func,
+}
 const Topics = () => {
   const [topics, setTopics] = useState([])
   const [searchKey, setSearchKey] = useState('')
@@ -31,8 +133,12 @@ const Topics = () => {
   const [redirect, setRedirectTo] = useState({ redirect: false, path: '' })
   //   const [lessonCounter, setLessonCounter] = useState(0)
   const [visibleModalDelete, setVisibleModalDelete] = useState(false)
+  const [visibleModalAdd, setVisibleModalAdd] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [itemToDelete, setItemToDelete] = useState({})
+  const addNewToTopics = (item) => {
+    setTopics(topics.concat(item))
+  }
   const refreshTopics = () => {
     topicService.getTopics().then((res) => {
       let result = res.results
@@ -96,7 +202,7 @@ const Topics = () => {
                           setTopics(topics.filter((_, i) => i !== index))
                         } else {
                           toast.error(
-                            `Không thể xoá được chủ đề này do. Liên hệ web developer để biết thêm chi tiết`,
+                            `Không thể xoá được chủ đề này. Liên hệ web developer để biết thêm chi tiết`,
                             {
                               position: 'top-right',
                               autoClose: 2500,
@@ -177,6 +283,22 @@ const Topics = () => {
                 ↻
               </CButton>
             </CInputGroup>
+          </CCol>
+          <CCol xs="12" sm="6" lg="3">
+            <AddModal
+              visible={visibleModalAdd}
+              setVisible={setVisibleModalAdd}
+              onSuccess={addNewToTopics}
+            />
+            <CButton
+              color="info"
+              style={{ color: 'white' }}
+              onClick={() => {
+                setVisibleModalAdd(true)
+              }}
+            >
+              Thêm chủ đề
+            </CButton>
           </CCol>
         </CRow>
         {!searching && (
