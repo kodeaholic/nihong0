@@ -14,7 +14,8 @@ const queryTopics = async (filter, options) => {
  * @returns {Promise<Topic>}
  */
 const getTopicById = async (id) => {
-    return Topic.findById(id);
+    const topic = await Topic.findById(id);
+    return topic
 };
 
 /**
@@ -79,6 +80,7 @@ const deleteChapterByTopicIdChapterId = async (topicId, chapterId) => {
         }
         return topic
     })
+    return {deleted: true}
 };
 
 const createChapterByTopicId = async (topicId, chapterData) => {

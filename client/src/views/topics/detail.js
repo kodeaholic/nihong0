@@ -25,6 +25,7 @@ import {
 import { toast } from 'react-toastify'
 import { topicService } from '../../services/api/topicService'
 import { pluralize, sleep } from '../../helpers/common'
+import { getLastPartFromPathName } from 'src/services/helpers/routeHelper'
 const AddModal = ({ visible, setVisible, onSuccess }) => {
   const [saving, setSaving] = useState(false)
   const [name, setName] = useState('')
@@ -33,7 +34,7 @@ const AddModal = ({ visible, setVisible, onSuccess }) => {
   return (
     <CModal visible={visible} onDismiss={() => setVisible(false)}>
       <CModalHeader onDismiss={() => setVisible(false)}>
-        <CModalTitle>THÊM MỚI CHỦ ĐỀ</CModalTitle>
+        <CModalTitle>THÊM MỚI CHAPTER</CModalTitle>
       </CModalHeader>
       <CModalBody>
         <CRow>
@@ -87,7 +88,7 @@ const AddModal = ({ visible, setVisible, onSuccess }) => {
                   (res.status !== 404 && res.status !== 400 && res.code !== 500 && res.code !== 400)
                 ) {
                   const toAdd = res
-                  toast.success(`Tạo mới chủ đề thành công`, {
+                  toast.success(`Tạo mới chapter thành công`, {
                     position: 'top-right',
                     autoClose: 2500,
                     hideProgressBar: true,
@@ -111,7 +112,7 @@ const AddModal = ({ visible, setVisible, onSuccess }) => {
                     })
                   } else
                     toast.error(
-                      `Không thể tạo được chủ đề này. Liên hệ web developer để biết thêm chi tiết`,
+                      `Không thể tạo được chapter này. Liên hệ web developer để biết thêm chi tiết`,
                       {
                         position: 'top-right',
                         autoClose: 2500,
@@ -153,7 +154,7 @@ const EditModal = ({ visible, setVisible, onSuccess, item, setItem, loading }) =
           setItem({})
         }}
       >
-        <CModalTitle>SỬA CHỦ ĐỀ</CModalTitle>
+        <CModalTitle>SỬA CHAPTER</CModalTitle>
       </CModalHeader>
       <CModalBody className="text-center">
         {!loading && (
@@ -224,7 +225,7 @@ const EditModal = ({ visible, setVisible, onSuccess, item, setItem, loading }) =
                       res.code !== 400)
                   ) {
                     const toAdd = res
-                    toast.success(`Lưu chủ đề thành công`, {
+                    toast.success(`Lưu chapter thành công`, {
                       position: 'top-right',
                       autoClose: 2500,
                       hideProgressBar: true,
@@ -249,7 +250,7 @@ const EditModal = ({ visible, setVisible, onSuccess, item, setItem, loading }) =
                       })
                     } else
                       toast.error(
-                        `Không thể lưu được chủ đề này. Liên hệ web developer để biết thêm chi tiết`,
+                        `Không thể lưu được chapter này. Liên hệ web developer để biết thêm chi tiết`,
                         {
                           position: 'top-right',
                           autoClose: 2500,
@@ -286,8 +287,10 @@ EditModal.propTypes = {
   setItem: PropTypes.func,
   loading: PropTypes.bool,
 }
-const Topics = () => {
-  const [topics, setTopics] = useState([])
+const TopicDetails = (props) => {
+  const pathName = props.location.pathname
+  const topicId = getLastPartFromPathName(pathName)
+  const [chapters, setChapters] = useState([])
   const [searchKey, setSearchKey] = useState('')
   const [searching, setSearching] = useState(false)
   const [redirect, setRedirectTo] = useState({ redirect: false, path: '' })
@@ -299,25 +302,38 @@ const Topics = () => {
   const [itemToDelete, setItemToDelete] = useState({})
   const [itemToEdit, setItemToEdit] = useState({})
   const [loadingEditModal, setLoadingEditModal] = useState(false)
+  const [refresh, setRefresh] = useState(0)
   const updateItemInTopics = (item) => {
-    let index = _.findIndex(topics, function (el) {
+    let index = _.findIndex(chapters, function (el) {
       return el.id === item.id
     })
     if (index >= 0) {
-      let newTopics = [...topics]
+      let newTopics = [...chapters]
       newTopics[index] = item
-      setTopics(newTopics)
+      setChapters(newTopics)
     }
   }
   const addNewToTopics = (item) => {
-    setTopics(topics.concat(item))
+    setChapters(chapters.concat(item))
   }
-  const refreshTopics = () => {
-    topicService.getTopics().then((res) => {
-      let result = res.results
-      setTopics(res.results)
-      if (!result.length)
-        toast.success(`Hiện tại chưa có chủ đề nào nào được thêm`, {
+  const refreshChapters = () => {
+    topicService.getTopic(topicId).then((res) => {
+      if (res.status === 404) {
+        toast.error(`Chủ đề không tồn tại hoặc đã bị xoá`, {
+          position: 'top-right',
+          autoClose: 2500,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        })
+        setRedirectTo({ redirect: true, path: '/topics' })
+      }
+
+      setChapters(res['chapters'])
+      if (!res['chapters'].length)
+        toast.success(`Hiện tại chưa có chapter nào nào được thêm`, {
           position: 'top-right',
           autoClose: 2500,
           hideProgressBar: true,
@@ -329,8 +345,8 @@ const Topics = () => {
     })
   }
   useEffect(() => {
-    refreshTopics()
-  }, [])
+    refreshChapters()
+  }, [refresh])
   const isDisabledSearch = searchKey.length === 0
   if (redirect.redirect) return <Redirect to={redirect.path} />
   else
@@ -340,7 +356,7 @@ const Topics = () => {
           <CCol xs="12" sm="6" lg="3">
             <CModal visible={visibleModalDelete} onDismiss={() => setVisibleModalDelete(false)}>
               <CModalHeader onDismiss={() => setVisibleModalDelete(false)}>
-                <CModalTitle>XÁC NHẬN XOÁ CHỦ ĐỀ NÀY</CModalTitle>
+                <CModalTitle>XÁC NHẬN XOÁ CHAPTER NÀY</CModalTitle>
               </CModalHeader>
               <CModalBody>
                 Bạn chắc chắn muốn xoá <CBadge color="success">{itemToDelete.name}</CBadge> ?
@@ -355,10 +371,9 @@ const Topics = () => {
                     color="danger"
                     onClick={() => {
                       setDeleting(true)
-                      topicService.deleteTopic(itemToDelete.id).then((res) => {
+                      topicService.deleteChapter(topicId, itemToDelete._id).then((res) => {
                         setDeleting(false)
                         if (res.ok || (res.status !== 404 && res.status !== 400)) {
-                          const toRemove = res
                           toast.success(`Xoá thành công`, {
                             position: 'top-right',
                             autoClose: 2500,
@@ -369,13 +384,10 @@ const Topics = () => {
                             progress: undefined,
                           })
                           setVisibleModalDelete(!visibleModalDelete)
-                          let index = _.findIndex(topics, function (item) {
-                            return item.id === toRemove.id
-                          })
-                          setTopics(topics.filter((_, i) => i !== index))
+                          setRefresh(refresh + 1)
                         } else {
                           toast.error(
-                            `Không thể xoá được chủ đề này. Liên hệ web developer để biết thêm chi tiết`,
+                            `Không thể xoá được chapter này. Liên hệ web developer để biết thêm chi tiết`,
                             {
                               position: 'top-right',
                               autoClose: 2500,
@@ -396,10 +408,10 @@ const Topics = () => {
                 )}
               </CModalFooter>
             </CModal>
-            <CInputGroup className="mb-3">
+            {/* <CInputGroup className="mb-3">
               <CFormControl
                 type="text"
-                placeholder="Tìm chủ đề theo tiêu đề ..."
+                placeholder="Tìm chapter theo tiêu đề ..."
                 defaultValue={searchKey}
                 onChange={(e) => {
                   setSearchKey(e.target.value)
@@ -436,7 +448,7 @@ const Topics = () => {
                           draggable: true,
                           progress: undefined,
                         })
-                      setTopics(result)
+                      setChapters(result)
                     })
                   }
                 }}
@@ -448,7 +460,7 @@ const Topics = () => {
                 color="danger"
                 onClick={() => {
                   setSearchKey('')
-                  refreshTopics()
+                  refreshChapters()
                   // remove search
                   document.getElementById('search-key').value = ''
                 }}
@@ -456,7 +468,16 @@ const Topics = () => {
               >
                 ↻
               </CButton>
-            </CInputGroup>
+            </CInputGroup> */}
+            <CButton
+              color="info"
+              style={{ color: 'white' }}
+              onClick={() => {
+                setVisibleModalAdd(true)
+              }}
+            >
+              Thêm chapter
+            </CButton>
           </CCol>
           <CCol xs="12" sm="6" lg="3">
             <AddModal
@@ -474,22 +495,13 @@ const Topics = () => {
                 loading={loadingEditModal}
               />
             )}
-            <CButton
-              color="info"
-              style={{ color: 'white' }}
-              onClick={() => {
-                setVisibleModalAdd(true)
-              }}
-            >
-              Thêm chủ đề
-            </CButton>
           </CCol>
         </CRow>
         {!searching && (
           <CRow>
-            {topics &&
-              topics.map((item) => (
-                <CCol key={item.id} xs="12" sm="6" lg="3">
+            {chapters &&
+              chapters.map((item) => (
+                <CCol key={item._id} xs="12" sm="6" lg="3">
                   <CCard style={{ width: '18rem', marginBottom: '5px' }}>
                     <CCardHeader>
                       {item.name}
@@ -529,19 +541,19 @@ const Topics = () => {
                     <CCardBody
                       style={{ cursor: 'pointer' }}
                       onClick={() => {
-                        setRedirectTo({ redirect: true, path: `/topics/topicDetail/${item.id}` })
+                        // setRedirectTo({ redirect: true, path: `/chapters/topicDetail/${item._id}` })
                       }}
                     >
                       <CCardTitle>{item.description}</CCardTitle>
                       <CCardSubtitle className="mb-2 text-muted">
                         {/* <CBadge color="success">{item.free ? 'Free' : 'Trả phí'}</CBadge>{' '} */}
-                        {!_.isEmpty(item['chapters']) && (
+                        {!_.isEmpty(item['lessons']) && (
                           <CBadge color="primary">
-                            {item['chapters'].length}{' '}
-                            {pluralize(item['chapters'].length, 'chapter', 'chapters')}
+                            {item['lessons'].length}{' '}
+                            {pluralize(item['lessons'].length, 'lesson', 'lessons')}
                           </CBadge>
                         )}
-                        {_.isEmpty(item['chapters']) && <CBadge color="primary">0 chapters</CBadge>}
+                        {_.isEmpty(item['lessons']) && <CBadge color="primary">0 lessons</CBadge>}
                         {/* <CBadge color="info">{item.cards.length} chữ</CBadge> */}
                       </CCardSubtitle>
                       {/* <CCardText>{item.description}</CCardText> */}
@@ -556,4 +568,4 @@ const Topics = () => {
     )
 }
 
-export default Topics
+export default TopicDetails
