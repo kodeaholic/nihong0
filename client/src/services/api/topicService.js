@@ -16,6 +16,7 @@ export const topicService = {
   getVocab,
   deleteVocab,
   createVocab,
+  updateVocab,
 }
 
 async function getTopics(filter, options = { sortBy: 'name:desc', limit: 40, page: 1 }) {
@@ -244,6 +245,23 @@ async function createVocab(lessonId, data) {
   }
   const response = await fetch(
     `${config.apiEndpoint}/topics/create-vocab/${lessonId}`,
+    requestOptions,
+  )
+  const topic = await response.json()
+  if (response.status === 200 && response.ok) return topic
+  else {
+    return response
+  }
+}
+
+async function updateVocab(lessonId, vocabId, data) {
+  const requestOptions = {
+    method: 'PATCH',
+    headers: authHeader(),
+    body: JSON.stringify(data),
+  }
+  const response = await fetch(
+    `${config.apiEndpoint}/topics/update-vocab/${lessonId}/${vocabId}`,
     requestOptions,
   )
   const topic = await response.json()

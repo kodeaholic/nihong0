@@ -214,15 +214,17 @@ const EditModal = ({
   item,
   setItem,
   loading,
-  chapterId,
   lessonId,
+  vocabId,
 }) => {
   const [saving, setSaving] = useState(false)
-  const [name, setName] = useState(item.title)
-  const [desc, setDesc] = useState(item.description)
-  const [meaning, setMeaning] = useState(item.meaning)
+  const [vocab, setVocab] = useState(item.vocab)
+  const [vocabMeaning, setVocabMeaning] = useState(item.vocabMeaning)
+  const [chinese, setChinese] = useState(item.chinese)
+  const [example, setExample] = useState(item.example)
+  const [exampleMeaning, setExampleMeaning] = useState(item.exampleMeaning)
   const [audioSrc, setAudioSrc] = useState(item.audioSrc)
-  const isDisabled = name.length > 0 ? false : true
+  const isDisabled = vocab.length > 0 ? false : true
   return (
     <CModal
       visible={visible}
@@ -237,57 +239,86 @@ const EditModal = ({
           setItem({})
         }}
       >
-        <CModalTitle>SỬA CHAPTER</CModalTitle>
+        <CModalTitle>SỬA TỪ VỰNG</CModalTitle>
       </CModalHeader>
       <CModalBody className="text-center">
         {!loading && (
           <>
             <CRow>
               <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
-                <CFormLabel htmlFor="name">
-                  Tiêu đề <span style={{ color: 'red' }}>*</span>
+                <CFormLabel htmlFor="vocab">
+                  Từ vựng <span style={{ color: 'red' }}>*</span>
                 </CFormLabel>
               </CCol>
               <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
                 <CFormControl
                   type="text"
-                  id="name"
-                  required
-                  placeholder="Ví dụ: Gia đình"
-                  onChange={(e) => setName(e.target.value)}
-                  defaultValue={name}
+                  id="vocab"
+                  placeholder="Ví dụ: みうち"
+                  onChange={(e) => setVocab(e.target.value)}
+                  defaultValue={item.vocab}
                 />
               </CCol>
             </CRow>
             <CRow>
               <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
-                <CFormLabel htmlFor="description">Mô tả</CFormLabel>
+                <CFormLabel htmlFor="chinese">Hán tự</CFormLabel>
               </CCol>
               <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
                 <CFormControl
                   type="text"
-                  component="textarea"
-                  id="description"
-                  placeholder="Mô tả ngắn gọn"
-                  onChange={(e) => setDesc(e.target.value)}
-                  rows={3}
-                  defaultValue={desc}
+                  id="chinese"
+                  placeholder="Ví dụ: 身内"
+                  onChange={(e) => setChinese(e.target.value)}
+                  defaultValue={item.chinese}
                 />
               </CCol>
             </CRow>
             <CRow>
               <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
-                <CFormLabel htmlFor="meaning">Tiêu đề trong tiếng Nhật</CFormLabel>
+                <CFormLabel htmlFor="vocabMeaning">Giải nghĩa</CFormLabel>
               </CCol>
               <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
                 <CFormControl
                   type="text"
                   component="textarea"
-                  id="meaning"
-                  placeholder="Mô tả ngắn gọn bằng tiếng Nhật"
-                  onChange={(e) => setMeaning(e.target.value)}
+                  id="vocabMeaning"
+                  placeholder="họ hàng, bà con thân thuộc"
+                  onChange={(e) => setVocabMeaning(e.target.value)}
                   rows={3}
-                  defaultValue={meaning}
+                  defaultValue={item.vocabMeaning}
+                />
+              </CCol>
+            </CRow>
+            <CRow>
+              <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
+                <CFormLabel htmlFor="example">Ví dụ</CFormLabel>
+              </CCol>
+              <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
+                <CFormControl
+                  type="text"
+                  component="textarea"
+                  id="example"
+                  placeholder="身内に医者がいると、何かと安心だ。"
+                  onChange={(e) => setExample(e.target.value)}
+                  rows={3}
+                  defaultValue={item.example}
+                />
+              </CCol>
+            </CRow>
+            <CRow>
+              <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
+                <CFormLabel htmlFor="exampleMeaning">Giải nghĩa ví dụ</CFormLabel>
+              </CCol>
+              <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
+                <CFormControl
+                  type="text"
+                  component="textarea"
+                  id="exampleMeaning"
+                  placeholder="Nếu trong họ hàng có một bác sĩ, gì thì gì cũng sẽ yên tâm hơn."
+                  onChange={(e) => setExampleMeaning(e.target.value)}
+                  rows={3}
+                  defaultValue={item.exampleMeaning}
                 />
               </CCol>
             </CRow>
@@ -303,7 +334,7 @@ const EditModal = ({
                   placeholder="https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3"
                   onChange={(e) => setAudioSrc(e.target.value)}
                   rows={3}
-                  defaultValue={audioSrc}
+                  defaultValue={item.audioSrc}
                 />
               </CCol>
             </CRow>
@@ -330,11 +361,13 @@ const EditModal = ({
               onClick={() => {
                 setSaving(true)
                 topicService
-                  .updateLesson(chapterId, lessonId, {
-                    title: name,
-                    description: desc,
-                    meaning: meaning,
-                    audioSrc: audioSrc,
+                  .updateVocab(lessonId, item._id, {
+                    vocab,
+                    vocabMeaning,
+                    chinese,
+                    example,
+                    exampleMeaning,
+                    audioSrc,
                   })
                   .then((res) => {
                     setSaving(false)
@@ -345,7 +378,7 @@ const EditModal = ({
                         res.code !== 500 &&
                         res.code !== 400)
                     ) {
-                      toast.success(`Lưu bài học thành công`, {
+                      toast.success(`Lưu từ vựng thành công`, {
                         position: 'top-right',
                         autoClose: 2500,
                         hideProgressBar: true,
@@ -370,7 +403,7 @@ const EditModal = ({
                         })
                       } else
                         toast.error(
-                          `Không thể lưu được bài học này. Liên hệ web developer để biết thêm chi tiết`,
+                          `Không thể lưu được từ vựng này. Liên hệ web developer để biết thêm chi tiết`,
                           {
                             position: 'top-right',
                             autoClose: 2500,
@@ -414,6 +447,7 @@ EditModal.propTypes = {
   setRefresh: PropTypes.func,
   chapterId: PropTypes.string,
   lessonId: PropTypes.string,
+  vocabId: PropTypes.string,
 }
 const ChapterDetails = (props) => {
   const { lessonId } = useParams()
@@ -632,8 +666,8 @@ const ChapterDetails = (props) => {
                 loading={loadingEditModal}
                 refresh={refresh}
                 setRefresh={setRefresh}
-                chapterId={chapterId}
-                lessonId={itemToEdit._id}
+                lessonId={lessonId}
+                vocabId={itemToEdit._id}
               />
             )}
           </CCol>

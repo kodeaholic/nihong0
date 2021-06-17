@@ -11,7 +11,7 @@ const VocabSchema = mongoose.Schema(
         },
         chinese: {
             type: String,
-            required: true,
+            required: false,
             trim: false,
         },
         vocabMeaning: {

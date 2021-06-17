@@ -4,6 +4,7 @@ const { objectId } = require('./custom.validation');
 const vocabSchemaValidation = Joi.object({
     vocab: Joi.string().required(),
     vocabMeaning: Joi.string().required(),
+    chinese: Joi.string().allow(null, ''),
     example: Joi.string().allow(null, ''),
     exampleMeaning: Joi.string().allow(null, ''),
     vocabPronounce: Joi.string().allow(null, ''),

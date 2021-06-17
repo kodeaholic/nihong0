@@ -211,10 +211,14 @@ const getLessonsByChapterId = async (chapterId) => {
 
 /** Vocab */
 const getVocabByLessonId = async (lessonId) => {
-    const topic = await Topic.findOne({'chapters.lessons._id': lessonId}, {"topic._id": 1, "chapters._id": 1, "chapters.lessons._id": 1, "chapters.lessons.vocab": 1})
-    console.log(topic)
+    const topic = await Topic.findOne({'chapters.lessons._id': lessonId}, {"topic._id": 1, "chapters._id": 1, "chapters.name": 1, "chapters.lessons.audioSrc": 1, "chapters.lessons.title": 1, "chapters.lessons._id": 1, "chapters.lessons.vocab": 1})
     if (_.isEmpty(topic) || !topic.id) throw new ApiError(httpStatus.NOT_FOUND, 'Bài học không tồn tại hoặc đã bị xoá');
-    return topic
+    const topicName = await Topic.findById(topic.id).select("name")
+    let obj = {}
+    obj.chapters = topic.chapters
+    obj.id = topic.id
+    obj.name = topicName.name
+    return obj
 };
 
 const deleteVocabByLessonId = async (lessonId, vocabId) => {
