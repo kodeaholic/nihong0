@@ -13,6 +13,9 @@ export const topicService = {
   deleteLesson,
   createLesson,
   updateLesson,
+  getVocab,
+  deleteVocab,
+  createVocab,
 }
 
 async function getTopics(filter, options = { sortBy: 'name:desc', limit: 40, page: 1 }) {
@@ -191,6 +194,56 @@ async function updateLesson(chapterId, lessonId, data) {
   }
   const response = await fetch(
     `${config.apiEndpoint}/topics/update-lesson/${chapterId}/${lessonId}`,
+    requestOptions,
+  )
+  const topic = await response.json()
+  if (response.status === 200 && response.ok) return topic
+  else {
+    return response
+  }
+}
+
+async function getVocab(lessonId) {
+  const requestOptions = {
+    method: 'GET',
+    headers: authHeader(),
+  }
+
+  const response = await fetch(
+    `${config.apiEndpoint}/topics/lessons/${lessonId}/vocab`,
+    requestOptions,
+  )
+  const topic = await response.json()
+  if (response.status === 200 && response.ok) return topic
+  else {
+    return response
+  }
+}
+
+async function deleteVocab(lessonId, vocabId) {
+  const requestOptions = {
+    method: 'DELETE',
+    headers: authHeader(),
+  }
+  const response = await fetch(
+    `${config.apiEndpoint}/topics/delete-vocab/${lessonId}/${vocabId}`,
+    requestOptions,
+  )
+  const topic = await response.json()
+  if (response.status === 200 && response.ok) return topic
+  else {
+    return response
+  }
+}
+
+async function createVocab(lessonId, data) {
+  const requestOptions = {
+    method: 'POST',
+    headers: authHeader(),
+    body: JSON.stringify(data),
+  }
+  const response = await fetch(
+    `${config.apiEndpoint}/topics/create-vocab/${lessonId}`,
     requestOptions,
   )
   const topic = await response.json()

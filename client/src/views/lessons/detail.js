@@ -24,62 +24,92 @@ import {
 } from '@coreui/react'
 import { toast } from 'react-toastify'
 import { topicService } from '../../services/api/topicService'
-import { pluralize, sleep } from '../../helpers/common'
+import { sleep } from '../../helpers/common'
 import RedirectButton from '../components/back-navigation'
-const AddModal = ({ visible, setVisible, refresh, setRefresh, chapterId }) => {
+const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
   const [saving, setSaving] = useState(false)
-  const [name, setName] = useState('')
-  const [desc, setDesc] = useState('')
-  const [meaning, setMeaning] = useState('')
+  const [vocab, setVocab] = useState('')
+  const [vocabMeaning, setVocabMeaning] = useState('')
+  const [chinese, setChinese] = useState('')
+  const [example, setExample] = useState('')
+  const [exampleMeaning, setExampleMeaning] = useState('')
   const [audioSrc, setAudioSrc] = useState('')
-  const isDisabled = name.length > 0 ? false : true
+  const isDisabled = vocab.length > 0 ? false : true
   return (
     <CModal visible={visible} onDismiss={() => setVisible(false)}>
       <CModalHeader onDismiss={() => setVisible(false)}>
-        <CModalTitle>THÊM MỚI BÀI HỌC</CModalTitle>
+        <CModalTitle>THÊM MỚI TỪ VỰNG</CModalTitle>
       </CModalHeader>
       <CModalBody>
         <CRow>
           <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
-            <CFormLabel htmlFor="name">
-              Tiêu đề <span style={{ color: 'red' }}>*</span>
+            <CFormLabel htmlFor="vocab">
+              Từ vựng <span style={{ color: 'red' }}>*</span>
             </CFormLabel>
           </CCol>
           <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
             <CFormControl
               type="text"
-              id="name"
-              placeholder="Ví dụ: Gia đình"
-              onChange={(e) => setName(e.target.value)}
+              id="vocab"
+              placeholder="Ví dụ: みうち"
+              onChange={(e) => setVocab(e.target.value)}
             />
           </CCol>
         </CRow>
         <CRow>
           <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
-            <CFormLabel htmlFor="description">Mô tả</CFormLabel>
+            <CFormLabel htmlFor="chinese">Hán tự</CFormLabel>
+          </CCol>
+          <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
+            <CFormControl
+              type="text"
+              id="chinese"
+              placeholder="Ví dụ: 身内"
+              onChange={(e) => setChinese(e.target.value)}
+            />
+          </CCol>
+        </CRow>
+        <CRow>
+          <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
+            <CFormLabel htmlFor="vocabMeaning">Giải nghĩa</CFormLabel>
           </CCol>
           <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
             <CFormControl
               type="text"
               component="textarea"
-              id="description"
-              placeholder="Mối quan hệ giữa người với người"
-              onChange={(e) => setDesc(e.target.value)}
+              id="vocabMeaning"
+              placeholder="họ hàng, bà con thân thuộc"
+              onChange={(e) => setVocabMeaning(e.target.value)}
               rows={3}
             />
           </CCol>
         </CRow>
         <CRow>
           <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
-            <CFormLabel htmlFor="meaning">Tiêu đề trong tiếng Nhật</CFormLabel>
+            <CFormLabel htmlFor="example">Ví dụ</CFormLabel>
           </CCol>
           <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
             <CFormControl
               type="text"
               component="textarea"
-              id="meaning"
-              placeholder="家族"
-              onChange={(e) => setMeaning(e.target.value)}
+              id="example"
+              placeholder="身内に医者がいると、何かと安心だ。"
+              onChange={(e) => setExample(e.target.value)}
+              rows={3}
+            />
+          </CCol>
+        </CRow>
+        <CRow>
+          <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
+            <CFormLabel htmlFor="exampleMeaning">Giải nghĩa ví dụ</CFormLabel>
+          </CCol>
+          <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
+            <CFormControl
+              type="text"
+              component="textarea"
+              id="exampleMeaning"
+              placeholder="Nếu trong họ hàng có một bác sĩ, gì thì gì cũng sẽ yên tâm hơn."
+              onChange={(e) => setExampleMeaning(e.target.value)}
               rows={3}
             />
           </CCol>
@@ -112,11 +142,13 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, chapterId }) => {
             onClick={() => {
               setSaving(true)
               topicService
-                .createLesson(chapterId, {
-                  title: name,
-                  description: desc,
-                  meaning: meaning,
-                  audioSrc: audioSrc,
+                .createVocab(lessonId, {
+                  vocab,
+                  vocabMeaning,
+                  chinese,
+                  example,
+                  exampleMeaning,
+                  audioSrc,
                 })
                 .then((res) => {
                   setSaving(false)
@@ -127,7 +159,7 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, chapterId }) => {
                       res.code !== 500 &&
                       res.code !== 400)
                   ) {
-                    toast.success(`Tạo mới bài học thành công`, {
+                    toast.success(`Tạo mới từ vựng thành công`, {
                       position: 'top-right',
                       autoClose: 2500,
                       hideProgressBar: true,
@@ -151,7 +183,7 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, chapterId }) => {
                       })
                     } else
                       toast.error(
-                        `Không thể tạo được bài học này. Liên hệ web developer để biết thêm chi tiết`,
+                        `Không thể tạo từ vựng này. Liên hệ web developer để biết thêm chi tiết`,
                         {
                           position: 'top-right',
                           autoClose: 2500,
@@ -368,7 +400,7 @@ AddModal.propTypes = {
   onSuccess: PropTypes.func,
   refresh: PropTypes.number,
   setRefresh: PropTypes.func,
-  chapterId: PropTypes.string,
+  lessonId: PropTypes.string,
 }
 EditModal.propTypes = {
   visible: PropTypes.bool,
@@ -384,8 +416,10 @@ EditModal.propTypes = {
   lessonId: PropTypes.string,
 }
 const ChapterDetails = (props) => {
-  const { topicId, chapterId } = useParams()
-  const [lessons, setLessons] = useState([])
+  const { lessonId } = useParams()
+  const [topicId, setTopicId] = useState('')
+  const [chapterId, setChapterId] = useState('')
+  const [lesson, setLesson] = useState({})
   const [searchKey, setSearchKey] = useState('')
   const [searching, setSearching] = useState(false)
   const [redirect, setRedirectTo] = useState({ redirect: false, path: '' })
@@ -399,8 +433,9 @@ const ChapterDetails = (props) => {
   const [refresh, setRefresh] = useState(0)
   const [chapter, setChapter] = useState({})
   const [topicName, setTopicName] = useState('')
+  const [vocab, setVocab] = useState([])
   const refreshList = () => {
-    topicService.getChapter(topicId, chapterId).then((res) => {
+    topicService.getVocab(lessonId).then((res) => {
       if (res.status === 404) {
         toast.error(`Chapter không tồn tại hoặc đã bị xoá`, {
           position: 'top-right',
@@ -413,11 +448,14 @@ const ChapterDetails = (props) => {
         })
         setRedirectTo({ redirect: true, path: '/topics/topicDetail/' + topicId })
       }
-      setChapter(res['chapter'])
-      setLessons(res['chapter']['lessons'])
-      setTopicName(res['topicName'])
-      if (!res['chapter']['lessons'].length)
-        toast.success(`Hiện tại chưa có bài học nào nào được thêm`, {
+      setChapter(res['chapters'][0])
+      setLesson(res['chapters'][0]['lessons'][0])
+      setTopicName(res['name'])
+      setTopicId(res['id'])
+      setChapterId(res['chapters'][0]._id)
+      setVocab(res['chapters'][0]['lessons'][0].vocab)
+      if (!res['chapters'][0]['lessons'][0].vocab.length)
+        toast.success(`Hiện tại chưa có từ vựng nào được thêm`, {
           position: 'top-right',
           autoClose: 2500,
           hideProgressBar: true,
@@ -440,10 +478,10 @@ const ChapterDetails = (props) => {
           <CCol xs="12" sm="12" lg="12" md="12">
             <CModal visible={visibleModalDelete} onDismiss={() => setVisibleModalDelete(false)}>
               <CModalHeader onDismiss={() => setVisibleModalDelete(false)}>
-                <CModalTitle>XÁC NHẬN XOÁ BÀI HỌC NÀY</CModalTitle>
+                <CModalTitle>XÁC NHẬN XOÁ TỪ VỰNG NÀY</CModalTitle>
               </CModalHeader>
               <CModalBody>
-                Bạn chắc chắn muốn xoá bài học <CBadge color="success">{itemToDelete.title}</CBadge>{' '}
+                Bạn chắc chắn muốn xoá từ vựng <CBadge color="success">{itemToDelete.title}</CBadge>{' '}
                 ?
               </CModalBody>
               <CModalFooter>
@@ -456,7 +494,7 @@ const ChapterDetails = (props) => {
                     color="danger"
                     onClick={() => {
                       setDeleting(true)
-                      topicService.deleteLesson(chapterId, itemToDelete._id).then((res) => {
+                      topicService.deleteVocab(lessonId, itemToDelete._id).then((res) => {
                         setDeleting(false)
                         if (res.ok || (res.status !== 404 && res.status !== 400)) {
                           toast.success(`Xoá thành công`, {
@@ -472,7 +510,7 @@ const ChapterDetails = (props) => {
                           setRefresh(refresh + 1)
                         } else {
                           toast.error(
-                            `Không thể xoá được bài học này. Liên hệ web developer để biết thêm chi tiết`,
+                            `Không thể xoá được từ vựng này. Liên hệ web developer để biết thêm chi tiết`,
                             {
                               position: 'top-right',
                               autoClose: 2500,
@@ -557,12 +595,12 @@ const ChapterDetails = (props) => {
             <CButtonGroup>
               <RedirectButton
                 buttonColor="secondary"
-                path={`/topics/topicDetail/${topicId}`}
+                path={`/topics/${topicId}/chapterDetail/${chapterId}/lessons`}
                 styles={{ color: 'white', marginBottom: '5px' }}
               />
-              {chapter && (
+              {lesson && chapter && (
                 <CButton disabled color="primary" style={{ color: 'white', marginBottom: '5px' }}>
-                  {topicName} - {chapter.name}
+                  {topicName} - {chapter.name} - Bài {lesson.title}
                 </CButton>
               )}
               <CButton
@@ -572,7 +610,7 @@ const ChapterDetails = (props) => {
                   setVisibleModalAdd(true)
                 }}
               >
-                &#x2B; Thêm bài học
+                &#x2B; Thêm từ vựng
               </CButton>
             </CButtonGroup>
           </CCol>
@@ -582,7 +620,7 @@ const ChapterDetails = (props) => {
               setVisible={setVisibleModalAdd}
               onSuccess={setRefresh}
               refresh={refresh}
-              chapterId={chapterId}
+              lessonId={lessonId}
               setRefresh={setRefresh}
             />
             {!_.isEmpty(itemToEdit) && (
@@ -602,12 +640,12 @@ const ChapterDetails = (props) => {
         </CRow>
         {!searching && (
           <CRow>
-            {lessons &&
-              lessons.map((item, index) => (
+            {vocab &&
+              vocab.map((item, index) => (
                 <CCol key={item._id} xs="12" sm="6" lg="3">
                   <CCard style={{ width: 'auto', marginBottom: '5px' }}>
                     <CCardHeader>
-                      Bài {index + 1}: {item.title}
+                      Từ vựng {index + 1}: {item.vocab}
                       <CBadge
                         style={{ float: 'right', marginTop: '2px', cursor: 'pointer' }}
                         color="danger"
@@ -644,26 +682,20 @@ const ChapterDetails = (props) => {
                     <CCardBody
                       style={{ cursor: 'pointer' }}
                       onClick={() => {
-                        setRedirectTo({
-                          redirect: true,
-                          path: `/topics/chapterDetail/${chapterId}/lessons/${item._id}/vocab`,
-                        })
+                        // setRedirectTo({
+                        //   redirect: true,
+                        //   path: `/topics/${topicId}/chapterDetail/${item._id}`,
+                        // })
                       }}
                     >
                       <CCardTitle>
-                        {item.title}
+                        {item.vocab}
                         <span> / </span>
-                        {item.meaning}
+                        {item.chinese}
                       </CCardTitle>
+                      <CCardTitle>{item.vocabMeaning}</CCardTitle>
                       <CCardSubtitle className="mb-2 text-muted">
                         {/* <CBadge color="success">{item.free ? 'Free' : 'Trả phí'}</CBadge>{' '} */}
-                        {!_.isEmpty(item['vocab']) && (
-                          <CBadge color="primary">
-                            {item['vocab'].length}{' '}
-                            {pluralize(item['vocab'].length, 'từ vựng', 'từ vựng')}
-                          </CBadge>
-                        )}
-                        {_.isEmpty(item['vocab']) && <CBadge color="primary">0 từ vựng</CBadge>}
                         {/* <CBadge color="info">{item.cards.length} chữ</CBadge> */}
                       </CCardSubtitle>
                       {/* <CCardText>{item.description}</CCardText> */}

@@ -606,7 +606,7 @@ const TopicDetails = (props) => {
                       onClick={() => {
                         setRedirectTo({
                           redirect: true,
-                          path: `/topics/${topicId}/chapterDetail/${item._id}`,
+                          path: `/topics/${topicId}/chapterDetail/${item._id}/lessons`,
                         })
                       }}
                     >

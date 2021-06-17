@@ -66,6 +66,7 @@ const Boards = React.lazy(() => import('./views/boards/master/boards'))
 const Topics = React.lazy(() => import('./views/topics/index'))
 const TopicDetails = React.lazy(() => import('./views/topics/detail'))
 const ChapterDetails = React.lazy(() => import('./views/lessons/index'))
+const LessonDetails = React.lazy(() => import('./views/lessons/detail'))
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Tổng quan', component: Dashboard },
@@ -147,11 +148,18 @@ const routes = [
     specificName: 'topicDetail',
   },
   {
-    path: '/topics/:topicId/chapterDetail/:chapterId',
+    path: '/topics/:topicId/chapterDetail/:chapterId/lessons',
     name: 'Quản lý bài học',
     component: ChapterDetails,
     exact: true,
     specificName: 'chapterDetail',
+  },
+  {
+    path: '/topics/chapterDetail/:chapterId/lessons/:lessonId/vocab',
+    name: 'Quản lý từ vựng trong bài học',
+    component: LessonDetails,
+    exact: true,
+    specificName: 'lessons',
   },
 ]
 

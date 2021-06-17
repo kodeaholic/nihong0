@@ -1,5 +1,5 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   CContainer,
@@ -20,6 +20,7 @@ import { sidebarActions } from '../redux/actions/sidebar.action'
 const AppHeader = () => {
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebar.sideBarShow)
+  const currentLocation = useLocation().pathname
   return (
     <CHeader position="sticky" className="mb-4">
       <CContainer fluid>
@@ -68,10 +69,15 @@ const AppHeader = () => {
           <AppHeaderDropdown />
         </CHeaderNav>
       </CContainer>
-      <CHeaderDivider />
-      <CContainer fluid>
-        <AppBreadcrumb />
-      </CContainer>
+
+      {!currentLocation.includes('topics') && (
+        <>
+          <CHeaderDivider />
+          <CContainer fluid>
+            <AppBreadcrumb />
+          </CContainer>
+        </>
+      )}
     </CHeader>
   )
 }
