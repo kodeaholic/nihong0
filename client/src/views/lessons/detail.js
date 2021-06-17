@@ -129,6 +129,16 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
             />
           </CCol>
         </CRow>
+        {audioSrc && (
+          <CRow>
+            <CCol xs="12" sm="12" lg="12" md="12">
+              <audio controls style={{ width: '100%' }} preload="auto" type="audio/mpeg">
+                <source src={audioSrc} />
+                Your browser does not support the audio element.
+              </audio>
+            </CCol>
+          </CRow>
+        )}
       </CModalBody>
       <CModalFooter>
         <CButton color="secondary" onClick={() => setVisible(false)}>
@@ -338,6 +348,16 @@ const EditModal = ({
                 />
               </CCol>
             </CRow>
+            {audioSrc && (
+              <CRow>
+                <CCol xs="12" sm="12" lg="12" md="12">
+                  <audio controls style={{ width: '100%' }} preload="auto" type="audio/mpeg">
+                    <source src={audioSrc} />
+                    Your browser does not support the audio element.
+                  </audio>
+                </CCol>
+              </CRow>
+            )}
           </>
         )}
         {loading && <CSpinner />}
@@ -648,6 +668,14 @@ const ChapterDetails = (props) => {
               </CButton>
             </CButtonGroup>
           </CCol>
+          {lesson && lesson.audioSrc && (
+            <CCol xs="12" sm="12" lg="12" md="12">
+              <audio controls style={{ width: '100%' }} preload="auto" type="audio/mpeg">
+                <source src={lesson.audioSrc} />
+                Your browser does not support the audio element.
+              </audio>
+            </CCol>
+          )}
           <CCol xs="12" sm="6" lg="3">
             <AddModal
               visible={visibleModalAdd}
