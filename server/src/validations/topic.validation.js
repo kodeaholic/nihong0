@@ -148,6 +148,19 @@ const updateLessonByChapterIdLessonId = {
   }),
 };
 
+const getVocabByLessonId = {
+  params: Joi.object().keys({
+    lessonId: Joi.required().custom(objectId)
+  })
+}
+
+const deleteVocabByLessonId = {
+  params: Joi.object().keys({
+    lessonId: Joi.required().custom(objectId),
+    vocabId: Joi.required().custom(objectId)
+  })
+}
+
 module.exports = {
   createTopic,
   getTopics,
@@ -162,5 +175,7 @@ module.exports = {
   updateLessonByChapterIdLessonId,
   getLessonsByChapterId,
   getChapter,
+  getVocabByLessonId,
+  deleteVocabByLessonId
 };
 

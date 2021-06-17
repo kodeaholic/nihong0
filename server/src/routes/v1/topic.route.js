@@ -45,4 +45,23 @@ router
     .route('/update-lesson/:chapterId/:lessonId')
     .patch(auth('admin'), validate(topicValidation.updateLessonByChapterIdLessonId), topicController.updateLessonByChapterIdLessonId);
 
+/** vocab */
+router
+    .route('/lessons/:lessonId/vocab')
+    .get(auth('admin'), validate(topicValidation.getVocabByLessonId), topicController.getVocabByLessonId);
+// router
+//     .route('/lessons/:lessonId/vocabs/:vocabId')
+//     .get(auth('admin'), validate(topicValidation.getVocabDetail), topicController.getVocabDetail);
+router
+    .route('/delete-vocab/:lessonId/:vocabId')
+    .delete(auth('admin'), validate(topicValidation.deleteVocabByLessonId), topicController.deleteVocabByLessonId);
+// router
+//     .route('/create-vocab/:lessonId/')
+//     .post(auth('admin'), validate(topicValidation.createVocabByLessonId), topicController.createVocabByLessonId);
+// router
+//     .route('/update-vocab/:lessonId/:vocabId')
+//     .patch(auth('admin'), validate(topicValidation.updateVocabByLessonId), topicController.updateVocabByLessonId);
+
+
+
 module.exports = router;

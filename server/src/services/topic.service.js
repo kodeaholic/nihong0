@@ -209,6 +209,30 @@ const getLessonsByChapterId = async (chapterId) => {
     return {lessons: _.get(chapters[chapterIndex], "lessons"), chapterId: chapterId}
 };
 
+/** Vocab */
+const getVocabByLessonId = async (lessonId) => {
+    const topic = await Topic.findOne({'chapters.lessons._id': lessonId}, {"topic._id": 1, "chapters._id": 1, "chapters.lessons._id": 1, "chapters.lessons.vocab": 1})
+    console.log(topic)
+    if (_.isEmpty(topic) || !topic.id) throw new ApiError(httpStatus.NOT_FOUND, 'Bài học không tồn tại hoặc đã bị xoá');
+    return topic
+};
+
+const deleteVocabByLessonId = async (lessonId, vocabId) => {
+    const topic = await Topic.findOne({'chapters.lessons._id': lessonId}, {"topic._id": 1, "chapters._id": 1, "chapters.lessons._id": 1, "chapters.lessons.vocab": 1})
+    if (_.isEmpty(topic) || !topic.id) throw new ApiError(httpStatus.NOT_FOUND, 'Bài học không tồn tại hoặc đã bị xoá');
+    await topic.updateOne(
+        { $pull: { "chapters.$[chapter].lessons.$[lesson].vocab" : {_id: vocabId} }},
+        { arrayFilters: [{"chapter._id": topic["chapters"][0]._id}, {"lesson._id": lessonId}]},
+        (err) => {
+            if (err) {
+                console.log(err)
+                throw new ApiError(httpStatus.NOT_FOUND, 'Vocab không tồn tại hoặc đã bị xoá');
+            }
+        }
+    )
+    return {deleted: true}
+};
+
 module.exports = {
   createTopic,
   updateTopicById,
@@ -224,4 +248,6 @@ module.exports = {
   getLessonsByChapterId,
   queryTopics,
   getChapter,
+  getVocabByLessonId,
+  deleteVocabByLessonId
 };
