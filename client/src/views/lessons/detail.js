@@ -21,6 +21,7 @@ import {
   CModalTitle,
   CFormLabel,
   CButtonGroup,
+  CImage,
 } from '@coreui/react'
 import { toast } from 'react-toastify'
 import { topicService } from '../../services/api/topicService'
@@ -701,15 +702,101 @@ const ChapterDetails = (props) => {
           </CCol>
         </CRow>
         {!searching && (
-          <CRow>
-            {vocab &&
-              vocab.map((item, index) => (
-                <CCol key={item._id} xs="12" sm="6" lg="3">
-                  <CCard style={{ width: 'auto', marginBottom: '5px' }}>
-                    <CCardHeader>
-                      Từ vựng {index + 1}: {item.vocab}
+          <>
+            <CRow>
+              <CCol
+                md="1"
+                className="text-center"
+                style={{ borderTop: '1px solid #dee2e6', borderBottom: '1px solid #dee2e6' }}
+              >
+                <b>STT</b>
+              </CCol>
+              <CCol
+                md="3"
+                className="text-left"
+                style={{ borderTop: '1px solid #dee2e6', borderBottom: '1px solid #dee2e6' }}
+              >
+                <b>Từ vựng</b>
+              </CCol>
+              <CCol
+                md="6"
+                className="text-left"
+                style={{ borderTop: '1px solid #dee2e6', borderBottom: '1px solid #dee2e6' }}
+              >
+                <b>Giải nghĩa</b>
+              </CCol>
+              <CCol
+                md="2"
+                className="text-left"
+                style={{ borderTop: '1px solid #dee2e6', borderBottom: '1px solid #dee2e6' }}
+              >
+                <b>Quản lý</b>
+              </CCol>
+            </CRow>
+            <>
+              {vocab &&
+                vocab.map((item, index) => (
+                  <CRow key={item._id}>
+                    <CCol
+                      md="1"
+                      className="text-center"
+                      style={{ borderBottom: '1px solid #dee2e6' }}
+                    >
+                      #{index + 1}
+                      <br />
+                      {item.audioSrc && (
+                        <>
+                          <audio preload="auto" type="audio/mpeg" id={`vocab-${item._id}`}>
+                            <source src={item.audioSrc} />
+                            Your browser does not support the audio element.
+                          </audio>
+                          <img
+                            alt="play"
+                            src="assets/play.jpg"
+                            height={20}
+                            style={{ cursor: 'pointer' }}
+                            id={`play-${item._id}`}
+                            onClick={(e) => {
+                              const str = e.target.id
+                              const audioId = str.replace('play-', 'vocab-')
+                              document.getElementById(audioId).play()
+                            }}
+                          />
+                        </>
+                      )}
+                    </CCol>
+                    <CCol
+                      key={item._id}
+                      md="3"
+                      className="text-left"
+                      style={{ borderBottom: '1px solid #dee2e6' }}
+                    >
+                      {item.vocab}
+                      <br />
+                      {item.chinese}
+                      <br />
+                      {item.vocabMeaning}
+                    </CCol>
+                    <CCol
+                      md="6"
+                      className="text-left"
+                      style={{ borderBottom: '1px solid #dee2e6' }}
+                    >
+                      {item.example}
+                      <br />
+                      {item.exampleMeaning}
+                    </CCol>
+                    <CCol
+                      md="2"
+                      className="text-left"
+                      style={{ borderBottom: '1px solid #dee2e6' }}
+                    >
                       <CBadge
-                        style={{ float: 'right', marginTop: '2px', cursor: 'pointer' }}
+                        style={{
+                          marginTop: '5px',
+                          cursor: 'pointer',
+                          marginRight: '2px',
+                        }}
                         color="danger"
                         shape="rounded-pill"
                         onClick={() => {
@@ -719,14 +806,8 @@ const ChapterDetails = (props) => {
                       >
                         XOÁ
                       </CBadge>
-                      {/* <CBadge style={{ float: 'right' }}> </CBadge> */}
                       <CBadge
-                        style={{
-                          float: 'right',
-                          marginRight: '5px',
-                          marginTop: '2px',
-                          cursor: 'pointer',
-                        }}
+                        style={{ marginTop: '5px', cursor: 'pointer' }}
                         color="success"
                         shape="rounded-pill"
                         onClick={() => {
@@ -740,32 +821,11 @@ const ChapterDetails = (props) => {
                       >
                         SỬA
                       </CBadge>
-                    </CCardHeader>
-                    <CCardBody
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        // setRedirectTo({
-                        //   redirect: true,
-                        //   path: `/topics/${topicId}/chapterDetail/${item._id}`,
-                        // })
-                      }}
-                    >
-                      <CCardTitle>
-                        {item.vocab}
-                        <span> / </span>
-                        {item.chinese}
-                      </CCardTitle>
-                      <CCardTitle>{item.vocabMeaning}</CCardTitle>
-                      <CCardSubtitle className="mb-2 text-muted">
-                        {/* <CBadge color="success">{item.free ? 'Free' : 'Trả phí'}</CBadge>{' '} */}
-                        {/* <CBadge color="info">{item.cards.length} chữ</CBadge> */}
-                      </CCardSubtitle>
-                      {/* <CCardText>{item.description}</CCardText> */}
-                    </CCardBody>
-                  </CCard>
-                </CCol>
-              ))}
-          </CRow>
+                    </CCol>
+                  </CRow>
+                ))}
+            </>
+          </>
         )}
         {searching && <CSpinner />}
       </>
