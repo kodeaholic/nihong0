@@ -249,6 +249,32 @@ const createVocabByLessonId = async (lessonId, data) => {
     return {created: true}
 };
 
+const findIndexOf = (array, property, value) => {
+    let index = _.findIndex(array, function (item) {
+        return (typeof value === "string" || value instanceof String) ? new String(item[property]).valueOf() == new String(value).valueOf() : item[property].toString() == value.toString()
+    })
+    return index
+}
+
+const updateVocabByLessonId = async (lessonId, vocabId, data) => {
+    const topic = await Topic.findOne({'chapters.lessons.vocab._id': vocabId}, {"topic._id": 1, "chapters._id": 1, "chapters.lessons._id": 1, "chapters.lessons.vocab": 1})
+    if (_.isEmpty(topic) || !topic.id) throw new ApiError(httpStatus.NOT_FOUND, 'Bài học không tồn tại hoặc đã bị xoá');
+    let topicId = topic.id
+    let chapterId = topic["chapters"][0]._id
+    const toBeUpdatedTopic = await Topic.findById(topicId)
+    const chapters = toBeUpdatedTopic["chapters"]
+    const chapterIndex = findIndexOf(chapters, "_id", chapterId)
+    const chapter = chapters[chapterIndex]
+    const lessons = chapter["lessons"]
+    const lessonIndex = findIndexOf(lessons, "_id", lessonId)
+    const lesson = lessons[lessonIndex]
+    const vocab = lesson["vocab"]
+    const vocabIndex = findIndexOf(vocab, "_id", vocabId)
+    Object.assign(toBeUpdatedTopic["chapters"][chapterIndex]["lessons"][lessonIndex]["vocab"][vocabIndex], data)
+    await toBeUpdatedTopic.save()
+    return {updated: true}
+};
+
 module.exports = {
   createTopic,
   updateTopicById,
@@ -266,5 +292,6 @@ module.exports = {
   getChapter,
   getVocabByLessonId,
   deleteVocabByLessonId,
-  createVocabByLessonId
+  createVocabByLessonId,
+  updateVocabByLessonId
 };

@@ -95,6 +95,11 @@ const createVocabByLessonId = catchAsync(async (req, res) => {
     const result = await topicService.createVocabByLessonId(req.params.lessonId, req.body)
     res.send(result)
 })
+
+const updateVocabByLessonId = catchAsync(async (req, res) => {
+    const result = await topicService.updateVocabByLessonId(req.params.lessonId, req.params.vocabId, req.body)
+    res.send(result)
+})
 module.exports = {
   createTopic,
   updateTopic,
@@ -112,5 +117,6 @@ module.exports = {
   getChapter,
   getVocabByLessonId,
   deleteVocabByLessonId,
-  createVocabByLessonId
+  createVocabByLessonId,
+  updateVocabByLessonId
 };

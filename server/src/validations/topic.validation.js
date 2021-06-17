@@ -175,6 +175,21 @@ const createVocabByLessonId = {
   }),
 }
 
+const updateVocabByLessonId = {
+  params: Joi.object().keys({
+    lessonId: Joi.required().custom(objectId),
+    vocabId: Joi.required().custom(objectId),
+  }),
+  body: Joi.object().keys({
+    vocab: Joi.string().required(),
+    chinese: Joi.string().required(),
+    vocabMeaning: Joi.string().allow(null, ''),
+    example: Joi.string().allow(null, ''),
+    exampleMeaning: Joi.string().allow(null, ''),
+    audioSrc: Joi.string().allow(null, '')
+  }),
+}
+
 module.exports = {
   createTopic,
   getTopics,
@@ -191,6 +206,7 @@ module.exports = {
   getChapter,
   getVocabByLessonId,
   deleteVocabByLessonId,
-  createVocabByLessonId
+  createVocabByLessonId,
+  updateVocabByLessonId
 };
 
