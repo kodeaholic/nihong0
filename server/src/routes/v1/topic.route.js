@@ -55,9 +55,9 @@ router
 router
     .route('/delete-vocab/:lessonId/:vocabId')
     .delete(auth('admin'), validate(topicValidation.deleteVocabByLessonId), topicController.deleteVocabByLessonId);
-// router
-//     .route('/create-vocab/:lessonId/')
-//     .post(auth('admin'), validate(topicValidation.createVocabByLessonId), topicController.createVocabByLessonId);
+router
+    .route('/create-vocab/:lessonId')
+    .post(auth('admin'), validate(topicValidation.createVocabByLessonId), topicController.createVocabByLessonId);
 // router
 //     .route('/update-vocab/:lessonId/:vocabId')
 //     .patch(auth('admin'), validate(topicValidation.updateVocabByLessonId), topicController.updateVocabByLessonId);

@@ -9,6 +9,11 @@ const VocabSchema = mongoose.Schema(
             required: true,
             trim: false
         },
+        chinese: {
+            type: String,
+            required: true,
+            trim: false,
+        },
         vocabMeaning: {
             type: String,
             required: true,

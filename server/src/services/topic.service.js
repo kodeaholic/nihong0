@@ -233,6 +233,22 @@ const deleteVocabByLessonId = async (lessonId, vocabId) => {
     return {deleted: true}
 };
 
+const createVocabByLessonId = async (lessonId, data) => {
+    const topic = await Topic.findOne({'chapters.lessons._id': lessonId}, {"topic._id": 1, "chapters._id": 1, "chapters.lessons._id": 1, "chapters.lessons.vocab": 1})
+    if (_.isEmpty(topic) || !topic.id) throw new ApiError(httpStatus.NOT_FOUND, 'Bài học không tồn tại hoặc đã bị xoá');
+    await topic.updateOne(
+        { $push: { "chapters.$[chapter].lessons.$[lesson].vocab" : data }},
+        { arrayFilters: [{"chapter._id": topic["chapters"][0]._id}, {"lesson._id": lessonId}]},
+        (err) => {
+            if (err) {
+                console.log(err)
+                throw new ApiError(httpStatus.NOT_FOUND, 'Không tạo được từ vựng lúc này');
+            }
+        }
+    )
+    return {created: true}
+};
+
 module.exports = {
   createTopic,
   updateTopicById,
@@ -249,5 +265,6 @@ module.exports = {
   queryTopics,
   getChapter,
   getVocabByLessonId,
-  deleteVocabByLessonId
+  deleteVocabByLessonId,
+  createVocabByLessonId
 };
