@@ -22,9 +22,13 @@ import {
   CModalBody,
   CModalTitle,
   CInputGroup,
+  CInputGroupText,
+  CFormSelect,
+  CButtonGroup,
 } from '@coreui/react'
 import { Redirect } from 'react-router-dom'
 import { boardService } from 'src/services/api/boardService'
+import _ from 'lodash'
 const getCardsString = (cards) => {
   const arr = cards.map((item) => item.letter)
   return arr.toString()
@@ -35,6 +39,145 @@ const getTagsFromCards = (cards) => {
   })
   return arr
 }
+
+const Exercise = (props) => {
+  const { quiz, onQuizItemChange, disabled } = props
+  return (
+    <>
+      {quiz.map((item, index) => {
+        return (
+          <QuizItem
+            data={item}
+            id={index}
+            key={index}
+            parentQuiz={quiz}
+            onChange={onQuizItemChange}
+            disabled={disabled}
+          />
+        )
+      })}
+    </>
+  )
+}
+Exercise.propTypes = {
+  quiz: PropTypes.array,
+  onQuizItemChange: PropTypes.func,
+  disabled: PropTypes.bool,
+}
+const QuizItem = (props) => {
+  let { data, id, parentQuiz, onChange, disabled } = props
+  if (_.isEmpty(data)) data = { question: '', A: '', B: '', C: '', D: '', answer: 'A' }
+
+  const handleInputChange = (e) => {
+    let { id, name, value } = e.target
+    let index = parseInt(id)
+    if (parentQuiz[index]) {
+      parentQuiz[index][name] = value
+      onChange(parentQuiz)
+    }
+  }
+
+  return (
+    <>
+      <CRow>
+        <CCol sm="12" style={{ marginTop: '10px' }}>
+          <CInputGroup>
+            <CInputGroupText id={`question-label-${id}`}>Câu {id + 1}</CInputGroupText>
+            <CFormControl
+              name="question"
+              id={`${id}`}
+              aria-describedby="question-label"
+              defaultValue={data.question}
+              onChange={handleInputChange}
+              disabled={disabled}
+            />
+          </CInputGroup>
+        </CCol>
+      </CRow>
+      <CRow>
+        <CCol sm="2" style={{ marginTop: '5px' }}>
+          <CInputGroup>
+            <CInputGroupText id={`optionA-label-${id}`}>A</CInputGroupText>
+            <CFormControl
+              name="A"
+              id={`${id}`}
+              aria-describedby="optionA-label"
+              defaultValue={data.A}
+              onChange={handleInputChange}
+              disabled={disabled}
+            />
+          </CInputGroup>
+        </CCol>
+        <CCol sm="2" style={{ marginTop: '5px' }}>
+          <CInputGroup>
+            <CInputGroupText id={`optionB-label-${id}`}>B</CInputGroupText>
+            <CFormControl
+              name="B"
+              id={`${id}`}
+              aria-describedby="optionB-label"
+              defaultValue={data.B}
+              onChange={handleInputChange}
+              disabled={disabled}
+            />
+          </CInputGroup>
+        </CCol>
+        <CCol sm="2" style={{ marginTop: '5px' }}>
+          <CInputGroup>
+            <CInputGroupText id={`optionC-label-${id}`}>C</CInputGroupText>
+            <CFormControl
+              name="C"
+              id={`${id}`}
+              aria-describedby="optionC-label"
+              defaultValue={data.C}
+              onChange={handleInputChange}
+              disabled={disabled}
+            />
+          </CInputGroup>
+        </CCol>
+        <CCol sm="2" style={{ marginTop: '5px' }}>
+          <CInputGroup>
+            <CInputGroupText id={`optionD-label-${id}`}>D</CInputGroupText>
+            <CFormControl
+              name="D"
+              id={`${id}`}
+              aria-describedby="optionD-label"
+              defaultValue={data.D}
+              onChange={handleInputChange}
+              disabled={disabled}
+            />
+          </CInputGroup>
+        </CCol>
+        <CCol sm="4" style={{ marginTop: '5px' }}>
+          <CInputGroup>
+            <CFormSelect
+              id={`${id}`}
+              aria-label="A"
+              defaultValue={data.answer}
+              name="answer"
+              onChange={handleInputChange}
+              disabled={disabled}
+            >
+              <option>Đáp án đúng</option>
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+              <option value="D">D</option>
+            </CFormSelect>
+          </CInputGroup>
+        </CCol>
+      </CRow>
+    </>
+  )
+}
+
+QuizItem.propTypes = {
+  data: PropTypes.object,
+  id: PropTypes.number,
+  parentQuiz: PropTypes.array,
+  onChange: PropTypes.func,
+  disabled: PropTypes.bool,
+}
+
 const Board = (props) => {
   const pathName = props.location.pathname
   const viewAction = getViewAction(pathName)
@@ -52,6 +195,11 @@ const Board = (props) => {
   const [checkingTags, setCheckingTags] = useState(false)
   const [visible, setVisible] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [quiz, setQuiz] = useState([])
+  const addQuiz = () => {
+    const data = { question: '', A: '', B: '', C: '', D: '', answer: 'A' }
+    setQuiz([...quiz, data])
+  }
   const handleCheckTags = () => {
     if (cardsString.length) {
       let letters = cardsString.split(',')
@@ -121,18 +269,38 @@ const Board = (props) => {
         })
     }
   }
+  const isQuizValidated = () => {
+    let valid = true
+    quiz.forEach((item) => {
+      if (!(item.question && item.A && item.B && item.C && item.D && item.answer)) valid = false
+    })
+    return valid
+  }
   const handleSubmit = () => {
-    setSaving(true)
-    const boardBody = {
-      title,
-      level,
-      description,
-      free,
-      cards,
+    if (isQuizValidated()) {
+      setSaving(true)
+      const boardBody = {
+        title,
+        level,
+        description,
+        free,
+        cards,
+        quiz,
+      }
+      viewAction === 'add'
+        ? boardService.createBoard(boardBody).then(savingCallback)
+        : boardService.updateBoard(boardBody, boardId).then(savingCallback)
+    } else {
+      toast.error(`Vui lòng không để trống câu hỏi bài tập củng cố”`, {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      })
     }
-    viewAction === 'add'
-      ? boardService.createBoard(boardBody).then(savingCallback)
-      : boardService.updateBoard(boardBody, boardId).then(savingCallback)
   }
   /* Load item */
   useEffect(() => {
@@ -159,6 +327,7 @@ const Board = (props) => {
             setCardsString(getCardsString(res.cards))
             setTags(getTagsFromCards(res.cards))
             let arr = res.cards.map((item) => item.id)
+            setQuiz(res.quiz)
             setCards(arr)
           }
         }
@@ -303,16 +472,29 @@ const Board = (props) => {
               </CRow>
             )}
             <CRow>
+              <CFormLabel className="col-sm-2 col-form-label">Bài tập củng cố</CFormLabel>
+              <CCol sm="10">
+                <Exercise quiz={quiz} onQuizItemChange={setQuiz} disabled={viewAction === 'get'} />
+              </CCol>
+            </CRow>
+            <CRow>
               {viewAction !== 'get' && (
-                <CCol className="col-sm-6">
-                  <CButton
-                    onClick={handleSubmit}
-                    disabled={!tags.length || !title.length}
-                    // style={{ color: 'white'}}
-                  >
-                    LƯU BÀI HỌC
-                  </CButton>
-                </CCol>
+                <>
+                  <CCol className="col-sm-6" style={{ marginTop: '5px' }}>
+                    <CButtonGroup>
+                      <CButton
+                        onClick={handleSubmit}
+                        disabled={!tags.length || !title.length}
+                        style={{ color: 'white', marginRight: '5px' }}
+                      >
+                        LƯU BÀI HỌC
+                      </CButton>
+                      <CButton onClick={addQuiz} color="success">
+                        THÊM CÂU HỎI
+                      </CButton>
+                    </CButtonGroup>
+                  </CCol>
+                </>
               )}
             </CRow>
 

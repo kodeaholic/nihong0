@@ -2,6 +2,41 @@ const mongoose = require('mongoose');
 const { toJSON, paginate } = require('./plugins');
 const Schema = mongoose.Schema
 
+const Quiz = mongoose.Schema(
+    {
+        question: {
+            type: String,
+            required: true,
+            trim: false,
+        },
+        A: {
+            type: String,
+            required: true
+        },
+        B: {
+            type: String,
+            required: true
+        },
+        C: {
+            type: String,
+            required: true
+        },
+        D: {
+            type: String,
+            required: true
+        },
+        answer: {
+            type: String,
+            enum: ['A', 'B', 'C', 'D'],
+            default: 'A',
+            required: true,
+        }
+        
+    }, {
+        _id: false,
+    }
+)
+
 const BoardSchema = mongoose.Schema(
     {
         title: {
@@ -29,6 +64,10 @@ const BoardSchema = mongoose.Schema(
             type: Number,
             required: true,
             default: 1
+        },
+        quiz: {
+            type: [Quiz],
+            require: false
         }
     },
     {
