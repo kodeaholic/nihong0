@@ -76,6 +76,17 @@ const QuizItem = (props) => {
       onChange(parentQuiz)
     }
   }
+  const handleDeleteClicked = (e) => {
+    console.log(e.target)
+    let { id } = e.target
+    id = id.replace('delete_', '')
+    let index = parseInt(id)
+    if (parentQuiz[index]) {
+      let arr = [...parentQuiz]
+      arr.splice(index, 1)
+      onChange(arr)
+    }
+  }
 
   return (
     <>
@@ -91,6 +102,11 @@ const QuizItem = (props) => {
               onChange={handleInputChange}
               disabled={disabled}
             />
+            {!disabled && (
+              <CInputGroupText id={`delete_${id}`} onClick={handleDeleteClicked}>
+                Gỡ bỏ
+              </CInputGroupText>
+            )}
           </CInputGroup>
         </CCol>
       </CRow>
@@ -291,7 +307,7 @@ const Board = (props) => {
         ? boardService.createBoard(boardBody).then(savingCallback)
         : boardService.updateBoard(boardBody, boardId).then(savingCallback)
     } else {
-      toast.error(`Vui lòng không để trống câu hỏi bài tập củng cố”`, {
+      toast.error(`Vui lòng không để trống ô nào trong câu hỏi trắc nghiệm`, {
         position: 'top-right',
         autoClose: 5000,
         hideProgressBar: true,
@@ -490,7 +506,7 @@ const Board = (props) => {
                         LƯU BÀI HỌC
                       </CButton>
                       <CButton onClick={addQuiz} color="success">
-                        THÊM CÂU HỎI
+                        THÊM CÂU HỎI TRẮC NGHIỆM
                       </CButton>
                     </CButtonGroup>
                   </CCol>
