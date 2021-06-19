@@ -6,3 +6,4 @@ module.exports.cardService = require('./card.service');
 module.exports.boardService = require('./board.service');
 module.exports.topicService = require('./topic.service');
 module.exports.chapterService = require('./chapter.service');
+module.exports.lessonService = require('./lesson.service');

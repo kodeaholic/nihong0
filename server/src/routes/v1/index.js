@@ -7,6 +7,7 @@ const cardRoute = require('./card.route');
 const boardRoute = require('./board.route');
 const topicRoute = require('./topic.route');
 const chapterRoute = require('./chapter.route');
+const lessonRoute = require('./lesson.route');
 const config = require('../../config/config');
 
 const router = express.Router();
@@ -40,6 +41,10 @@ const defaultRoutes = [
   {
     path: '/chapters',
     route: chapterRoute
+  },
+  {
+    path: '/lessons',
+    route: lessonRoute
   }
 ];
 

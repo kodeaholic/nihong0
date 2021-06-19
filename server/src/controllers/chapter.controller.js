@@ -10,7 +10,7 @@ const createChapter = catchAsync(async (req, res) => {
 });
 
 const getChapters = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['name']);
+  const filter = pick(req.query, ['name', 'topic']);
   if (filter.name) filter.name = new RegExp(filter.name) // this will add {name: /name/i} to filter to search by regex, not search by identical string comparison
   const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
   const result = await chapterService.queryChapters(filter, options);

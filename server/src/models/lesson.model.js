@@ -3,7 +3,7 @@ const { toJSON, paginate } = require('./plugins');
 const Schema = mongoose.Schema
 const LessonSchema = mongoose.Schema(
     {
-        title: {
+        name: {
             type: String,
             required: true,
         },

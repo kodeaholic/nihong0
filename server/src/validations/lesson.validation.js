@@ -1,54 +1,57 @@
 const Joi = require('joi');
 const { objectId } = require('./custom.validation');
 
-const getChapters = {
+const getLessons = {
     query: Joi.object().keys({
       name: Joi.string(),
       sortBy: Joi.string(),
       limit: Joi.number().integer(),
       page: Joi.number().integer(),
       populate: Joi.string(),
-      topic: Joi.string().custom(objectId)
+      chapter: Joi.string().custom(objectId)
     }),
   };
 
-const getChapter = {
+const getLesson = {
   params: Joi.object().keys({
-    chapterId: Joi.string().custom(objectId),
+    lessonId: Joi.string().custom(objectId),
   }),
 };
-const createChapter = {
+const createLesson = {
     body: Joi.object().keys({
         name: Joi.string().required(),
         description: Joi.string().allow(null, ''),
         meaning: Joi.string().allow(null, ''),
-        topic: Joi.string().custom(objectId)
+        audioSrc: Joi.string().allow(null, ''),
+        chapter: Joi.string().custom(objectId).required(),
+
     }),
 };
 
-const updateChapter = {
+const updateLesson = {
     params: Joi.object().keys({
-        chapterId: Joi.required().custom(objectId)
+        lessonId: Joi.required().custom(objectId)
     }),
     body: Joi.object().keys({
         name: Joi.string().required(),
         description: Joi.string().allow(null, ''),
         meaning: Joi.string().allow(null, ''),
-        topic: Joi.required().custom(objectId),
+        audioSrc: Joi.string().allow(null, ''),
+        chapter: Joi.required().custom(objectId),
     }),
 };
 
-const deleteChapter = {
+const deleteLesson = {
     params: Joi.object().keys({
-      chapterId: Joi.string().custom(objectId),
+      lessonId: Joi.string().custom(objectId),
     }),
   };
 
 module.exports = {
-  deleteChapter,
-  createChapter,
-  updateChapter,
-  getChapter,
-  getChapters,
+  deleteLesson,
+  createLesson,
+  updateLesson,
+  getLesson,
+  getLessons,
 };
 
