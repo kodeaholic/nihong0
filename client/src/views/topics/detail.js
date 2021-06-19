@@ -10,7 +10,6 @@ import {
   CFormControl,
   CButton,
   CSpinner,
-  CCardSubtitle,
   CCardTitle,
   CBadge,
   CCardHeader,
@@ -24,7 +23,8 @@ import {
 } from '@coreui/react'
 import { toast } from 'react-toastify'
 import { topicService } from '../../services/api/topicService'
-import { pluralize, sleep } from '../../helpers/common'
+import { chapterService } from '../../services/api/chapterService'
+import { sleep } from '../../helpers/common'
 import { getLastPartFromPathName } from 'src/services/helpers/routeHelper'
 import RedirectButton from '../components/back-navigation'
 const AddModal = ({ visible, setVisible, refresh, setRefresh, topicId }) => {
@@ -99,8 +99,8 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, topicId }) => {
             color="success"
             onClick={() => {
               setSaving(true)
-              topicService
-                .createChapter(topicId, { name: name, description: desc, meaning: meaning })
+              chapterService
+                .createChapter({ name: name, description: desc, meaning: meaning, topic: topicId })
                 .then((res) => {
                   setSaving(false)
                   if (
@@ -262,11 +262,12 @@ const EditModal = ({
               color="success"
               onClick={() => {
                 setSaving(true)
-                topicService
-                  .updateChapter(topicId, item._id, {
+                chapterService
+                  .updateChapter(item.id, {
                     name: name,
                     description: desc,
                     meaning: meaning,
+                    topic: topicId,
                   })
                   .then((res) => {
                     setSaving(false)
@@ -378,7 +379,7 @@ const TopicDetails = (props) => {
       }
       setTopic(res)
       setChapters(res['chapters'])
-      if (!res['chapters'].length)
+      if (res['chapters'] && !res['chapters'].length)
         toast.success(`Hiện tại chưa có chapter nào nào được thêm`, {
           position: 'top-right',
           autoClose: 2500,
@@ -417,7 +418,7 @@ const TopicDetails = (props) => {
                     color="danger"
                     onClick={() => {
                       setDeleting(true)
-                      topicService.deleteChapter(topicId, itemToDelete._id).then((res) => {
+                      chapterService.deleteChapter(itemToDelete.id).then((res) => {
                         setDeleting(false)
                         if (res.ok || (res.status !== 404 && res.status !== 400)) {
                           toast.success(`Xoá thành công`, {
@@ -564,7 +565,7 @@ const TopicDetails = (props) => {
           <CRow>
             {chapters &&
               chapters.map((item) => (
-                <CCol key={item._id} xs="12" sm="6" md="4" lg="3">
+                <CCol key={item.id} xs="12" sm="6" md="4" lg="3">
                   <CCard style={{ width: 'auto', marginBottom: '5px' }}>
                     <CCardHeader>
                       {item.name}
@@ -606,7 +607,7 @@ const TopicDetails = (props) => {
                       onClick={() => {
                         setRedirectTo({
                           redirect: true,
-                          path: `/topics/${topicId}/chapterDetail/${item._id}/lessons`,
+                          path: `/topics/${topicId}/chapterDetail/${item.id}/lessons`,
                         })
                       }}
                     >
@@ -615,17 +616,6 @@ const TopicDetails = (props) => {
                         <span> / </span>
                         {item.meaning}
                       </CCardTitle>
-                      <CCardSubtitle className="mb-2 text-muted">
-                        {!_.isEmpty(item['lessons']) && (
-                          <CBadge color="primary">
-                            {item['lessons'].length}{' '}
-                            {pluralize(item['lessons'].length, 'bài học', 'bài học')}
-                          </CBadge>
-                        )}
-                        {_.isEmpty(item['lessons']) && <CBadge color="primary">0 bài học</CBadge>}
-                        {/* <CBadge color="info">{item.cards.length} chữ</CBadge> */}
-                      </CCardSubtitle>
-                      {/* <CCardText>{item.description}</CCardText> */}
                     </CCardBody>
                   </CCard>
                 </CCol>

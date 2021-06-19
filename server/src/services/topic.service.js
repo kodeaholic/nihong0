@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Topic, Chapter, Lesson, Vocab } = require('../models');
+const { Topic, Chapter } = require('../models');
 const ApiError = require('../utils/ApiError');
 const _ = require('lodash')
 
@@ -15,6 +15,14 @@ const queryTopics = async (filter, options) => {
  */
 const getTopicById = async (id) => {
     const topic = await Topic.findById(id);
+    let chapters = []
+    let res = {}
+    if (topic) {
+        // get chapters
+        chapters = await Chapter.find({"topic": id})
+        const { name, description } = topic
+        return { id, name, description, chapters }
+    }
     return topic
 };
 
