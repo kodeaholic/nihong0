@@ -1,35 +1,10 @@
 const Joi = require('joi');
 const { objectId } = require('./custom.validation');
 
-const vocabSchemaValidation = Joi.object({
-    vocab: Joi.string().required(),
-    vocabMeaning: Joi.string().required(),
-    chinese: Joi.string().allow(null, ''),
-    example: Joi.string().allow(null, ''),
-    exampleMeaning: Joi.string().allow(null, ''),
-    vocabPronounce: Joi.string().allow(null, ''),
-    examplePronounce: Joi.string().allow(null, ''),
-    audioSrc: Joi.string().allow(null, ''),
-  });
-const lessonSchemaValidation = Joi.object({
-    title: Joi.string().required(),
-    description: Joi.string().allow(null, ''),
-    meaning: Joi.string().allow(null, ''),
-    audioSrc: Joi.string().allow(null, ''),
-    vocab: Joi.array().items(vocabSchemaValidation)
-  });
-const chapterSchemaValidation = Joi.object({
-    name: Joi.string().required(),
-    description: Joi.string().allow(null, ''),
-    meaning: Joi.string().allow(null, ''),
-    lessons: Joi.array().items(lessonSchemaValidation)
-  });
-
 const createTopic = {
   body: Joi.object().keys({
     name: Joi.string().required(),
-    description: Joi.string().allow(null, ''),
-    chapters: Joi.array().items(chapterSchemaValidation)
+    description: Joi.string().allow(null, '')
   }),
 };
 
@@ -51,12 +26,10 @@ const updateTopic = {
   params: Joi.object().keys({
     topicId: Joi.required().custom(objectId),
   }),
-  body: Joi.object()
-    .keys({
-        name: Joi.string().required(),
-        description: Joi.string().allow(null, ''),
-        chapters: Joi.array().items(chapterSchemaValidation)
-    })
+  body: Joi.object().keys({
+    name: Joi.string().required(),
+    description: Joi.string().allow(null, '')
+  })
 };
 
 const deleteTopic = {
@@ -65,149 +38,11 @@ const deleteTopic = {
   }),
 };
 
-const deleteChapterByTopicIdChapterId = {
-    params: Joi.object().keys({
-      topicId: Joi.string().custom(objectId),
-      chapterId: Joi.string().custom(objectId),
-    }),
-  };
-const getChapter = {
-  params: Joi.object().keys({
-    topicId: Joi.string().custom(objectId),
-    chapterId: Joi.string().custom(objectId),
-  }),
-};
-const createChapterByTopicId = {
-    params: Joi.object().keys({
-        topicId: Joi.required().custom(objectId)
-    }),
-    body: Joi.object().keys({
-        name: Joi.string().required(),
-        description: Joi.string().allow(null, ''),
-        meaning: Joi.string().allow(null, ''),
-        lessons: Joi.array().items(lessonSchemaValidation)
-    }),
-};
-
-const updateChapterByTopicIdChapterId = {
-    params: Joi.object().keys({
-        topicId: Joi.required().custom(objectId),
-        chapterId: Joi.required().custom(objectId)
-    }),
-    body: Joi.object().keys({
-        name: Joi.string().required(),
-        description: Joi.string().allow(null, ''),
-        meaning: Joi.string().allow(null, ''),
-        lessons: Joi.array().items(lessonSchemaValidation)
-    }),
-};
-
-
-const getLessonsByChapterId = {
-  params: Joi.object().keys({
-    chapterId: Joi.required().custom(objectId)
-  }),
-  // query: Joi.object().keys({
-  //   name: Joi.string(),
-  //   sortBy: Joi.string(),
-  //   limit: Joi.number().integer(),
-  //   page: Joi.number().integer(),
-  // }),
-};
-
-const deleteLessonByChapterIdLessonId = {
-  params: Joi.object().keys({
-    chapterId: Joi.string().custom(objectId),
-    lessonId: Joi.string().custom(objectId),
-  }),
-};
-
-const createLessonByChapterId = {
-  params: Joi.object().keys({
-      chapterId: Joi.required().custom(objectId)
-  }),
-  body: Joi.object().keys({
-      title: Joi.string().required(),
-      description: Joi.string().allow(null, ''),
-      meaning: Joi.string().allow(null, ''),
-      audioSrc: Joi.string().allow(null, ''),
-      vocab: Joi.array().items(vocabSchemaValidation)
-  }),
-};
-
-const updateLessonByChapterIdLessonId = {
-  params: Joi.object().keys({
-      chapterId: Joi.required().custom(objectId),
-      lessonId: Joi.required().custom(objectId)
-  }),
-  body: Joi.object().keys({
-      title: Joi.string().required(),
-      description: Joi.string().allow(null, ''),
-      meaning: Joi.string().allow(null, ''),
-      audioSrc: Joi.string().allow(null, ''),
-      vocab: Joi.array().items(vocabSchemaValidation)
-  }),
-};
-
-const getVocabByLessonId = {
-  params: Joi.object().keys({
-    lessonId: Joi.required().custom(objectId)
-  })
-}
-
-const deleteVocabByLessonId = {
-  params: Joi.object().keys({
-    lessonId: Joi.required().custom(objectId),
-    vocabId: Joi.required().custom(objectId)
-  })
-}
-
-const createVocabByLessonId = {
-  params: Joi.object().keys({
-    lessonId: Joi.required().custom(objectId),
-  }),
-  body: Joi.object().keys({
-    vocab: Joi.string().required(),
-    chinese: Joi.string().required(),
-    vocabMeaning: Joi.string().allow(null, ''),
-    example: Joi.string().allow(null, ''),
-    exampleMeaning: Joi.string().allow(null, ''),
-    audioSrc: Joi.string().allow(null, '')
-  }),
-}
-
-const updateVocabByLessonId = {
-  params: Joi.object().keys({
-    lessonId: Joi.required().custom(objectId),
-    vocabId: Joi.required().custom(objectId),
-  }),
-  body: Joi.object().keys({
-    vocab: Joi.string().required(),
-    chinese: Joi.string().required(),
-    vocabMeaning: Joi.string().allow(null, ''),
-    example: Joi.string().allow(null, ''),
-    exampleMeaning: Joi.string().allow(null, ''),
-    audioSrc: Joi.string().allow(null, '')
-  }),
-}
-
 module.exports = {
   createTopic,
   getTopics,
   getTopic,
   updateTopic,
   deleteTopic,
-  deleteChapterByTopicIdChapterId,
-  createChapterByTopicId,
-  updateChapterByTopicIdChapterId,
-  deleteLessonByChapterIdLessonId,
-  createLessonByChapterId,
-  updateLessonByChapterIdLessonId,
-  getLessonsByChapterId,
-  getChapter,
-  getVocabByLessonId,
-  deleteVocabByLessonId,
-  createVocabByLessonId,
-  updateVocabByLessonId
 };
 
