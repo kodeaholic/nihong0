@@ -274,6 +274,7 @@ const Card = (props) => {
                         kunTextExample: kunExample,
                         svgSrc: srcSvg,
                         code: svgCode,
+                        note: note,
                       }
                       const callback = (res) => {
                         setIsSubmitting(false)
