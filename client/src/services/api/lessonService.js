@@ -42,7 +42,7 @@ async function createLesson(data) {
     headers: authHeader(),
     body: JSON.stringify(data),
   }
-  let url = `${config.apiEndpoint}/lessons?`
+  let url = `${config.apiEndpoint}/lessons`
   try {
     const response = await fetch(url, requestOptions)
     const res = await response.json()

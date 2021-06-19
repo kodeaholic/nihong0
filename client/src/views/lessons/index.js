@@ -26,6 +26,8 @@ import { toast } from 'react-toastify'
 import { topicService } from '../../services/api/topicService'
 import { pluralize, sleep } from '../../helpers/common'
 import RedirectButton from '../components/back-navigation'
+import { chapterService } from 'src/services/api/chapterService'
+import { lessonService } from 'src/services/api/lessonService'
 const AddModal = ({ visible, setVisible, refresh, setRefresh, chapterId }) => {
   const [saving, setSaving] = useState(false)
   const [name, setName] = useState('')
@@ -111,12 +113,13 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, chapterId }) => {
             color="success"
             onClick={() => {
               setSaving(true)
-              topicService
-                .createLesson(chapterId, {
-                  title: name,
+              lessonService
+                .createLesson({
+                  name: name,
                   description: desc,
                   meaning: meaning,
                   audioSrc: audioSrc,
+                  chapter: chapterId,
                 })
                 .then((res) => {
                   setSaving(false)
@@ -186,7 +189,7 @@ const EditModal = ({
   lessonId,
 }) => {
   const [saving, setSaving] = useState(false)
-  const [name, setName] = useState(item.title)
+  const [name, setName] = useState(item.name)
   const [desc, setDesc] = useState(item.description)
   const [meaning, setMeaning] = useState(item.meaning)
   const [audioSrc, setAudioSrc] = useState(item.audioSrc)
@@ -297,12 +300,13 @@ const EditModal = ({
               color="success"
               onClick={() => {
                 setSaving(true)
-                topicService
-                  .updateLesson(chapterId, lessonId, {
-                    title: name,
+                lessonService
+                  .updateLesson(lessonId, {
+                    name: name,
                     description: desc,
                     meaning: meaning,
                     audioSrc: audioSrc,
+                    chapter: chapterId,
                   })
                   .then((res) => {
                     setSaving(false)
@@ -400,7 +404,7 @@ const ChapterDetails = (props) => {
   const [chapter, setChapter] = useState({})
   const [topicName, setTopicName] = useState('')
   const refreshList = () => {
-    topicService.getChapter(topicId, chapterId).then((res) => {
+    chapterService.getChapter(chapterId).then((res) => {
       if (res.status === 404) {
         toast.error(`Chapter không tồn tại hoặc đã bị xoá`, {
           position: 'top-right',
@@ -413,10 +417,10 @@ const ChapterDetails = (props) => {
         })
         setRedirectTo({ redirect: true, path: '/topics/topicDetail/' + topicId })
       }
-      setChapter(res['chapter'])
-      setLessons(res['chapter']['lessons'])
-      setTopicName(res['topicName'])
-      if (!res['chapter']['lessons'].length)
+      setChapter(res)
+      setLessons(res['lessons'])
+      setTopicName(res['topic']['name'])
+      if (!res['lessons'].length)
         toast.success(`Hiện tại chưa có bài học nào nào được thêm`, {
           position: 'top-right',
           autoClose: 2500,
@@ -443,7 +447,7 @@ const ChapterDetails = (props) => {
                 <CModalTitle>XÁC NHẬN XOÁ BÀI HỌC NÀY</CModalTitle>
               </CModalHeader>
               <CModalBody>
-                Bạn chắc chắn muốn xoá bài học <CBadge color="success">{itemToDelete.title}</CBadge>{' '}
+                Bạn chắc chắn muốn xoá bài học <CBadge color="success">{itemToDelete.name}</CBadge>{' '}
                 ?
               </CModalBody>
               <CModalFooter>
@@ -456,7 +460,7 @@ const ChapterDetails = (props) => {
                     color="danger"
                     onClick={() => {
                       setDeleting(true)
-                      topicService.deleteLesson(chapterId, itemToDelete._id).then((res) => {
+                      lessonService.deleteLesson(itemToDelete.id).then((res) => {
                         setDeleting(false)
                         if (res.ok || (res.status !== 404 && res.status !== 400)) {
                           toast.success(`Xoá thành công`, {
@@ -595,7 +599,7 @@ const ChapterDetails = (props) => {
                 refresh={refresh}
                 setRefresh={setRefresh}
                 chapterId={chapterId}
-                lessonId={itemToEdit._id}
+                lessonId={itemToEdit.id}
               />
             )}
           </CCol>
@@ -604,10 +608,10 @@ const ChapterDetails = (props) => {
           <CRow>
             {lessons &&
               lessons.map((item, index) => (
-                <CCol key={item._id} xs="12" sm="6" lg="3">
+                <CCol key={item.id} xs="12" sm="6" lg="3">
                   <CCard style={{ width: 'auto', marginBottom: '5px' }}>
                     <CCardHeader>
-                      Bài {index + 1}: {item.title}
+                      Bài {index + 1}: {item.name}
                       <CBadge
                         style={{ float: 'right', marginTop: '2px', cursor: 'pointer' }}
                         color="danger"
@@ -646,27 +650,15 @@ const ChapterDetails = (props) => {
                       onClick={() => {
                         setRedirectTo({
                           redirect: true,
-                          path: `/topics/chapterDetail/${chapterId}/lessons/${item._id}/vocab`,
+                          path: `/topics/chapterDetail/${chapterId}/lessons/${item.id}/vocab`,
                         })
                       }}
                     >
                       <CCardTitle>
-                        {item.title}
+                        {item.name}
                         <span> / </span>
                         {item.meaning}
                       </CCardTitle>
-                      <CCardSubtitle className="mb-2 text-muted">
-                        {/* <CBadge color="success">{item.free ? 'Free' : 'Trả phí'}</CBadge>{' '} */}
-                        {!_.isEmpty(item['vocab']) && (
-                          <CBadge color="primary">
-                            {item['vocab'].length}{' '}
-                            {pluralize(item['vocab'].length, 'từ vựng', 'từ vựng')}
-                          </CBadge>
-                        )}
-                        {_.isEmpty(item['vocab']) && <CBadge color="primary">0 từ vựng</CBadge>}
-                        {/* <CBadge color="info">{item.cards.length} chữ</CBadge> */}
-                      </CCardSubtitle>
-                      {/* <CCardText>{item.description}</CCardText> */}
                     </CCardBody>
                   </CCard>
                 </CCol>

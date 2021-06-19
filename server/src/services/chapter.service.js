@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Chapter } = require('../models');
+const { Chapter, Lesson } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 /**
@@ -33,7 +33,15 @@ const queryChapters = async (filter, options) => {
  * @returns {Promise<Chapter>}
  */
 const getChapterById = async (id) => {
-  return Chapter.findById(id).populate('topic');
+  const chapter = await Chapter.findById(id).populate('topic');
+  let lessons = []
+  if (chapter) {
+      // get lessons
+      lessons = await Lesson.find({"chapter": id})
+      const { name, description, meaning, topic } = chapter
+      return { id, name, description, meaning, lessons, topic }
+  }
+  return chapter
 };
 
 /**

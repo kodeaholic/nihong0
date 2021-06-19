@@ -22,7 +22,7 @@ const getChapter = catchAsync(async (req, res) => {
   if (!chapter) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Chapter không tồn tại hoặc đã bị xoá');
   }
-  res.send(Chapter);
+  res.send(chapter);
 });
 
 const updateChapter = catchAsync(async (req, res) => {

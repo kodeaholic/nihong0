@@ -16,7 +16,6 @@ const queryTopics = async (filter, options) => {
 const getTopicById = async (id) => {
     const topic = await Topic.findById(id);
     let chapters = []
-    let res = {}
     if (topic) {
         // get chapters
         chapters = await Chapter.find({"topic": id})

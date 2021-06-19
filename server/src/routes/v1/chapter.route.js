@@ -12,7 +12,7 @@ router
     .post(auth('admin'), validate(chapterValidation.createChapter), chapterController.createChapter)
 router
     .route('/:chapterId')
-    .get(auth('getChapters'), validate(chapterValidation.getChapter), chapterController.getChapter)
+    .get(auth('admin'), validate(chapterValidation.getChapter), chapterController.getChapter)
     .patch(auth('admin'), validate(chapterValidation.updateChapter), chapterController.updateChapter)
     .delete(auth('admin'), validate(chapterValidation.deleteChapter), chapterController.deleteChapter);
 
