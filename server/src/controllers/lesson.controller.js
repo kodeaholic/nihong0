@@ -22,7 +22,7 @@ const getLesson = catchAsync(async (req, res) => {
   if (!lesson) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Lesson không tồn tại hoặc đã bị xoá');
   }
-  res.send(Lesson);
+  res.send(lesson);
 });
 
 const updateLesson = catchAsync(async (req, res) => {

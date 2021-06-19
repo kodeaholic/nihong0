@@ -387,7 +387,7 @@ EditModal.propTypes = {
   chapterId: PropTypes.string,
   lessonId: PropTypes.string,
 }
-const ChapterDetails = (props) => {
+const ChapterDetail = (props) => {
   const { topicId, chapterId } = useParams()
   const [lessons, setLessons] = useState([])
   const [searchKey, setSearchKey] = useState('')
@@ -670,4 +670,4 @@ const ChapterDetails = (props) => {
     )
 }
 
-export default ChapterDetails
+export default ChapterDetail

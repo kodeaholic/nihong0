@@ -43,7 +43,7 @@ const createTopic = async (topicBody) => {
  * @returns {Promise<Topic>}
  */
 const updateTopicById = async (topicId, topicBody) => {
-    const topic = await getTopicById(topicId);
+    const topic = await Topic.findById(topicId);
     if (!topic) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Chủ đề không tồn tại hoặc đã bị xoá');
     }
@@ -55,7 +55,7 @@ const updateTopicById = async (topicId, topicBody) => {
     return topic;
 };
 const deleteTopicById = async (topicId) => {
-    const topic = await getTopicById(topicId);
+    const topic = await Topic.findById(topicId);
     if (!topic) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Chủ để không tồn tại hoặc đã bị xoá');
     }

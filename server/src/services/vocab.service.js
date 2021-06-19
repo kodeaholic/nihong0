@@ -33,7 +33,11 @@ const queryVocabs = async (filter, options) => {
  * @returns {Promise<Vocab>}
  */
 const getVocabById = async (id) => {
-  return Vocab.findById(id).populate('lesson');
+  const vocab = await Vocab.findById(id).populate({path: 'lesson', populate: {path: 'chapter', populate: { path: 'topic'}}});
+  if (!vocab) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Từ vựng không tồn tại hoặc đã bị xoá');
+  }
+  return vocab;
 };
 
 /**
@@ -43,7 +47,7 @@ const getVocabById = async (id) => {
  * @returns {Promise<Vocab>}
  */
 const updateVocabById = async (vocabId, updateBody) => {
-  const vocab = await getVocabById(vocabId);
+  const vocab = await Vocab.findById(vocabId);
   if (!vocab) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Từ vựng không tồn tại hoặc đã bị xoá');
   }
@@ -58,7 +62,7 @@ const updateVocabById = async (vocabId, updateBody) => {
  * @returns {Promise<Vocab>}
  */
 const deleteVocabById = async (vocabId) => {
-  const vocab = await getVocabById(vocabId);
+  const vocab = await Vocab.findById(vocabId);
   if (!vocab) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Từ vựng không tồn tại hoặc đã bị xoá');
   }

@@ -22,7 +22,7 @@ const getVocab = catchAsync(async (req, res) => {
   if (!vocab) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Từ vựng không tồn tại hoặc đã bị xoá');
   }
-  res.send(Vocab);
+  res.send(vocab);
 });
 
 const updateVocab = catchAsync(async (req, res) => {

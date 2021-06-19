@@ -15,7 +15,7 @@ const VocabSchema = mongoose.Schema(
         },
         vocabMeaning: {
             type: String,
-            required: true,
+            required: false,
             trim: false,
         },
         example: {

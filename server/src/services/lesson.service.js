@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Lesson } = require('../models');
+const { Lesson, Vocab } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 /**
@@ -32,10 +32,20 @@ const queryLessons = async (filter, options) => {
  * @param {ObjectId} id
  * @returns {Promise<Lesson>}
  */
-const getLessonById = async (id) => {
-  return Lesson.findById(id).populate('chapter');
-};
 
+const getLessonById = async (id) => {
+  const lesson = await Lesson.findById(id).populate({path: 'chapter', populate: {
+    path: 'topic'
+  }});
+  let vocabs = []
+  if (lesson) {
+      // get lessons
+      vocabs = await Vocab.find({"lesson": id})
+      const { name, description, meaning, topic, chapter } = lesson
+      return { name, description, meaning, topic, chapter, vocabs }
+  }
+  return lesson
+};
 /**
  * Update lesson by id
  * @param {ObjectId} lessonId
@@ -43,7 +53,7 @@ const getLessonById = async (id) => {
  * @returns {Promise<Lesson>}
  */
 const updateLessonById = async (lessonId, updateBody) => {
-  const lesson = await getLessonById(lessonId);
+  const lesson = await Lesson.findById(lessonId);
   if (!lesson) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Bài học không tồn tại hoặc đã bị xoá');
   }
@@ -58,7 +68,7 @@ const updateLessonById = async (lessonId, updateBody) => {
  * @returns {Promise<Lesson>}
  */
 const deleteLessonById = async (lessonId) => {
-  const lesson = await getLessonById(lessonId);
+  const lesson = await Lesson.findById(lessonId);
   if (!lesson) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Bài học không tồn tại hoặc đã bị xoá');
   }

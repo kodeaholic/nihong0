@@ -51,7 +51,7 @@ const getChapterById = async (id) => {
  * @returns {Promise<Chapter>}
  */
 const updateChapterById = async (chapterId, updateBody) => {
-  const chapter = await getChapterById(chapterId);
+  const chapter = await Chapter.findById(chapterId);
   if (!chapter) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Chapter không tồn tại hoặc đã bị xoá');
   }
@@ -66,7 +66,7 @@ const updateChapterById = async (chapterId, updateBody) => {
  * @returns {Promise<Chapter>}
  */
 const deleteChapterById = async (chapterId) => {
-  const chapter = await getChapterById(chapterId);
+  const chapter = await Chapter.findById(chapterId);
   if (!chapter) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Chapter không tồn tại hoặc đã bị xoá');
   }

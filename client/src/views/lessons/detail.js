@@ -27,6 +27,8 @@ import { toast } from 'react-toastify'
 import { topicService } from '../../services/api/topicService'
 import { sleep } from '../../helpers/common'
 import RedirectButton from '../components/back-navigation'
+import { lessonService } from 'src/services/api/lessonService'
+import { vocabService } from 'src/services/api/vocabService'
 const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
   const [saving, setSaving] = useState(false)
   const [vocab, setVocab] = useState('')
@@ -59,7 +61,7 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
         </CRow>
         <CRow>
           <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
-            <CFormLabel htmlFor="chinese">Hán tự</CFormLabel>
+            <CFormLabel htmlFor="chinese">Cách đọc</CFormLabel>
           </CCol>
           <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
             <CFormControl
@@ -152,14 +154,15 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
             color="success"
             onClick={() => {
               setSaving(true)
-              topicService
-                .createVocab(lessonId, {
+              vocabService
+                .createVocab({
                   vocab,
                   vocabMeaning,
                   chinese,
                   example,
                   exampleMeaning,
                   audioSrc,
+                  lesson: lessonId,
                 })
                 .then((res) => {
                   setSaving(false)
@@ -273,7 +276,7 @@ const EditModal = ({
             </CRow>
             <CRow>
               <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
-                <CFormLabel htmlFor="chinese">Hán tự</CFormLabel>
+                <CFormLabel htmlFor="chinese">Cách đọc</CFormLabel>
               </CCol>
               <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
                 <CFormControl
@@ -381,14 +384,15 @@ const EditModal = ({
               color="success"
               onClick={() => {
                 setSaving(true)
-                topicService
-                  .updateVocab(lessonId, item._id, {
+                vocabService
+                  .updateVocab(item.id, {
                     vocab,
                     vocabMeaning,
                     chinese,
                     example,
                     exampleMeaning,
                     audioSrc,
+                    lesson: lessonId,
                   })
                   .then((res) => {
                     setSaving(false)
@@ -470,7 +474,7 @@ EditModal.propTypes = {
   lessonId: PropTypes.string,
   vocabId: PropTypes.string,
 }
-const ChapterDetails = (props) => {
+const LessonDetail = (props) => {
   const { lessonId } = useParams()
   const [topicId, setTopicId] = useState('')
   const [chapterId, setChapterId] = useState('')
@@ -490,7 +494,7 @@ const ChapterDetails = (props) => {
   const [topicName, setTopicName] = useState('')
   const [vocab, setVocab] = useState([])
   const refreshList = () => {
-    topicService.getVocab(lessonId).then((res) => {
+    lessonService.getLesson(lessonId).then((res) => {
       if (res.status === 404) {
         toast.error(`Chapter không tồn tại hoặc đã bị xoá`, {
           position: 'top-right',
@@ -503,13 +507,13 @@ const ChapterDetails = (props) => {
         })
         setRedirectTo({ redirect: true, path: '/topics/topicDetail/' + topicId })
       }
-      setChapter(res['chapters'][0])
-      setLesson(res['chapters'][0]['lessons'][0])
-      setTopicName(res['name'])
-      setTopicId(res['id'])
-      setChapterId(res['chapters'][0]._id)
-      setVocab(res['chapters'][0]['lessons'][0].vocab)
-      if (!res['chapters'][0]['lessons'][0].vocab.length)
+      setChapter(res['chapter'])
+      setLesson(res)
+      setTopicName(res['chapter']['topic']['name'])
+      setTopicId(res['chapter']['topic']['id'])
+      setChapterId(res['chapter']['id'])
+      setVocab(res['vocabs'])
+      if (!res['vocabs'].length)
         toast.success(`Hiện tại chưa có từ vựng nào được thêm`, {
           position: 'top-right',
           autoClose: 2500,
@@ -536,7 +540,7 @@ const ChapterDetails = (props) => {
                 <CModalTitle>XÁC NHẬN XOÁ TỪ VỰNG NÀY</CModalTitle>
               </CModalHeader>
               <CModalBody>
-                Bạn chắc chắn muốn xoá từ vựng <CBadge color="success">{itemToDelete.title}</CBadge>{' '}
+                Bạn chắc chắn muốn xoá từ vựng <CBadge color="success">{itemToDelete.vocab}</CBadge>{' '}
                 ?
               </CModalBody>
               <CModalFooter>
@@ -549,7 +553,7 @@ const ChapterDetails = (props) => {
                     color="danger"
                     onClick={() => {
                       setDeleting(true)
-                      topicService.deleteVocab(lessonId, itemToDelete._id).then((res) => {
+                      vocabService.deleteVocab(itemToDelete.id).then((res) => {
                         setDeleting(false)
                         if (res.ok || (res.status !== 404 && res.status !== 400)) {
                           toast.success(`Xoá thành công`, {
@@ -655,7 +659,7 @@ const ChapterDetails = (props) => {
               />
               {lesson && chapter && (
                 <CButton disabled color="primary" style={{ color: 'white', marginBottom: '5px' }}>
-                  {topicName} - {chapter.name} - Bài {lesson.title}
+                  {topicName} - {chapter.name} - Bài {lesson.name}
                 </CButton>
               )}
               <CButton
@@ -696,7 +700,7 @@ const ChapterDetails = (props) => {
                 refresh={refresh}
                 setRefresh={setRefresh}
                 lessonId={lessonId}
-                vocabId={itemToEdit._id}
+                vocabId={itemToEdit.id}
               />
             )}
           </CCol>
@@ -736,7 +740,7 @@ const ChapterDetails = (props) => {
             <>
               {vocab &&
                 vocab.map((item, index) => (
-                  <CRow key={item._id}>
+                  <CRow key={item.id}>
                     <CCol
                       md="1"
                       className="text-center"
@@ -746,7 +750,7 @@ const ChapterDetails = (props) => {
                       <br />
                       {item.audioSrc && (
                         <>
-                          <audio preload="auto" type="audio/mpeg" id={`vocab-${item._id}`}>
+                          <audio preload="auto" type="audio/mpeg" id={`vocab-${item.id}`}>
                             <source src={item.audioSrc} />
                             Your browser does not support the audio element.
                           </audio>
@@ -755,7 +759,7 @@ const ChapterDetails = (props) => {
                             src="assets/play.jpg"
                             height={20}
                             style={{ cursor: 'pointer' }}
-                            id={`play-${item._id}`}
+                            id={`play-${item.id}`}
                             onClick={(e) => {
                               const str = e.target.id
                               const audioId = str.replace('play-', 'vocab-')
@@ -766,7 +770,7 @@ const ChapterDetails = (props) => {
                       )}
                     </CCol>
                     <CCol
-                      key={item._id}
+                      key={item.id}
                       md="3"
                       className="text-left"
                       style={{ borderBottom: '1px solid #dee2e6' }}
@@ -832,4 +836,4 @@ const ChapterDetails = (props) => {
     )
 }
 
-export default ChapterDetails
+export default LessonDetail

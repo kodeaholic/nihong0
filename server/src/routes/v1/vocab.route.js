@@ -12,7 +12,7 @@ router
     .post(auth('admin'), validate(vocabValidation.createVocab), vocabController.createVocab)
 router
     .route('/:vocabId')
-    .get(auth('getVocabs'), validate(vocabValidation.getVocab), vocabController.getVocab)
+    .get(auth('admin'), validate(vocabValidation.getVocab), vocabController.getVocab)
     .patch(auth('admin'), validate(vocabValidation.updateVocab), vocabController.updateVocab)
     .delete(auth('admin'), validate(vocabValidation.deleteVocab), vocabController.deleteVocab);
 
