@@ -20,7 +20,7 @@ const Cards = () => {
   const refresh = () => {
     cardService.getCards().then((res) => {
       setCards(res.results)
-      if (!res.results.length)
+      if (!res.results || !res.results.length)
         toast.success(`Hiện tại chưa có thẻ nào được thêm`, {
           position: 'top-right',
           autoClose: 2500,

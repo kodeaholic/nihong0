@@ -24,7 +24,7 @@ const Boards = () => {
   const refresh = () => {
     boardService.getBoards().then((res) => {
       setBoards(res.results)
-      if (!res.results.length)
+      if (!res.results || !res.results.length)
         toast.success(`Hiện tại chưa có bài từ vựng nào được thêm`, {
           position: 'top-right',
           autoClose: 2500,
