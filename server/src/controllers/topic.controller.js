@@ -34,89 +34,11 @@ const deleteTopic = catchAsync(async (req, res) => {
     res.send(topic);
 });
 
-/**
- * Chapter
- */
-const getChaptersByTopicId = catchAsync(async (req, res) => {
-    const chapters = await topicService.getChaptersByTopicId(req.params.topicId);
-    res.send(chapters)
-});
-const getChapter = catchAsync(async (req, res) => {
-    const chapters = await topicService.getChapter(req.params.topicId, req.params.chapterId);
-    res.send(chapters)
-});
 
-const deleteChapterByTopicIdChapterId = catchAsync(async (req, res) => {
-    const chapter = await topicService.deleteChapterByTopicIdChapterId(req.params.topicId, req.params.chapterId);
-    res.send(chapter)
-})
-
-const createChapterByTopicId = catchAsync(async (req, res) => {
-    const chapter = await topicService.createChapterByTopicId(req.params.topicId, req.body);
-    res.send(chapter)
-})
-
-const updateChapterByTopicIdChapterId = catchAsync(async (req, res) => {
-    const chapter = await topicService.updateChapterByTopicIdChapterId(req.params.topicId, req.params.chapterId, req.body);
-    res.send(chapter)
-})
-
-const deleteLessonByChapterIdLessonId = catchAsync(async (req, res) => {
-    const resultTopic = await topicService.deleteLessonByChapterIdLessonId(req.params.chapterId, req.params.lessonId);
-    res.send(resultTopic)
-})
-
-const createLessonByChapterId = catchAsync(async (req, res) => {
-    const updatedChapter = await topicService.createLessonByChapterId(req.params.chapterId, req.body);
-    res.send(updatedChapter)
-})
-
-const updateLessonByChapterIdLessonId = catchAsync(async (req, res) => {
-    const chapter = await topicService.updateLessonByChapterIdLessonId(req.params.chapterId, req.params.lessonId, req.body);
-    res.send(chapter)
-})
-
-const getLessonsByChapterId = catchAsync(async (req, res) => {
-    const chapter = await topicService.getLessonsByChapterId(req.params.chapterId);
-    res.send(chapter)
-})
-
-const getVocabByLessonId = catchAsync(async (req, res) => {
-    const result = await topicService.getVocabByLessonId(req.params.lessonId)
-    res.send(result)
-})
-
-const deleteVocabByLessonId = catchAsync(async (req, res) => {
-    const result = await topicService.deleteVocabByLessonId(req.params.lessonId, req.params.vocabId)
-    res.send(result)
-})
-
-const createVocabByLessonId = catchAsync(async (req, res) => {
-    const result = await topicService.createVocabByLessonId(req.params.lessonId, req.body)
-    res.send(result)
-})
-
-const updateVocabByLessonId = catchAsync(async (req, res) => {
-    const result = await topicService.updateVocabByLessonId(req.params.lessonId, req.params.vocabId, req.body)
-    res.send(result)
-})
 module.exports = {
   createTopic,
   updateTopic,
   getTopic,
   deleteTopic,
-  getChaptersByTopicId,
-  deleteChapterByTopicIdChapterId,
-  createChapterByTopicId,
-  updateChapterByTopicIdChapterId,
-  deleteLessonByChapterIdLessonId,
-  createLessonByChapterId,
-  updateLessonByChapterIdLessonId,
-  getLessonsByChapterId,
   getTopics,
-  getChapter,
-  getVocabByLessonId,
-  deleteVocabByLessonId,
-  createVocabByLessonId,
-  updateVocabByLessonId
 };

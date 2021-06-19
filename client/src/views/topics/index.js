@@ -533,18 +533,6 @@ const Topics = () => {
                       }}
                     >
                       <CCardTitle>{item.description}</CCardTitle>
-                      <CCardSubtitle className="mb-2 text-muted">
-                        {/* <CBadge color="success">{item.free ? 'Free' : 'Trả phí'}</CBadge>{' '} */}
-                        {!_.isEmpty(item['chapters']) && (
-                          <CBadge color="primary">
-                            {item['chapters'].length}{' '}
-                            {pluralize(item['chapters'].length, 'chapter', 'chapters')}
-                          </CBadge>
-                        )}
-                        {_.isEmpty(item['chapters']) && <CBadge color="primary">0 chapters</CBadge>}
-                        {/* <CBadge color="info">{item.cards.length} chữ</CBadge> */}
-                      </CCardSubtitle>
-                      {/* <CCardText>{item.description}</CCardText> */}
                     </CCardBody>
                   </CCard>
                 </CCol>
