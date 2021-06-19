@@ -41,8 +41,8 @@ const getLessonById = async (id) => {
   if (lesson) {
       // get lessons
       vocabs = await Vocab.find({"lesson": id})
-      const { name, description, meaning, topic, chapter } = lesson
-      return { name, description, meaning, topic, chapter, vocabs }
+      const { name, description, meaning, topic, chapter, audioSrc } = lesson
+      return { name, description, meaning, topic, chapter, vocabs, audioSrc }
   }
   return lesson
 };

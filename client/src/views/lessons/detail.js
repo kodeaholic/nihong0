@@ -132,7 +132,7 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
             />
           </CCol>
         </CRow>
-        {audioSrc && (
+        {!_.isEmpty(audioSrc) && (
           <CRow>
             <CCol xs="12" sm="12" lg="12" md="12">
               <audio controls style={{ width: '100%' }} preload="auto" type="audio/mpeg">
@@ -352,7 +352,7 @@ const EditModal = ({
                 />
               </CCol>
             </CRow>
-            {audioSrc && (
+            {!_.isEmpty(audioSrc) && (
               <CRow>
                 <CCol xs="12" sm="12" lg="12" md="12">
                   <audio controls style={{ width: '100%' }} preload="auto" type="audio/mpeg">
