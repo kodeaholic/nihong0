@@ -273,14 +273,16 @@ const Card = (props) => {
                 <CFormLabel htmlFor="kunExample">
                   Ví dụ KUN {viewAction === 'get' ? '' : guide}
                 </CFormLabel>
-                <CFormControl
-                  component="textarea"
-                  onChange={(e) => setKunExample(e.target.value)}
-                  id="kunExample"
-                  rows="3"
-                  disabled={viewAction === 'get'}
-                  defaultValue={kunExample}
-                ></CFormControl>
+                {onExample && viewAction !== 'get' && (
+                  <CFormControl
+                    component="textarea"
+                    onChange={(e) => setKunExample(e.target.value)}
+                    id="kunExample"
+                    rows="3"
+                    disabled={viewAction === 'get'}
+                    defaultValue={kunExample}
+                  ></CFormControl>
+                )}
                 {kunExample && (
                   <div
                     style={{
