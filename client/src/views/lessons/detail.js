@@ -41,6 +41,7 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
   const [audioSrc, setAudioSrc] = useState('')
   const isDisabled = vocab.length > 0 ? false : true
   const [vocabPreview, setVocabPreview] = useState('')
+  const [examplePreview, setExamplePreview] = useState('')
   return (
     <CModal visible={visible} onDismiss={() => setVisible(false)}>
       <CModalHeader onDismiss={() => setVisible(false)}>
@@ -119,10 +120,29 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
               component="textarea"
               id="example"
               placeholder="身内に医者がいると、何かと安心だ。"
-              onChange={(e) => setExample(e.target.value)}
+              onChange={(e) => {
+                setExample(e.target.value)
+                setExamplePreview(generateRubyAnnotationString(e.target.value))
+              }}
               rows={3}
             />
           </CCol>
+          {examplePreview && (
+            <>
+              <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px', marginTop: '5px' }}>
+                <CFormLabel htmlFor="vocab">Cách đọc của ví dụ</CFormLabel>
+              </CCol>
+              <CCol
+                xs="12"
+                sm="9"
+                lg="9"
+                style={{ marginBottom: '5px', marginTop: '5px', fontSize: '30px' }}
+                className="text-center"
+              >
+                {parse(examplePreview)}
+              </CCol>
+            </>
+          )}
         </CRow>
         <CRow>
           <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
@@ -262,6 +282,7 @@ const EditModal = ({
   const [audioSrc, setAudioSrc] = useState(item.audioSrc)
   const isDisabled = vocab.length > 0 ? false : true
   const [vocabPreview, setVocabPreview] = useState(generateRubyAnnotationString(vocab))
+  const [examplePreview, setExamplePreview] = useState(generateRubyAnnotationString(example))
   return (
     <CModal
       visible={visible}
@@ -355,11 +376,30 @@ const EditModal = ({
                   component="textarea"
                   id="example"
                   placeholder="身内に医者がいると、何かと安心だ。"
-                  onChange={(e) => setExample(e.target.value)}
+                  onChange={(e) => {
+                    setExample(e.target.value)
+                    setExamplePreview(generateRubyAnnotationString(e.target.value))
+                  }}
                   rows={3}
                   defaultValue={item.example}
                 />
               </CCol>
+              {examplePreview && (
+                <>
+                  <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px', marginTop: '5px' }}>
+                    <CFormLabel htmlFor="vocab">Cách đọc của ví dụ</CFormLabel>
+                  </CCol>
+                  <CCol
+                    xs="12"
+                    sm="9"
+                    lg="9"
+                    style={{ marginBottom: '5px', marginTop: '5px', fontSize: '30px' }}
+                    className="text-center"
+                  >
+                    {parse(examplePreview)}
+                  </CCol>
+                </>
+              )}
             </CRow>
             <CRow>
               <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
