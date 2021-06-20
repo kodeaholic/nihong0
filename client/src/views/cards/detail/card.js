@@ -20,10 +20,15 @@ import {
   CModalBody,
   CModalTitle,
 } from '@coreui/react'
-import { getHtmlEntityCodeFromDecodedString } from '../../../helpers/htmlentities'
+import {
+  getHtmlEntityCodeFromDecodedString,
+  htmlEntityEncode,
+  htmlEntityDecode,
+} from '../../../helpers/htmlentities'
 import { svgService } from '../../../services/api/svgService'
 import { cardService } from '../../../services/api/cardService'
 import { Redirect } from 'react-router-dom'
+import parse from 'html-react-parser'
 const Card = (props) => {
   const pathName = props.location.pathname
   const viewAction = getViewAction(pathName)
@@ -105,9 +110,9 @@ const Card = (props) => {
             setMeaning(res.meaning)
             setNote(res.note)
             setOnField(res.onText)
-            setOnExample(res.onTextExample)
+            setOnExample(htmlEntityDecode(res.onTextExample))
             setKunField(res.kunText)
-            setKunExample(res.kunTextExample)
+            setKunExample(htmlEntityDecode(res.kunTextExample))
             setSrcSvg(res.svgSrc)
             setSvgCode(res.code)
           }
@@ -227,7 +232,9 @@ const Card = (props) => {
                 />
               </div>
               <div className="mb-3">
-                <CFormLabel htmlFor="onExample">Ví dụ (On)</CFormLabel>
+                <CFormLabel htmlFor="onExample">
+                  Ví dụ ON (để xuống dòng, thêm {'<br />'})
+                </CFormLabel>
                 <CFormControl
                   component="textarea"
                   onChange={(e) => setOnExample(e.target.value)}
@@ -236,6 +243,18 @@ const Card = (props) => {
                   disabled={viewAction === 'get'}
                   defaultValue={onExample}
                 ></CFormControl>
+                {onExample && viewAction !== 'get' && (
+                  <div
+                    style={{
+                      fontSize: '50px',
+                      border: '1px solid',
+                      marginTop: '5px',
+                      minWidth: '50%',
+                    }}
+                  >
+                    {parse(onExample)}
+                  </div>
+                )}
               </div>
               <div className="mb-3">
                 <CFormLabel htmlFor="kunField">Kun</CFormLabel>
@@ -248,7 +267,9 @@ const Card = (props) => {
                 />
               </div>
               <div className="mb-3">
-                <CFormLabel htmlFor="kunExample">Ví dụ (Kun)</CFormLabel>
+                <CFormLabel htmlFor="kunExample">
+                  Ví dụ KUN (để xuống dòng, thêm {'<br />'})
+                </CFormLabel>
                 <CFormControl
                   component="textarea"
                   onChange={(e) => setKunExample(e.target.value)}
@@ -257,6 +278,18 @@ const Card = (props) => {
                   disabled={viewAction === 'get'}
                   defaultValue={kunExample}
                 ></CFormControl>
+                {kunExample && viewAction !== 'get' && (
+                  <div
+                    style={{
+                      fontSize: '50px',
+                      border: '1px solid',
+                      marginTop: '5px',
+                      minWidth: '50%',
+                    }}
+                  >
+                    {parse(kunExample)}
+                  </div>
+                )}
               </div>
               {viewAction !== 'get' && (
                 <div className="mb-3">
@@ -269,9 +302,9 @@ const Card = (props) => {
                         letter: input,
                         meaning: meaning,
                         onText: onField,
-                        onTextExample: onExample,
+                        onTextExample: htmlEntityEncode(onExample),
                         kunText: kunField,
-                        kunTextExample: kunExample,
+                        kunTextExample: htmlEntityEncode(kunExample),
                         svgSrc: srcSvg,
                         code: svgCode,
                         note: note,

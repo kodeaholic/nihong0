@@ -23,20 +23,20 @@ const Furigana = () => {
     if (element) {
       let elementText = element.value //get the text content from the element
       copyText(elementText) //use the copyText function below
-      toast.success(`Đã copy!`, {
-        position: 'top-right',
-        autoClose: 2000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      })
     }
   }
   //If you only want to put some Text in the Clipboard just use this function
   // and pass the string to copied as the argument.
   const copyText = (text) => {
+    toast.success(`Đã copy!`, {
+      position: 'top-right',
+      autoClose: 2000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    })
     navigator.clipboard.writeText(text)
   }
   return (
