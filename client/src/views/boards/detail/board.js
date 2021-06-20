@@ -101,6 +101,9 @@ const QuizItem = (props) => {
               defaultValue={data.question}
               onChange={handleInputChange}
               disabled={disabled}
+              type="text"
+              component="textarea"
+              rows="4"
             />
             {!disabled && (
               <CInputGroupText id={`delete_${id}`} onClick={handleDeleteClicked}>
