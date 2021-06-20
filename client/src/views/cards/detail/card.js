@@ -51,6 +51,7 @@ const Card = (props) => {
   const [redirectTo, setRedirecTo] = useState({ isRedirected: false, redirectedPath: '' })
   const [visible, setVisible] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const guide = '(để xuống dòng, thêm <br />)'
   useEffect(() => {
     // fetch svg src
     if (searchKey) {
@@ -233,17 +234,19 @@ const Card = (props) => {
               </div>
               <div className="mb-3">
                 <CFormLabel htmlFor="onExample">
-                  Ví dụ ON (để xuống dòng, thêm {'<br />'})
+                  Ví dụ ON {viewAction === 'get' ? '' : guide}
                 </CFormLabel>
-                <CFormControl
-                  component="textarea"
-                  onChange={(e) => setOnExample(e.target.value)}
-                  id="onExample"
-                  rows="3"
-                  disabled={viewAction === 'get'}
-                  defaultValue={onExample}
-                ></CFormControl>
                 {onExample && viewAction !== 'get' && (
+                  <CFormControl
+                    component="textarea"
+                    onChange={(e) => setOnExample(e.target.value)}
+                    id="onExample"
+                    rows="3"
+                    disabled={viewAction === 'get'}
+                    defaultValue={onExample}
+                  ></CFormControl>
+                )}
+                {onExample && (
                   <div
                     style={{
                       fontSize: '50px',
@@ -268,7 +271,7 @@ const Card = (props) => {
               </div>
               <div className="mb-3">
                 <CFormLabel htmlFor="kunExample">
-                  Ví dụ KUN (để xuống dòng, thêm {'<br />'})
+                  Ví dụ KUN {viewAction === 'get' ? '' : guide}
                 </CFormLabel>
                 <CFormControl
                   component="textarea"
@@ -278,7 +281,7 @@ const Card = (props) => {
                   disabled={viewAction === 'get'}
                   defaultValue={kunExample}
                 ></CFormControl>
-                {kunExample && viewAction !== 'get' && (
+                {kunExample && (
                   <div
                     style={{
                       fontSize: '50px',
