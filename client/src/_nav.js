@@ -348,6 +348,12 @@ const _nav = [
     icon: <CIcon name="cil-pencil" customClasses="nav-icon" />,
   },
   {
+    _component: 'CNavItem',
+    as: NavLink,
+    anchor: 'Furigana',
+    to: '/furigana',
+  },
+  {
     _component: 'CNavTitle',
     anchor: 'Chữ Hán',
   },

@@ -67,6 +67,7 @@ const Topics = React.lazy(() => import('./views/topics/index'))
 const TopicDetails = React.lazy(() => import('./views/topics/detail'))
 const ChapterDetails = React.lazy(() => import('./views/lessons/index'))
 const LessonDetails = React.lazy(() => import('./views/lessons/detail'))
+const Furigana = React.lazy(() => import('./views/furigana/index'))
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Tổng quan', component: Dashboard },
@@ -160,6 +161,12 @@ const routes = [
     component: LessonDetails,
     exact: true,
     specificName: 'lessons',
+  },
+  {
+    path: '/furigana',
+    name: 'Phủ hiragana lên đầu chữ Hán',
+    component: Furigana,
+    exact: true,
   },
 ]
 
