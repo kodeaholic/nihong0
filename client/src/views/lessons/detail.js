@@ -29,6 +29,8 @@ import { sleep } from '../../helpers/common'
 import RedirectButton from '../components/back-navigation'
 import { lessonService } from 'src/services/api/lessonService'
 import { vocabService } from 'src/services/api/vocabService'
+import { generateRubyAnnotationString } from 'src/helpers/furigana'
+import parse from 'html-react-parser'
 const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
   const [saving, setSaving] = useState(false)
   const [vocab, setVocab] = useState('')
@@ -38,6 +40,7 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
   const [exampleMeaning, setExampleMeaning] = useState('')
   const [audioSrc, setAudioSrc] = useState('')
   const isDisabled = vocab.length > 0 ? false : true
+  const [vocabPreview, setVocabPreview] = useState('')
   return (
     <CModal visible={visible} onDismiss={() => setVisible(false)}>
       <CModalHeader onDismiss={() => setVisible(false)}>
@@ -54,12 +57,31 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
             <CFormControl
               type="text"
               id="vocab"
-              placeholder="Ví dụ: みうち"
-              onChange={(e) => setVocab(e.target.value)}
+              placeholder="Ví dụ: 新[あたら]しい"
+              onChange={(e) => {
+                setVocab(e.target.value)
+                setVocabPreview(generateRubyAnnotationString(e.target.value))
+              }}
             />
           </CCol>
+          {vocabPreview && (
+            <>
+              <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px', marginTop: '5px' }}>
+                <CFormLabel htmlFor="vocab">Preview</CFormLabel>
+              </CCol>
+              <CCol
+                xs="12"
+                sm="9"
+                lg="9"
+                style={{ marginBottom: '5px', marginTop: '5px', fontSize: '30px' }}
+                className="text-center"
+              >
+                {parse(vocabPreview)}
+              </CCol>
+            </>
+          )}
         </CRow>
-        <CRow>
+        {/* <CRow>
           <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
             <CFormLabel htmlFor="chinese">Cách đọc</CFormLabel>
           </CCol>
@@ -71,7 +93,7 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
               onChange={(e) => setChinese(e.target.value)}
             />
           </CCol>
-        </CRow>
+        </CRow> */}
         <CRow>
           <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
             <CFormLabel htmlFor="vocabMeaning">Giải nghĩa</CFormLabel>
@@ -239,6 +261,7 @@ const EditModal = ({
   const [exampleMeaning, setExampleMeaning] = useState(item.exampleMeaning)
   const [audioSrc, setAudioSrc] = useState(item.audioSrc)
   const isDisabled = vocab.length > 0 ? false : true
+  const [vocabPreview, setVocabPreview] = useState(generateRubyAnnotationString(vocab))
   return (
     <CModal
       visible={visible}
@@ -268,13 +291,31 @@ const EditModal = ({
                 <CFormControl
                   type="text"
                   id="vocab"
-                  placeholder="Ví dụ: みうち"
-                  onChange={(e) => setVocab(e.target.value)}
+                  placeholder="Ví dụ: 新[あたら]しい"
+                  onChange={(e) => {
+                    setVocab(e.target.value)
+                    setVocabPreview(generateRubyAnnotationString(e.target.value))
+                  }}
                   defaultValue={item.vocab}
                 />
               </CCol>
+              {vocabPreview && (
+                <>
+                  <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px', marginTop: '5px' }}>
+                    <CFormLabel htmlFor="vocab">Preview</CFormLabel>
+                  </CCol>
+                  <CCol
+                    xs="12"
+                    sm="9"
+                    lg="9"
+                    style={{ marginBottom: '5px', marginTop: '5px', fontSize: '30px' }}
+                  >
+                    {parse(vocabPreview)}
+                  </CCol>
+                </>
+              )}
             </CRow>
-            <CRow>
+            {/* <CRow>
               <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
                 <CFormLabel htmlFor="chinese">Cách đọc</CFormLabel>
               </CCol>
@@ -287,7 +328,7 @@ const EditModal = ({
                   defaultValue={item.chinese}
                 />
               </CCol>
-            </CRow>
+            </CRow> */}
             <CRow>
               <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
                 <CFormLabel htmlFor="vocabMeaning">Giải nghĩa</CFormLabel>
