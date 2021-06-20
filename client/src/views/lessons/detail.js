@@ -854,22 +854,24 @@ const LessonDetail = (props) => {
                       key={item.id}
                       md="3"
                       className="text-left"
-                      style={{ borderBottom: '1px solid #dee2e6' }}
+                      style={{ borderBottom: '1px solid #dee2e6', fontSize: '30px' }}
                     >
-                      {item.vocab}
-                      <br />
-                      {item.chinese}
-                      <br />
-                      {item.vocabMeaning}
+                      {parse(
+                        `<div style:"font-size: 30px;">${generateRubyAnnotationString(
+                          item.vocab,
+                        )}</div><div style="font-size: 15px;">${item.vocabMeaning}</>`,
+                      )}
                     </CCol>
                     <CCol
                       md="6"
                       className="text-left"
-                      style={{ borderBottom: '1px solid #dee2e6' }}
+                      style={{ borderBottom: '1px solid #dee2e6', fontSize: '30px' }}
                     >
-                      {item.example}
-                      <br />
-                      {item.exampleMeaning}
+                      {parse(
+                        `<div style:"font-size: 30px;">${generateRubyAnnotationString(
+                          item.example,
+                        )}</div><div style="font-size: 15px;">${item.exampleMeaning}</>`,
+                      )}
                     </CCol>
                     <CCol
                       md="2"
