@@ -20,10 +20,15 @@ import {
   CModalBody,
   CModalTitle,
 } from '@coreui/react'
-import { getHtmlEntityCodeFromDecodedString } from '../../../helpers/htmlentities'
+import {
+  getHtmlEntityCodeFromDecodedString,
+  htmlEntityEncode,
+  htmlEntityDecode,
+} from '../../../helpers/htmlentities'
 import { svgService } from '../../../services/api/svgService'
 import { cardService } from '../../../services/api/cardService'
 import { Redirect } from 'react-router-dom'
+import parse from 'html-react-parser'
 const Card = (props) => {
   const pathName = props.location.pathname
   const viewAction = getViewAction(pathName)
@@ -46,6 +51,7 @@ const Card = (props) => {
   const [redirectTo, setRedirecTo] = useState({ isRedirected: false, redirectedPath: '' })
   const [visible, setVisible] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const guide = '(để xuống dòng, thêm <br />)'
   useEffect(() => {
     // fetch svg src
     if (searchKey) {
@@ -105,9 +111,9 @@ const Card = (props) => {
             setMeaning(res.meaning)
             setNote(res.note)
             setOnField(res.onText)
-            setOnExample(res.onTextExample)
+            setOnExample(htmlEntityDecode(res.onTextExample))
             setKunField(res.kunText)
-            setKunExample(res.kunTextExample)
+            setKunExample(htmlEntityDecode(res.kunTextExample))
             setSrcSvg(res.svgSrc)
             setSvgCode(res.code)
           }
@@ -227,15 +233,31 @@ const Card = (props) => {
                 />
               </div>
               <div className="mb-3">
-                <CFormLabel htmlFor="onExample">Ví dụ (On)</CFormLabel>
-                <CFormControl
-                  component="textarea"
-                  onChange={(e) => setOnExample(e.target.value)}
-                  id="onExample"
-                  rows="3"
-                  disabled={viewAction === 'get'}
-                  defaultValue={onExample}
-                ></CFormControl>
+                <CFormLabel htmlFor="onExample">
+                  Ví dụ ON {viewAction === 'get' ? '' : guide}
+                </CFormLabel>
+                {onExample && viewAction !== 'get' && (
+                  <CFormControl
+                    component="textarea"
+                    onChange={(e) => setOnExample(e.target.value)}
+                    id="onExample"
+                    rows="3"
+                    disabled={viewAction === 'get'}
+                    defaultValue={onExample}
+                  ></CFormControl>
+                )}
+                {onExample && (
+                  <div
+                    style={{
+                      fontSize: '50px',
+                      border: '1px solid',
+                      marginTop: '5px',
+                      minWidth: '50%',
+                    }}
+                  >
+                    {parse(onExample)}
+                  </div>
+                )}
               </div>
               <div className="mb-3">
                 <CFormLabel htmlFor="kunField">Kun</CFormLabel>
@@ -248,15 +270,31 @@ const Card = (props) => {
                 />
               </div>
               <div className="mb-3">
-                <CFormLabel htmlFor="kunExample">Ví dụ (Kun)</CFormLabel>
-                <CFormControl
-                  component="textarea"
-                  onChange={(e) => setKunExample(e.target.value)}
-                  id="kunExample"
-                  rows="3"
-                  disabled={viewAction === 'get'}
-                  defaultValue={kunExample}
-                ></CFormControl>
+                <CFormLabel htmlFor="kunExample">
+                  Ví dụ KUN {viewAction === 'get' ? '' : guide}
+                </CFormLabel>
+                {onExample && viewAction !== 'get' && (
+                  <CFormControl
+                    component="textarea"
+                    onChange={(e) => setKunExample(e.target.value)}
+                    id="kunExample"
+                    rows="3"
+                    disabled={viewAction === 'get'}
+                    defaultValue={kunExample}
+                  ></CFormControl>
+                )}
+                {kunExample && (
+                  <div
+                    style={{
+                      fontSize: '50px',
+                      border: '1px solid',
+                      marginTop: '5px',
+                      minWidth: '50%',
+                    }}
+                  >
+                    {parse(kunExample)}
+                  </div>
+                )}
               </div>
               {viewAction !== 'get' && (
                 <div className="mb-3">
@@ -269,9 +307,9 @@ const Card = (props) => {
                         letter: input,
                         meaning: meaning,
                         onText: onField,
-                        onTextExample: onExample,
+                        onTextExample: htmlEntityEncode(onExample),
                         kunText: kunField,
-                        kunTextExample: kunExample,
+                        kunTextExample: htmlEntityEncode(kunExample),
                         svgSrc: srcSvg,
                         code: svgCode,
                         note: note,
