@@ -5,6 +5,15 @@ const _ = require('lodash')
 
 const queryTopics = async (filter, options) => {
     const topics = await Topic.paginate(filter, options);
+    const results = topics["results"]
+    let chapters = []
+    if (results) {
+        // query for chapters
+        let topicIDs = results.map(item => item._id)
+        chapters = await Chapter.find({'topic': { $in: topicIDs }})
+    }
+    // transform data
+    topics["chapters"] = chapters
     return topics;
 };
 
