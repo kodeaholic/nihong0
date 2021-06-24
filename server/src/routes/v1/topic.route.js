@@ -8,12 +8,12 @@ const router = express.Router();
 
 router
     .route('/')
-    .get(auth('admin'), validate(topicValidation.getTopics), topicController.getTopics)
+    .get(auth('getTopics'), validate(topicValidation.getTopics), topicController.getTopics)
     .post(auth('admin'), validate(topicValidation.createTopic), topicController.createTopic)
 
 router
     .route('/:topicId')
-    .get(auth('admin'), validate(topicValidation.getTopic), topicController.getTopic)
+    .get(auth('getTopics'), validate(topicValidation.getTopic), topicController.getTopic)
     .patch(auth('admin'), validate(topicValidation.updateTopic), topicController.updateTopic)
     .delete(auth('admin'), validate(topicValidation.deleteTopic), topicController.deleteTopic);
 

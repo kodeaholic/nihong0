@@ -1,10 +1,22 @@
 const httpStatus = require('http-status');
-const { Topic, Chapter } = require('../models');
+const { Topic, Chapter, Lesson } = require('../models');
 const ApiError = require('../utils/ApiError');
 const _ = require('lodash')
 
 const queryTopics = async (filter, options) => {
     const topics = await Topic.paginate(filter, options);
+    const results = topics["results"]
+    let chapters = []
+    if (results) {
+        // query for chapters
+        let topicIDs = results.map(item => item._id)
+        chapters = await Chapter.find({'topic': { $in: topicIDs }})
+        let chapterIDs = chapters.map(item => item._id)
+        lessons = await Lesson.find({'chapter': { $in: chapterIDs }})
+    }
+    // transform data
+    topics["chapters"] = chapters
+    topics["lessons"] = lessons
     return topics;
 };
 

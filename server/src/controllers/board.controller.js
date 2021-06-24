@@ -10,7 +10,7 @@ const createBoard = catchAsync(async (req, res) => {
 });
 
 const getBoards = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['title']);
+  const filter = pick(req.query, ['title', 'level']);
   if (filter.title) filter.title = new RegExp(filter.title) // this will add {title: /title/i} to filter to search by regex, not search by identical string comparison
   const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
   const result = await boardService.queryBoards(filter, options);

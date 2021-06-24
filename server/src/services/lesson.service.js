@@ -24,6 +24,15 @@ const createLesson = async (lessonBody) => {
  */
 const queryLessons = async (filter, options) => {
   const lessons = await Lesson.paginate(filter, options);
+  const results = lessons["results"]
+  let vocabs = []
+  if (results) {
+      // query for vocabs
+      let lessonIDs = results.map(item => item._id)
+      vocabs = await Vocab.find({'lesson': { $in: lessonIDs }})
+  }
+  // transform data
+  lessons["vocabs"] = vocabs
   return lessons;
 };
 

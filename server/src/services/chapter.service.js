@@ -24,6 +24,15 @@ const createChapter = async (chapterBody) => {
  */
 const queryChapters = async (filter, options) => {
   const chapters = await Chapter.paginate(filter, options);
+  const results = chapters["results"]
+  let lessons = []
+  if (results) {
+      // query for lessons
+      let chapterIDs = results.map(item => item._id)
+      lessons = await Lesson.find({'chapter': { $in: chapterIDs }})
+  }
+  // transform data
+  chapters["lessons"] = lessons
   return chapters;
 };
 
