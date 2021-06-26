@@ -397,15 +397,19 @@ const _nav = [
   },
   {
     _component: 'CNavTitle',
-    anchor: 'Bài học nghe (đang xây dựng)',
+    anchor: 'Bài học nghe',
   },
   {
-    _component: 'CNavTitle',
-    anchor: 'Bài học ngữ pháp (đang xây dựng)',
+    _component: 'CNavItem',
+    as: NavLink,
+    anchor: 'Danh sách bài học nghe',
+    to: '/listening-boards',
   },
   {
-    _component: 'CNavTitle',
-    anchor: 'Bài test trắc nghiệm tổng hợp (đang xây dựng)',
+    _component: 'CNavItem',
+    as: NavLink,
+    anchor: 'Thêm bài học nghe',
+    to: '/listening-boards/addBoard',
   },
 ]
 
