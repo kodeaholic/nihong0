@@ -5,6 +5,7 @@ const docsRoute = require('./docs.route');
 const svgRoute = require('./svg.route');
 const cardRoute = require('./card.route');
 const boardRoute = require('./board.route');
+const listeningBoardRoute = require('./listeningBoard.route');
 const topicRoute = require('./topic.route');
 const chapterRoute = require('./chapter.route');
 const lessonRoute = require('./lesson.route');
@@ -50,6 +51,10 @@ const defaultRoutes = [
   {
     path: '/vocabs',
     route: vocabRoute
+  },
+  {
+    path: '/listening-boards',
+    route: listeningBoardRoute
   }
 ];
 

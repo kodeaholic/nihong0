@@ -37,7 +37,7 @@ const Quiz = mongoose.Schema(
     }
 )
 
-const BoardSchema = mongoose.Schema(
+const ListeningBoardSchema = mongoose.Schema(
     {
         title: {
             type: String,
@@ -80,15 +80,15 @@ const BoardSchema = mongoose.Schema(
     }        
 );
 // add plugin that converts mongoose to json
-BoardSchema.plugin(toJSON);
-BoardSchema.plugin(paginate);
+ListeningBoardSchema.plugin(toJSON);
+ListeningBoardSchema.plugin(paginate);
 /**
  * Check if a title is taken
  * @param {string} title - The board's title
  * @param {ObjectId} [excludeBoardId] - The id of the board to be excluded
  * @returns {Promise<boolean>}
  */
-BoardSchema.statics.isTitleTaken = async function (title, excludeBoardId) {
+ListeningBoardSchema.statics.isTitleTaken = async function (title, excludeBoardId) {
     const board = await this.findOne({ title, _id: { $ne: excludeBoardId } });
     return !!board;
 };
@@ -96,6 +96,6 @@ BoardSchema.statics.isTitleTaken = async function (title, excludeBoardId) {
 /**
  * @typedef Board
  */
-const Board = mongoose.model('Board', BoardSchema);
+const ListeningBoard = mongoose.model('ListeningBoard', ListeningBoardSchema);
 
-module.exports = Board;
+module.exports = ListeningBoard;
