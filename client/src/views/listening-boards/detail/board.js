@@ -115,6 +115,9 @@ const QuizItem = (props) => {
                   border: '1px solid grey',
                   borderRadius: '0 5px 5px 0',
                   backgroundColor: '#fff',
+                  paddingRight: '5px',
+                  paddingLeft: '5px',
+                  paddingTop: '5px',
                 }}
               >
                 {renderHTML(data.question)}
@@ -166,6 +169,9 @@ const QuizItem = (props) => {
                   border: '1px solid grey',
                   borderRadius: '0 5px 5px 0',
                   backgroundColor: '#fff',
+                  paddingRight: '5px',
+                  paddingLeft: '5px',
+                  paddingTop: '5px',
                 }}
               >
                 {renderHTML(data.A)}
@@ -206,6 +212,9 @@ const QuizItem = (props) => {
                   border: '1px solid grey',
                   borderRadius: '0 5px 5px 0',
                   backgroundColor: '#fff',
+                  paddingRight: '5px',
+                  paddingLeft: '5px',
+                  paddingTop: '5px',
                 }}
               >
                 {renderHTML(data.B)}
@@ -246,6 +255,9 @@ const QuizItem = (props) => {
                   border: '1px solid grey',
                   borderRadius: '0 5px 5px 0',
                   backgroundColor: '#fff',
+                  paddingRight: '5px',
+                  paddingLeft: '5px',
+                  paddingTop: '5px',
                 }}
               >
                 {renderHTML(data.C)}
@@ -286,6 +298,9 @@ const QuizItem = (props) => {
                   border: '1px solid grey',
                   borderRadius: '0 5px 5px 0',
                   backgroundColor: '#fff',
+                  paddingRight: '5px',
+                  paddingLeft: '5px',
+                  paddingTop: '5px',
                 }}
               >
                 {renderHTML(data.D)}
@@ -293,7 +308,7 @@ const QuizItem = (props) => {
             )}
           </CInputGroup>
         </CCol>
-        <CCol sm="4" style={{ marginTop: '5px' }}>
+        <CCol sm="4" style={{ marginTop: '5px', marginBottom: '5px' }}>
           <CInputGroup>
             <CInputGroupText id={`answer-label-${id}`}>Đáp án đúng</CInputGroupText>
             <CFormSelect
@@ -574,9 +589,15 @@ const ListeningBoard = (props) => {
                 </CCol>
               </CRow>
             )}
+            <CRow>
+              <CFormLabel className="col-sm-2 col-form-label">Câu hỏi phần I</CFormLabel>
+              <CCol sm="10">
+                <Exercise quiz={quiz} onQuizItemChange={setQuiz} disabled={viewAction === 'get'} />
+              </CCol>
+            </CRow>
             <CRow className="mb-3">
               <CFormLabel htmlFor="script" className="col-sm-2 col-form-label">
-                Lời thoại tiếng Nhật
+                Câu hỏi và lời thoại tiếng Nhật (phần II)
               </CFormLabel>
               <CCol sm="10">
                 {viewAction !== 'get' && (
@@ -597,12 +618,26 @@ const ListeningBoard = (props) => {
                     }}
                   />
                 )}
-                {viewAction === 'get' && renderHTML(script)}
+                {viewAction === 'get' && (
+                  <div
+                    style={{
+                      border: '1px solid grey',
+                      borderRadius: '5px 5px 5px 5px',
+                      backgroundColor: '#fff',
+                      paddingRight: '5px',
+                      paddingLeft: '5px',
+                      paddingTop: '5px',
+                      marginTop: '7px',
+                    }}
+                  >
+                    {renderHTML(script)}
+                  </div>
+                )}
               </CCol>
             </CRow>
             <CRow className="mb-3">
               <CFormLabel htmlFor="subtitle" className="col-sm-2 col-form-label">
-                Giải nghĩa lời thoại
+                Câu hỏi và lời thoại tiếng Việt (phần II)
               </CFormLabel>
               <CCol sm="10">
                 {viewAction !== 'get' && (
@@ -623,13 +658,21 @@ const ListeningBoard = (props) => {
                     }}
                   />
                 )}
-                {viewAction === 'get' && renderHTML(subtitle)}
-              </CCol>
-            </CRow>
-            <CRow>
-              <CFormLabel className="col-sm-2 col-form-label">Câu hỏi phần I</CFormLabel>
-              <CCol sm="10">
-                <Exercise quiz={quiz} onQuizItemChange={setQuiz} disabled={viewAction === 'get'} />
+                {viewAction === 'get' && (
+                  <div
+                    style={{
+                      border: '1px solid grey',
+                      borderRadius: '5px 5px 5px 5px',
+                      backgroundColor: '#fff',
+                      paddingRight: '5px',
+                      paddingLeft: '5px',
+                      paddingTop: '5px',
+                      marginTop: '7px',
+                    }}
+                  >
+                    {renderHTML(subtitle)}
+                  </div>
+                )}
               </CCol>
             </CRow>
             <CRow>
