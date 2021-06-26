@@ -12,7 +12,7 @@ CKEDITOR.dialog.add( 'furiganaDialog', function( editor ) {
                    {
                         type: 'text',
                         id: 'id_furigana',
-                        label: 'Input Furigana',
+                        label: 'Nhập Furigana',
                         validate: CKEDITOR.dialog.validate.notEmpty( "value not Empty!" ),
                         setup: function( element ) {
                             var childrt = element.getChild( 1 );

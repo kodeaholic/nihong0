@@ -29,7 +29,8 @@ import {
 import { Redirect } from 'react-router-dom'
 import { listeningBoardService } from '../../../services/api/listeningBoardService'
 import _ from 'lodash'
-
+import { htmlEntityEncode, htmlEntityDecode } from '../../../helpers/htmlentities'
+import renderHTML from 'react-render-html'
 const Exercise = (props) => {
   const { quiz, onQuizItemChange, disabled } = props
   return (
@@ -96,7 +97,11 @@ const QuizItem = (props) => {
               rows="4"
             />
             {!disabled && (
-              <CInputGroupText id={`delete_${id}`} onClick={handleDeleteClicked}>
+              <CInputGroupText
+                id={`delete_${id}`}
+                onClick={handleDeleteClicked}
+                style={{ cursor: 'pointer' }}
+              >
                 Gỡ bỏ
               </CInputGroupText>
             )}
@@ -104,10 +109,13 @@ const QuizItem = (props) => {
         </CCol>
       </CRow>
       <CRow>
-        <CCol sm="2" style={{ marginTop: '5px' }}>
+        <CCol sm="6" style={{ marginTop: '5px' }}>
           <CInputGroup>
             <CInputGroupText id={`optionA-label-${id}`}>A</CInputGroupText>
             <CFormControl
+              type="text"
+              component="textarea"
+              rows={2}
               name="A"
               id={`${id}`}
               aria-describedby="optionA-label"
@@ -117,10 +125,13 @@ const QuizItem = (props) => {
             />
           </CInputGroup>
         </CCol>
-        <CCol sm="2" style={{ marginTop: '5px' }}>
+        <CCol sm="6" style={{ marginTop: '5px' }}>
           <CInputGroup>
             <CInputGroupText id={`optionB-label-${id}`}>B</CInputGroupText>
             <CFormControl
+              type="text"
+              component="textarea"
+              rows={2}
               name="B"
               id={`${id}`}
               aria-describedby="optionB-label"
@@ -130,10 +141,13 @@ const QuizItem = (props) => {
             />
           </CInputGroup>
         </CCol>
-        <CCol sm="2" style={{ marginTop: '5px' }}>
+        <CCol sm="6" style={{ marginTop: '5px' }}>
           <CInputGroup>
             <CInputGroupText id={`optionC-label-${id}`}>C</CInputGroupText>
             <CFormControl
+              type="text"
+              component="textarea"
+              rows={2}
               name="C"
               id={`${id}`}
               aria-describedby="optionC-label"
@@ -143,10 +157,13 @@ const QuizItem = (props) => {
             />
           </CInputGroup>
         </CCol>
-        <CCol sm="2" style={{ marginTop: '5px' }}>
+        <CCol sm="6" style={{ marginTop: '5px' }}>
           <CInputGroup>
             <CInputGroupText id={`optionD-label-${id}`}>D</CInputGroupText>
             <CFormControl
+              type="text"
+              component="textarea"
+              rows={2}
               name="D"
               id={`${id}`}
               aria-describedby="optionD-label"
@@ -158,8 +175,9 @@ const QuizItem = (props) => {
         </CCol>
         <CCol sm="4" style={{ marginTop: '5px' }}>
           <CInputGroup>
+            <CInputGroupText id={`answer-label-${id}`}>Đáp án đúng</CInputGroupText>
             <CFormSelect
-              id={`${id}`}
+              id={`answer-label-${id}`}
               aria-label="A"
               defaultValue={data.answer}
               name="answer"
@@ -259,8 +277,8 @@ const ListeningBoard = (props) => {
       const boardBody = {
         title,
         level,
-        script,
-        subtitle,
+        script: htmlEntityEncode(script),
+        subtitle: htmlEntityEncode(subtitle),
         audioSrc,
         free,
         quiz,
@@ -301,8 +319,8 @@ const ListeningBoard = (props) => {
             setFree(res.free)
             setTitle(res.title)
             setLevel(res.level)
-            setScript(res.script)
-            setSubtitle(res.subtitle)
+            setScript(htmlEntityDecode(res.script))
+            setSubtitle(htmlEntityDecode(res.subtitle))
             setAudioSrc(res.audioSrc)
             setQuiz(res.quiz)
           }
@@ -419,16 +437,25 @@ const ListeningBoard = (props) => {
                 Lời thoại tiếng Nhật
               </CFormLabel>
               <CCol sm="10">
-                <CFormControl
-                  type="text"
-                  id="script"
-                  placeholder="Phần II: Câu hỏi + Lời thoại tiếng Nhật"
-                  component="textarea"
-                  rows="5"
-                  onChange={(e) => setScript(e.target.value)}
-                  defaultValue={script}
-                  disabled={viewAction === 'get'}
-                />
+                {viewAction !== 'get' && (
+                  <CFormControl
+                    type="text"
+                    id="script"
+                    placeholder="Phần II: Câu hỏi + Lời thoại tiếng Nhật"
+                    component="textarea"
+                    rows="5"
+                    onChange={(e) => setScript(e.target.value)}
+                    defaultValue={script}
+                    disabled={viewAction === 'get'}
+                    onFocus={(e) => {
+                      const scriptEditor = window.CKEDITOR.replace('script')
+                      scriptEditor.on('change', function (e) {
+                        setScript(scriptEditor.getData())
+                      })
+                    }}
+                  />
+                )}
+                {viewAction === 'get' && renderHTML(script)}
               </CCol>
             </CRow>
             <CRow className="mb-3">
@@ -436,16 +463,25 @@ const ListeningBoard = (props) => {
                 Giải nghĩa lời thoại
               </CFormLabel>
               <CCol sm="10">
-                <CFormControl
-                  type="text"
-                  id="subtitle"
-                  placeholder="Phần II: Câu hỏi + Lời thoại tiếng Nhật"
-                  component="textarea"
-                  rows="5"
-                  onChange={(e) => setSubtitle(e.target.value)}
-                  defaultValue={subtitle}
-                  disabled={viewAction === 'get'}
-                />
+                {viewAction !== 'get' && (
+                  <CFormControl
+                    type="text"
+                    id="subtitle"
+                    placeholder="Phần II: Câu hỏi + Lời thoại tiếng Nhật"
+                    component="textarea"
+                    rows="5"
+                    onChange={(e) => setSubtitle(e.target.value)}
+                    defaultValue={subtitle}
+                    disabled={viewAction === 'get'}
+                    onFocus={(e) => {
+                      const subtitleEditor = window.CKEDITOR.replace('subtitle')
+                      subtitleEditor.on('change', function (e) {
+                        setSubtitle(subtitleEditor.getData())
+                      })
+                    }}
+                  />
+                )}
+                {viewAction === 'get' && renderHTML(subtitle)}
               </CCol>
             </CRow>
             <CRow>
