@@ -85,17 +85,41 @@ const QuizItem = (props) => {
         <CCol sm="12" style={{ marginTop: '10px' }}>
           <CInputGroup>
             <CInputGroupText id={`question-label-${id}`}>Câu {id + 1}</CInputGroupText>
-            <CFormControl
-              name="question"
-              id={`${id}`}
-              aria-describedby="question-label"
-              defaultValue={data.question}
-              onChange={handleInputChange}
-              disabled={disabled}
-              type="text"
-              component="textarea"
-              rows="4"
-            />
+            {!disabled && (
+              <CFormControl
+                name="question"
+                id={`question-${id}`}
+                aria-describedby="question-label"
+                defaultValue={data.question}
+                onChange={handleInputChange}
+                disabled={disabled}
+                type="text"
+                component="textarea"
+                rows="4"
+                onFocus={(e) => {
+                  const quizEditor = window.CKEDITOR.replace(`question-${id}`)
+                  quizEditor.on('change', function (e) {
+                    let index = parseInt(id)
+                    let quizes = [...parentQuiz]
+                    if (quizes[index]) {
+                      quizes[index]['question'] = quizEditor.getData()
+                      onChange(quizes)
+                    }
+                  })
+                }}
+              />
+            )}
+            {disabled && (
+              <div
+                style={{
+                  border: '1px solid grey',
+                  borderRadius: '0 5px 5px 0',
+                  backgroundColor: '#fff',
+                }}
+              >
+                {renderHTML(data.question)}
+              </div>
+            )}
             {!disabled && (
               <CInputGroupText
                 id={`delete_${id}`}
@@ -112,65 +136,161 @@ const QuizItem = (props) => {
         <CCol sm="6" style={{ marginTop: '5px' }}>
           <CInputGroup>
             <CInputGroupText id={`optionA-label-${id}`}>A</CInputGroupText>
-            <CFormControl
-              type="text"
-              component="textarea"
-              rows={2}
-              name="A"
-              id={`${id}`}
-              aria-describedby="optionA-label"
-              defaultValue={data.A}
-              onChange={handleInputChange}
-              disabled={disabled}
-            />
+            {!disabled && (
+              <CFormControl
+                type="text"
+                component="textarea"
+                rows={2}
+                name="A"
+                id={`optionA-${id}`}
+                aria-describedby="optionA-label"
+                defaultValue={data.A}
+                onChange={handleInputChange}
+                disabled={disabled}
+                onFocus={(e) => {
+                  const quizEditor = window.CKEDITOR.replace(`optionA-${id}`)
+                  quizEditor.on('change', function (e) {
+                    let index = parseInt(id)
+                    let quizes = [...parentQuiz]
+                    if (quizes[index]) {
+                      quizes[index]['A'] = quizEditor.getData()
+                      onChange(quizes)
+                    }
+                  })
+                }}
+              />
+            )}
+            {disabled && (
+              <div
+                style={{
+                  border: '1px solid grey',
+                  borderRadius: '0 5px 5px 0',
+                  backgroundColor: '#fff',
+                }}
+              >
+                {renderHTML(data.A)}
+              </div>
+            )}
           </CInputGroup>
         </CCol>
         <CCol sm="6" style={{ marginTop: '5px' }}>
           <CInputGroup>
             <CInputGroupText id={`optionB-label-${id}`}>B</CInputGroupText>
-            <CFormControl
-              type="text"
-              component="textarea"
-              rows={2}
-              name="B"
-              id={`${id}`}
-              aria-describedby="optionB-label"
-              defaultValue={data.B}
-              onChange={handleInputChange}
-              disabled={disabled}
-            />
+            {!disabled && (
+              <CFormControl
+                type="text"
+                component="textarea"
+                rows={2}
+                name="B"
+                id={`optionB-${id}`}
+                aria-describedby="optionB-label"
+                defaultValue={data.B}
+                onChange={handleInputChange}
+                disabled={disabled}
+                onFocus={(e) => {
+                  const quizEditor = window.CKEDITOR.replace(`optionB-${id}`)
+                  quizEditor.on('change', function (e) {
+                    let index = parseInt(id)
+                    let quizes = [...parentQuiz]
+                    if (quizes[index]) {
+                      quizes[index]['B'] = quizEditor.getData()
+                      onChange(quizes)
+                    }
+                  })
+                }}
+              />
+            )}
+            {disabled && (
+              <div
+                style={{
+                  border: '1px solid grey',
+                  borderRadius: '0 5px 5px 0',
+                  backgroundColor: '#fff',
+                }}
+              >
+                {renderHTML(data.B)}
+              </div>
+            )}
           </CInputGroup>
         </CCol>
         <CCol sm="6" style={{ marginTop: '5px' }}>
           <CInputGroup>
             <CInputGroupText id={`optionC-label-${id}`}>C</CInputGroupText>
-            <CFormControl
-              type="text"
-              component="textarea"
-              rows={2}
-              name="C"
-              id={`${id}`}
-              aria-describedby="optionC-label"
-              defaultValue={data.C}
-              onChange={handleInputChange}
-              disabled={disabled}
-            />
+            {!disabled && (
+              <CFormControl
+                type="text"
+                component="textarea"
+                rows={2}
+                name="C"
+                id={`optionC-${id}`}
+                aria-describedby="optionC-label"
+                defaultValue={data.C}
+                onChange={handleInputChange}
+                disabled={disabled}
+                onFocus={(e) => {
+                  const quizEditor = window.CKEDITOR.replace(`optionC-${id}`)
+                  quizEditor.on('change', function (e) {
+                    let index = parseInt(id)
+                    let quizes = [...parentQuiz]
+                    if (quizes[index]) {
+                      quizes[index]['C'] = quizEditor.getData()
+                      onChange(quizes)
+                    }
+                  })
+                }}
+              />
+            )}
+            {disabled && (
+              <div
+                style={{
+                  border: '1px solid grey',
+                  borderRadius: '0 5px 5px 0',
+                  backgroundColor: '#fff',
+                }}
+              >
+                {renderHTML(data.C)}
+              </div>
+            )}
           </CInputGroup>
         </CCol>
         <CCol sm="6" style={{ marginTop: '5px' }}>
           <CInputGroup>
             <CInputGroupText id={`optionD-label-${id}`}>D</CInputGroupText>
-            <CFormControl
-              type="text"
-              component="textarea"
-              rows={2}
-              name="D"
-              id={`${id}`}
-              aria-describedby="optionD-label"
-              defaultValue={data.D}
-              onChange={handleInputChange}
-              disabled={disabled}
-            />
+            {!disabled && (
+              <CFormControl
+                type="text"
+                component="textarea"
+                rows={2}
+                name="D"
+                id={`optionD-${id}`}
+                aria-describedby="optionD-label"
+                defaultValue={data.D}
+                onChange={handleInputChange}
+                disabled={disabled}
+                onFocus={(e) => {
+                  const quizEditor = window.CKEDITOR.replace(`optionD-${id}`)
+                  quizEditor.on('change', function (e) {
+                    let index = parseInt(id)
+                    let quizes = [...parentQuiz]
+                    if (quizes[index]) {
+                      quizes[index]['D'] = quizEditor.getData()
+                      onChange(quizes)
+                    }
+                  })
+                }}
+              />
+            )}
+            {disabled && (
+              <div
+                style={{
+                  border: '1px solid grey',
+                  borderRadius: '0 5px 5px 0',
+                  backgroundColor: '#fff',
+                }}
+              >
+                {renderHTML(data.D)}
+              </div>
+            )}
           </CInputGroup>
         </CCol>
         <CCol sm="4" style={{ marginTop: '5px' }}>
@@ -274,6 +394,17 @@ const ListeningBoard = (props) => {
   const handleSubmit = () => {
     if (isQuizValidated()) {
       setSaving(true)
+      /**Handle quiz data */
+      let quizes = [...quiz]
+      let resultQuiz = quizes.map(function (item) {
+        let newItem = { ...item }
+        newItem.question = htmlEntityEncode(item.question)
+        newItem.A = htmlEntityEncode(item.A)
+        newItem.B = htmlEntityEncode(item.B)
+        newItem.C = htmlEntityEncode(item.C)
+        newItem.D = htmlEntityEncode(item.D)
+        return newItem
+      })
       const boardBody = {
         title,
         level,
@@ -281,7 +412,7 @@ const ListeningBoard = (props) => {
         subtitle: htmlEntityEncode(subtitle),
         audioSrc,
         free,
-        quiz,
+        quiz: resultQuiz,
       }
       viewAction === 'add'
         ? listeningBoardService.createBoard(boardBody).then(savingCallback)
@@ -322,7 +453,18 @@ const ListeningBoard = (props) => {
             setScript(htmlEntityDecode(res.script))
             setSubtitle(htmlEntityDecode(res.subtitle))
             setAudioSrc(res.audioSrc)
-            setQuiz(res.quiz)
+            let initialQuiz = res.quiz
+            let quizes = [...initialQuiz]
+            let resultQuiz = quizes.map(function (item) {
+              let newItem = { ...item }
+              newItem.question = htmlEntityDecode(item.question)
+              newItem.A = htmlEntityDecode(item.A)
+              newItem.B = htmlEntityDecode(item.B)
+              newItem.C = htmlEntityDecode(item.C)
+              newItem.D = htmlEntityDecode(item.D)
+              return newItem
+            })
+            setQuiz(resultQuiz)
           }
         }
       })
