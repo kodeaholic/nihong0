@@ -382,6 +382,10 @@ const Board = (props) => {
                   onChange={(e) => setTitle(e.target.value)}
                   defaultValue={title}
                   disabled={viewAction === 'get'}
+                  onFocus={() => {
+                    console.log(window.CKEDITOR)
+                    window.CKEDITOR.replace('title')
+                  }}
                 />
               </CCol>
             </CRow>
@@ -397,6 +401,10 @@ const Board = (props) => {
                   onChange={(e) => setLevel(e.target.value)}
                   defaultValue={level}
                   disabled={viewAction === 'get'}
+                  onFocus={() => {
+                    console.log(window.CKEDITOR)
+                    window.CKEDITOR.replace('level')
+                  }}
                 />
               </CCol>
             </CRow>
