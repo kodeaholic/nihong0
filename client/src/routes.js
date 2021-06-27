@@ -63,6 +63,8 @@ const Card = React.lazy(() => import('./views/cards/detail/card'))
 const Cards = React.lazy(() => import('./views/cards/master/cards'))
 const Board = React.lazy(() => import('./views/boards/detail/board'))
 const Boards = React.lazy(() => import('./views/boards/master/boards'))
+const ListeningBoard = React.lazy(() => import('./views/listening-boards/detail/board'))
+const ListeningBoards = React.lazy(() => import('./views/listening-boards/master/boards'))
 const Topics = React.lazy(() => import('./views/topics/index'))
 const TopicDetails = React.lazy(() => import('./views/topics/detail'))
 const ChapterDetails = React.lazy(() => import('./views/lessons/index'))
@@ -167,6 +169,25 @@ const routes = [
     name: 'Phủ hiragana lên đầu chữ Hán',
     component: Furigana,
     exact: true,
+  },
+  { path: '/listening-boards', name: 'Bài học nghe', component: ListeningBoards, exact: true },
+  {
+    path: '/listening-boards/addBoard',
+    name: 'Thêm mới',
+    component: ListeningBoard,
+    specificName: 'addBoard',
+  },
+  {
+    path: '/listening-boards/getBoard/:cardId',
+    name: 'Thông tin bài học',
+    component: ListeningBoard,
+    specificName: 'getBoard',
+  },
+  {
+    path: '/listening-boards/editBoard/:cardId',
+    name: 'Sửa',
+    component: ListeningBoard,
+    specificName: 'editBoard',
   },
 ]
 

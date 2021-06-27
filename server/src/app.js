@@ -26,10 +26,10 @@ if (config.env !== 'test') {
 app.use('/v1', helmet());
 
 // parse json request body
-app.use('/v1', express.json());
+app.use('/v1', express.json({limit: '200mb'}));
 
 // parse urlencoded request body
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({limit: '200mb', extended: true }));
 
 // sanitize request data
 app.use('/v1', xss());
