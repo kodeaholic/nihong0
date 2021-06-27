@@ -25,7 +25,8 @@ const createBoard = async (boardBody) => {
  * @returns {Promise<QueryResult>}
  */
 const queryBoards = async (filter, options) => {
-  const boards = await ListeningBoard.paginate(filter, options);
+  const select = { "title": 1, "_id": 1, "id": 1, "free": 1, "audioSrc": 1}
+  const boards = await ListeningBoard.paginate(filter, options, select);
   return boards;
 };
 

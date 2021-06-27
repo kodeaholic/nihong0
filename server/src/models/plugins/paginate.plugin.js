@@ -19,7 +19,7 @@ const paginate = (schema) => {
    * @param {number} [options.page] - Current page (default = 1)
    * @returns {Promise<QueryResult>}
    */
-  schema.statics.paginate = async function (filter, options) {
+  schema.statics.paginate = async function (filter, options, select = {}) {
     let sort = '';
     if (options.sortBy) {
       const sortingCriteria = [];
@@ -37,7 +37,11 @@ const paginate = (schema) => {
     const skip = (page - 1) * limit;
 
     const countPromise = this.countDocuments(filter).exec();
-    let docsPromise = this.find(filter).sort(sort).skip(skip).limit(limit);
+    let docsPromise;
+    if (!select) docsPromise = this.find(filter).sort(sort).skip(skip).limit(limit);
+    else {
+      docsPromise = this.find(filter).select(select).sort(sort).skip(skip).limit(limit);
+    }
 
     if (options.populate) {
       options.populate.split(',').forEach((populateOption) => {

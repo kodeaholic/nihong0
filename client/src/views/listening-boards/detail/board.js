@@ -422,7 +422,7 @@ const ListeningBoard = (props) => {
       })
       const boardBody = {
         title,
-        level,
+        level: level ? level : 'N5',
         script: htmlEntityEncode(script),
         subtitle: htmlEntityEncode(subtitle),
         audioSrc,
