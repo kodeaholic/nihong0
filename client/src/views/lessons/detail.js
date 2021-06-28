@@ -63,6 +63,14 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
                 setVocab(e.target.value)
                 setVocabPreview(generateRubyAnnotationString(e.target.value))
               }}
+              onFocus={(e) => {
+                const vocabEditor = window.CKEDITOR.replace('vocab')
+                vocabEditor.setData(vocab)
+                vocabEditor.on('change', function (e) {
+                  setVocab(vocabEditor.getData())
+                  setVocabPreview(vocabEditor.getData())
+                })
+              }}
             />
           </CCol>
           {vocabPreview && (
@@ -120,9 +128,13 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
               component="textarea"
               id="example"
               placeholder="身内に医者がいると、何かと安心だ。"
-              onChange={(e) => {
-                setExample(e.target.value)
-                setExamplePreview(generateRubyAnnotationString(e.target.value))
+              onFocus={(e) => {
+                const exampleEditor = window.CKEDITOR.replace('example')
+                exampleEditor.setData(example)
+                exampleEditor.on('change', function (e) {
+                  setExample(exampleEditor.getData())
+                  setExamplePreview(exampleEditor.getData())
+                })
               }}
               rows={3}
             />
@@ -130,7 +142,7 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
           {examplePreview && (
             <>
               <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px', marginTop: '5px' }}>
-                <CFormLabel htmlFor="vocab">Cách đọc của ví dụ</CFormLabel>
+                <CFormLabel htmlFor="vocab">Preview</CFormLabel>
               </CCol>
               <CCol
                 xs="12"
@@ -317,6 +329,14 @@ const EditModal = ({
                     setVocab(e.target.value)
                     setVocabPreview(generateRubyAnnotationString(e.target.value))
                   }}
+                  onFocus={(e) => {
+                    const vocabEditor = window.CKEDITOR.replace('vocab')
+                    vocabEditor.setData(vocab)
+                    vocabEditor.on('change', function (e) {
+                      setVocab(vocabEditor.getData())
+                      setVocabPreview(vocabEditor.getData())
+                    })
+                  }}
                   defaultValue={item.vocab}
                 />
               </CCol>
@@ -379,6 +399,14 @@ const EditModal = ({
                   onChange={(e) => {
                     setExample(e.target.value)
                     setExamplePreview(generateRubyAnnotationString(e.target.value))
+                  }}
+                  onFocus={(e) => {
+                    const exampleEditor = window.CKEDITOR.replace('example')
+                    exampleEditor.setData(example)
+                    exampleEditor.on('change', function (e) {
+                      setExample(exampleEditor.getData())
+                      setExamplePreview(exampleEditor.getData())
+                    })
                   }}
                   rows={3}
                   defaultValue={item.example}
