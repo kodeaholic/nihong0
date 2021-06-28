@@ -8,9 +8,6 @@ const ApiError = require('../utils/ApiError');
  * @returns {Promise<Board>}
  */
 const createBoard = async (boardBody) => {
-  if (await ListeningBoard.isTitleTaken(boardBody.title)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Tiêu đề đã tồn tại');
-  }
   const board = await ListeningBoard.create(boardBody);
   return board;
 };
@@ -25,7 +22,7 @@ const createBoard = async (boardBody) => {
  * @returns {Promise<QueryResult>}
  */
 const queryBoards = async (filter, options) => {
-  const select = { "title": 1, "_id": 1, "id": 1, "free": 1, "audioSrc": 1}
+  const select = { "title": 1, "_id": 1, "id": 1, "free": 1, "audioSrc": 1, "level": 1}
   const boards = await ListeningBoard.paginate(filter, options, select);
   return boards;
 };
@@ -36,7 +33,7 @@ const queryBoards = async (filter, options) => {
  * @returns {Promise<Board>}
  */
 const getBoardById = async (id) => {
-  return ListeningBoard.findById(id).populate('cards');
+  return ListeningBoard.findById(id);
 };
 
 /**
@@ -49,9 +46,6 @@ const updateBoardById = async (boardId, updateBody) => {
   const board = await getBoardById(boardId);
   if (!board) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Bài học không tồn tại hoặc đã bị xoá');
-  }
-  if (updateBody.title && (await ListeningBoard.isTitleTaken(updateBody.title, boardId))) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Tiêu đề đã tồn tại');
   }
   Object.assign(board, updateBody);
   await board.save();

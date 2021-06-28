@@ -43,7 +43,7 @@ const BoardSchema = mongoose.Schema(
             type: String,
             required: true,
             trim: false,
-            unique: true
+            // unique: false,
         },
         description: {
             type: String,
@@ -83,11 +83,14 @@ BoardSchema.plugin(paginate);
  * @param {ObjectId} [excludeBoardId] - The id of the board to be excluded
  * @returns {Promise<boolean>}
  */
-BoardSchema.statics.isTitleTaken = async function (title, excludeBoardId) {
-    const board = await this.findOne({ title, _id: { $ne: excludeBoardId } });
+BoardSchema.statics.isTitleTaken = async function (title, excludeBoardId, level) {
+    const board = await this.findOne({ title, _id: { $ne: excludeBoardId }, level: { $eq: level} });
     return !!board;
 };
-
+BoardSchema.statics.isTitleTakenForCreating = async function (title, level) {
+    const board = await this.findOne({ title, level: { $eq: level} });
+    return !!board;
+};
 /**
  * @typedef Board
  */

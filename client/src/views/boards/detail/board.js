@@ -251,7 +251,7 @@ const Board = (props) => {
   }
   const savingCallback = (res) => {
     setSaving(false)
-    if (res && res.code !== 400 && res.code !== 403 && res.code !== 401) {
+    if (res && res.code !== 400 && res.code !== 403 && res.code !== 401 && res.code !== 500) {
       toast.success(`Lưu thành công bài học`, {
         position: 'top-right',
         autoClose: 2500,

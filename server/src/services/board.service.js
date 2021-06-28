@@ -8,9 +8,9 @@ const ApiError = require('../utils/ApiError');
  * @returns {Promise<Board>}
  */
 const createBoard = async (boardBody) => {
-  if (await Board.isTitleTaken(boardBody.title)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Tiêu đề đã tồn tại');
-  }
+  // if (await Board.isTitleTaken(boardBody.title)) {
+  //   throw new ApiError(httpStatus.BAD_REQUEST, 'Tiêu đề đã tồn tại');
+  // }
   const board = await Board.create(boardBody);
   return board;
 };
@@ -50,9 +50,9 @@ const updateBoardById = async (boardId, updateBody) => {
   if (!board) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Bài học không tồn tại hoặc đã bị xoá');
   }
-  if (updateBody.title && (await Board.isTitleTaken(updateBody.title, boardId))) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Tiêu đề đã tồn tại');
-  }
+  // if (updateBody.title && (await Board.isTitleTaken(updateBody.title, boardId))) {
+  //   throw new ApiError(httpStatus.BAD_REQUEST, 'Tiêu đề đã tồn tại');
+  // }
   Object.assign(board, updateBody);
   await board.save();
   return board;

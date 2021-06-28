@@ -361,7 +361,7 @@ const ListeningBoard = (props) => {
   }
   const savingCallback = (res) => {
     setSaving(false)
-    if (res && res.code !== 400 && res.code !== 403 && res.code !== 401) {
+    if (res && res.code !== 400 && res.code !== 403 && res.code !== 401 && res.code !== 500) {
       toast.success(`Lưu thành công bài học`, {
         position: 'top-right',
         autoClose: 2500,
@@ -387,7 +387,7 @@ const ListeningBoard = (props) => {
           progress: undefined,
         })
       } else
-        toast.error(`Có lỗi xảy ra khi tạo bài học”`, {
+        toast.error(`Có lỗi xảy ra khi tạo bài học`, {
           position: 'top-right',
           autoClose: 2500,
           hideProgressBar: true,
@@ -448,7 +448,12 @@ const ListeningBoard = (props) => {
     if (boardId) {
       listeningBoardService.getBoard(boardId).then((res) => {
         if (res) {
-          if (res.status === 401 || res.status === 404 || res.status === 400) {
+          if (
+            res.status === 401 ||
+            res.status === 404 ||
+            res.status === 400 ||
+            res.status === 500
+          ) {
             toast.error(`Bài học không tồn tại`, {
               position: 'top-right',
               autoClose: 3000,
@@ -458,7 +463,7 @@ const ListeningBoard = (props) => {
               draggable: true,
               progress: undefined,
             })
-            setRedirecTo({ isRedirected: true, redirectedPath: '/boards' })
+            setRedirecTo({ isRedirected: true, redirectedPath: '/listening-boards' })
           } else {
             setData(res)
             setFree(res.free)
