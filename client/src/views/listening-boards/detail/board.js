@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
-import PropTypes from 'prop-types'
+import PropTypes, { string } from 'prop-types'
 import { DraggableArea } from 'react-draggable-tags'
 import { getViewAction, getLastPartFromPathName } from 'src/services/helpers/routeHelper'
 import deleteBtn from '../../../assets/images/delete.png'
@@ -61,14 +61,13 @@ const QuizItem = (props) => {
 
   const handleInputChange = (e) => {
     let { id, name, value } = e.target
-    let index = parseInt(id)
+    let index = name === 'answer' ? id.replace('answer-label-', '') : id
     if (parentQuiz[index]) {
       parentQuiz[index][name] = value
       onChange(parentQuiz)
     }
   }
   const handleDeleteClicked = (e) => {
-    console.log(e.target)
     let { id } = e.target
     id = id.replace('delete_', '')
     let index = parseInt(id)
@@ -313,7 +312,7 @@ const QuizItem = (props) => {
             <CInputGroupText id={`answer-label-${id}`}>Đáp án đúng</CInputGroupText>
             <CFormSelect
               id={`answer-label-${id}`}
-              aria-label="A"
+              aria-label={`answer-label-${id}`}
               defaultValue={data.answer}
               name="answer"
               onChange={handleInputChange}
