@@ -236,7 +236,7 @@ const Card = (props) => {
                 <CFormLabel htmlFor="onExample">
                   Ví dụ ON {viewAction === 'get' ? '' : guide}
                 </CFormLabel>
-                {onExample && viewAction !== 'get' && (
+                {viewAction !== 'get' && (
                   <CFormControl
                     component="textarea"
                     onChange={(e) => setOnExample(e.target.value)}
@@ -244,15 +244,25 @@ const Card = (props) => {
                     rows="3"
                     disabled={viewAction === 'get'}
                     defaultValue={onExample}
+                    onFocus={(e) => {
+                      const onExampleEditor = window.CKEDITOR.replace('onExample')
+                      onExampleEditor.on('change', function (e) {
+                        setOnExample(onExampleEditor.getData())
+                      })
+                    }}
                   ></CFormControl>
                 )}
-                {onExample && (
+                {viewAction === 'get' && (
                   <div
                     style={{
-                      fontSize: '50px',
+                      fontSize: '30px',
                       border: '1px solid',
                       marginTop: '5px',
-                      minWidth: '50%',
+                      height: 'auto',
+                      borderRadius: 5,
+                      borderColor: '#b1b7c1',
+                      backgroundColor: '#d8dbe0',
+                      paddingLeft: 10,
                     }}
                   >
                     {parse(onExample)}
@@ -273,7 +283,7 @@ const Card = (props) => {
                 <CFormLabel htmlFor="kunExample">
                   Ví dụ KUN {viewAction === 'get' ? '' : guide}
                 </CFormLabel>
-                {onExample && viewAction !== 'get' && (
+                {viewAction !== 'get' && (
                   <CFormControl
                     component="textarea"
                     onChange={(e) => setKunExample(e.target.value)}
@@ -281,15 +291,25 @@ const Card = (props) => {
                     rows="3"
                     disabled={viewAction === 'get'}
                     defaultValue={kunExample}
+                    onFocus={(e) => {
+                      const kunExampleEditor = window.CKEDITOR.replace('kunExample')
+                      kunExampleEditor.on('change', function (e) {
+                        setKunExample(kunExampleEditor.getData())
+                      })
+                    }}
                   ></CFormControl>
                 )}
-                {kunExample && (
+                {viewAction === 'get' && (
                   <div
                     style={{
-                      fontSize: '50px',
+                      fontSize: '30px',
                       border: '1px solid',
                       marginTop: '5px',
-                      minWidth: '50%',
+                      height: 'auto',
+                      borderRadius: 5,
+                      borderColor: '#b1b7c1',
+                      backgroundColor: '#d8dbe0',
+                      paddingLeft: 10,
                     }}
                   >
                     {parse(kunExample)}
@@ -317,7 +337,7 @@ const Card = (props) => {
                       const callback = (res) => {
                         setIsSubmitting(false)
                         if (res && res.code !== 400 && res.code !== 403) {
-                          toast.success(`Lưu thành công  “${searchKey}”`, {
+                          toast.success(`Lưu thành công`, {
                             position: 'top-right',
                             autoClose: 2500,
                             hideProgressBar: true,
