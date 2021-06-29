@@ -43,7 +43,7 @@ const ListeningBoardSchema = mongoose.Schema(
             type: String,
             required: true,
             trim: false,
-            unique: true
+            // unique: false,
         },
         script: {
             type: String,
@@ -88,8 +88,13 @@ ListeningBoardSchema.plugin(paginate);
  * @param {ObjectId} [excludeBoardId] - The id of the board to be excluded
  * @returns {Promise<boolean>}
  */
-ListeningBoardSchema.statics.isTitleTaken = async function (title, excludeBoardId) {
-    const board = await this.findOne({ title, _id: { $ne: excludeBoardId } });
+ListeningBoardSchema.statics.isTitleTaken = async function (title, excludeBoardId, level) {
+    const board = await this.findOne({ title, _id: { $ne: excludeBoardId }, level: { $eq: level} });
+    return !!board;
+};
+
+ListeningBoardSchema.statics.isTitleTakenForCreating = async function (title, level) {
+    const board = await this.findOne({ title, level: { $eq: level} });
     return !!board;
 };
 

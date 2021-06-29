@@ -31,6 +31,7 @@ import { lessonService } from 'src/services/api/lessonService'
 import { vocabService } from 'src/services/api/vocabService'
 import { generateRubyAnnotationString } from 'src/helpers/furigana'
 import parse from 'html-react-parser'
+import { htmlEntityEncode, htmlEntityDecode } from '../../helpers/htmlentities'
 const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
   const [saving, setSaving] = useState(false)
   const [vocab, setVocab] = useState('')
@@ -59,28 +60,15 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
               type="text"
               id="vocab"
               placeholder="Ví dụ: 新[あたら]しい"
-              onChange={(e) => {
-                setVocab(e.target.value)
-                setVocabPreview(generateRubyAnnotationString(e.target.value))
+              onFocus={(e) => {
+                const vocabEditor = window.CKEDITOR.replace('vocab')
+                vocabEditor.setData(htmlEntityDecode(vocab))
+                vocabEditor.on('change', function (e) {
+                  setVocab(vocabEditor.getData())
+                })
               }}
             />
           </CCol>
-          {vocabPreview && (
-            <>
-              <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px', marginTop: '5px' }}>
-                <CFormLabel htmlFor="vocab">Preview</CFormLabel>
-              </CCol>
-              <CCol
-                xs="12"
-                sm="9"
-                lg="9"
-                style={{ marginBottom: '5px', marginTop: '5px', fontSize: '30px' }}
-                className="text-center"
-              >
-                {parse(vocabPreview)}
-              </CCol>
-            </>
-          )}
         </CRow>
         {/* <CRow>
           <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
@@ -120,29 +108,16 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
               component="textarea"
               id="example"
               placeholder="身内に医者がいると、何かと安心だ。"
-              onChange={(e) => {
-                setExample(e.target.value)
-                setExamplePreview(generateRubyAnnotationString(e.target.value))
+              onFocus={(e) => {
+                const exampleEditor = window.CKEDITOR.replace('example')
+                exampleEditor.setData(htmlEntityDecode(example))
+                exampleEditor.on('change', function (e) {
+                  setExample(exampleEditor.getData())
+                })
               }}
               rows={3}
             />
           </CCol>
-          {examplePreview && (
-            <>
-              <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px', marginTop: '5px' }}>
-                <CFormLabel htmlFor="vocab">Cách đọc của ví dụ</CFormLabel>
-              </CCol>
-              <CCol
-                xs="12"
-                sm="9"
-                lg="9"
-                style={{ marginBottom: '5px', marginTop: '5px', fontSize: '30px' }}
-                className="text-center"
-              >
-                {parse(examplePreview)}
-              </CCol>
-            </>
-          )}
         </CRow>
         <CRow>
           <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
@@ -198,10 +173,10 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
               setSaving(true)
               vocabService
                 .createVocab({
-                  vocab,
+                  vocab: htmlEntityEncode(vocab),
                   vocabMeaning,
                   chinese,
-                  example,
+                  example: htmlEntityEncode(example),
                   exampleMeaning,
                   audioSrc,
                   lesson: lessonId,
@@ -313,28 +288,16 @@ const EditModal = ({
                   type="text"
                   id="vocab"
                   placeholder="Ví dụ: 新[あたら]しい"
-                  onChange={(e) => {
-                    setVocab(e.target.value)
-                    setVocabPreview(generateRubyAnnotationString(e.target.value))
+                  onFocus={(e) => {
+                    const vocabEditor = window.CKEDITOR.replace('vocab')
+                    vocabEditor.setData(htmlEntityDecode(vocab))
+                    vocabEditor.on('change', function (e) {
+                      setVocab(vocabEditor.getData())
+                    })
                   }}
                   defaultValue={item.vocab}
                 />
               </CCol>
-              {vocabPreview && (
-                <>
-                  <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px', marginTop: '5px' }}>
-                    <CFormLabel htmlFor="vocab">Preview</CFormLabel>
-                  </CCol>
-                  <CCol
-                    xs="12"
-                    sm="9"
-                    lg="9"
-                    style={{ marginBottom: '5px', marginTop: '5px', fontSize: '30px' }}
-                  >
-                    {parse(vocabPreview)}
-                  </CCol>
-                </>
-              )}
             </CRow>
             {/* <CRow>
               <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
@@ -376,30 +339,17 @@ const EditModal = ({
                   component="textarea"
                   id="example"
                   placeholder="身内に医者がいると、何かと安心だ。"
-                  onChange={(e) => {
-                    setExample(e.target.value)
-                    setExamplePreview(generateRubyAnnotationString(e.target.value))
+                  onFocus={(e) => {
+                    const exampleEditor = window.CKEDITOR.replace('example')
+                    exampleEditor.setData(htmlEntityDecode(example))
+                    exampleEditor.on('change', function (e) {
+                      setExample(exampleEditor.getData())
+                    })
                   }}
                   rows={3}
                   defaultValue={item.example}
                 />
               </CCol>
-              {examplePreview && (
-                <>
-                  <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px', marginTop: '5px' }}>
-                    <CFormLabel htmlFor="vocab">Cách đọc của ví dụ</CFormLabel>
-                  </CCol>
-                  <CCol
-                    xs="12"
-                    sm="9"
-                    lg="9"
-                    style={{ marginBottom: '5px', marginTop: '5px', fontSize: '30px' }}
-                    className="text-center"
-                  >
-                    {parse(examplePreview)}
-                  </CCol>
-                </>
-              )}
             </CRow>
             <CRow>
               <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
@@ -467,10 +417,10 @@ const EditModal = ({
                 setSaving(true)
                 vocabService
                   .updateVocab(item.id, {
-                    vocab,
+                    vocab: htmlEntityEncode(vocab),
                     vocabMeaning,
                     chinese,
-                    example,
+                    example: htmlEntityEncode(example),
                     exampleMeaning,
                     audioSrc,
                     lesson: lessonId,
@@ -856,11 +806,8 @@ const LessonDetail = (props) => {
                       className="text-left"
                       style={{ borderBottom: '1px solid #dee2e6', fontSize: '30px' }}
                     >
-                      {parse(
-                        `<div style:"font-size: 30px;">${generateRubyAnnotationString(
-                          item.vocab,
-                        )}</div><div style="font-size: 15px;">${item.vocabMeaning}</>`,
-                      )}
+                      {parse(htmlEntityDecode(item.vocab))}
+                      <div style={{ fontSize: 15 }}>{item.vocabMeaning}</div>
                     </CCol>
                     <CCol
                       md="6"
@@ -868,7 +815,7 @@ const LessonDetail = (props) => {
                       style={{ borderBottom: '1px solid #dee2e6', fontSize: '30px' }}
                     >
                       {parse(
-                        `<div style:"font-size: 30px;">${generateRubyAnnotationString(
+                        `<div style:"font-size: 30px;">${htmlEntityDecode(
                           item.example,
                         )}</div><div style="font-size: 15px;">${item.exampleMeaning}</>`,
                       )}
