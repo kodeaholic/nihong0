@@ -48,7 +48,11 @@ const verifyEmail = {
     token: Joi.string().required(),
   }),
 };
-
+const socialLogin = {
+  body: Joi.object().keys({
+    userSocialDetails: Joi.object().required(),
+  }),
+};
 module.exports = {
   register,
   login,
@@ -57,4 +61,5 @@ module.exports = {
   forgotPassword,
   resetPassword,
   verifyEmail,
+  socialLogin
 };
