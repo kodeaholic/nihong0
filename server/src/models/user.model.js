@@ -3,7 +3,6 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const { toJSON, paginate } = require('./plugins');
 const { roles } = require('../config/roles');
-
 const userSchema = mongoose.Schema(
   {
     name: {
@@ -44,6 +43,27 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    photo: {
+      type: String,
+      required: false,
+      trim: false,
+      default: ''
+    },
+    provider: {
+      type: String,
+      required: false,
+      trim: false,
+    },
+    providerUserId: {
+      type: String,
+      required: false,
+      trim: false,
+    },
+    socialUserDetails: {
+      type: String,
+      required: false,
+      trim: false,
+    }
   },
   {
     timestamps: true,

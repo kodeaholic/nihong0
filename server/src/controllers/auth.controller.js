@@ -47,6 +47,12 @@ const verifyEmail = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 });
 
+const loginUserBySocialDetails = catchAsync(async (req, res) => {
+  const { userSocialDetails } = req.body;
+  const user = await authService.loginUserBySocialDetails(userSocialDetails);
+  const tokens = await tokenService.generateAuthTokens(user);
+  res.send({ user, tokens });
+});
 module.exports = {
   register,
   login,
@@ -56,4 +62,5 @@ module.exports = {
   resetPassword,
   sendVerificationEmail,
   verifyEmail,
+  loginUserBySocialDetails
 };

@@ -2,9 +2,10 @@ const httpStatus = require('http-status');
 const tokenService = require('./token.service');
 const userService = require('./user.service');
 const Token = require('../models/token.model');
+const User = require('../models/user.model');
 const ApiError = require('../utils/ApiError');
 const { tokenTypes } = require('../config/tokens');
-
+const { socialAuthenticationConstants } = require('../constants/auth.constants');
 /**
  * Login with username and password
  * @param {string} email
@@ -90,10 +91,41 @@ const verifyEmail = async (verifyEmailToken) => {
   }
 };
 
+const loginUserBySocialDetails = async (userSocialDetails) => {
+  // userSocialDetails = userInfo got from social login api + provider name. ex: Google, Facebook
+  // This service function must return an user object and then controller will take care the rest
+  const { provider, userInfo } = userSocialDetails
+  switch (provider) {
+    case socialAuthenticationConstants.GOOGLE:
+      const { user } = userInfo
+      const { email, name, photo, id } = user
+      if (!email || email.length <= 0) throw new ApiError(httpStatus.UNAUTHORIZED, "Can't login with the given social provider email");
+      const existingUser = await userService.getUserByEmail(email);
+      const userBody = {isEmailVerified: true, email, name, password: 'nihongo365', photo, providerUserId: id, provider: socialAuthenticationConstants.GOOGLE, socialUserDetails: JSON.stringify(userInfo) }
+      if (!existingUser) {
+        // create a new user account based on this email
+        const newUser = await User.create(userBody)
+        return newUser
+      } else {
+        // check for provider user id
+        // if the current providerUserId empty => update all fields. If not, check matching. If match => update all fields else throw error fake login
+        if (!existingUser.providerUserId || existingUser.providerUserId === id) {
+          Object.assign(existingUser, userBody);
+          await existingUser.save();
+          return existingUser;
+        }
+        else throw new ApiError(httpStatus.UNAUTHORIZED, "Provider userId and email do not match");
+      }
+    default:
+      throw new ApiError(httpStatus.UNAUTHORIZED, "Can't login with this social provider");
+  }
+};
+
 module.exports = {
   loginUserWithEmailAndPassword,
   logout,
   refreshAuth,
   resetPassword,
   verifyEmail,
+  loginUserBySocialDetails
 };
