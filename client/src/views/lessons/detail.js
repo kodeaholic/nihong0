@@ -249,10 +249,10 @@ const EditModal = ({
   vocabId,
 }) => {
   const [saving, setSaving] = useState(false)
-  const [vocab, setVocab] = useState(htmlEntityDecode(item.vocab))
+  const [vocab, setVocab] = useState(item.vocab)
   const [vocabMeaning, setVocabMeaning] = useState(item.vocabMeaning)
   const [chinese, setChinese] = useState(item.chinese)
-  const [example, setExample] = useState(htmlEntityDecode(item.example))
+  const [example, setExample] = useState(item.example)
   const [exampleMeaning, setExampleMeaning] = useState(item.exampleMeaning)
   const [audioSrc, setAudioSrc] = useState(item.audioSrc)
   const isDisabled = vocab.length > 0 ? false : true
@@ -290,7 +290,7 @@ const EditModal = ({
                   placeholder="Ví dụ: 新[あたら]しい"
                   onFocus={(e) => {
                     const vocabEditor = window.CKEDITOR.replace('vocab')
-                    vocabEditor.setData(vocab)
+                    vocabEditor.setData(htmlEntityDecode(vocab))
                     vocabEditor.on('change', function (e) {
                       setVocab(vocabEditor.getData())
                     })
@@ -341,7 +341,7 @@ const EditModal = ({
                   placeholder="身内に医者がいると、何かと安心だ。"
                   onFocus={(e) => {
                     const exampleEditor = window.CKEDITOR.replace('example')
-                    exampleEditor.setData(example)
+                    exampleEditor.setData(htmlEntityDecode(example))
                     exampleEditor.on('change', function (e) {
                       setExample(exampleEditor.getData())
                     })
