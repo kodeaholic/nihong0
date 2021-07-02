@@ -49,7 +49,7 @@ const getLessonById = async (id) => {
   let vocabs = []
   if (lesson) {
       // get lessons
-      vocabs = await Vocab.find({"lesson": id})
+      vocabs = await Vocab.find({"lesson": id}, null, {sort: { createdAt : 'asc' }}, function(err, docs) {});
       const { name, description, meaning, topic, chapter, audioSrc } = lesson
       return { name, description, meaning, topic, chapter, vocabs, audioSrc }
   }
