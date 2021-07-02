@@ -671,7 +671,7 @@ const DialogBoard = (props) => {
                 <CCol className="col-sm-3">
                   <CButton
                     color="danger"
-                    style={{ color: 'white' }}
+                    style={{ color: 'white', marginBottom: '10px' }}
                     onClick={() => setVisible(!visible)}
                   >
                     XOÁ BÀI NÀY
@@ -716,6 +716,26 @@ const DialogBoard = (props) => {
                       )}
                     </CModalFooter>
                   </CModal>
+                </CCol>
+              </CRow>
+            )}
+            {viewAction === 'get' && (
+              <CRow>
+                <CCol className="col-sm-3">
+                  {saving && <CSpinner />}
+                  {!saving && (
+                    <CButton
+                      style={{ color: 'white', marginBottom: '10px' }}
+                      onClick={() => {
+                        setRedirecTo({
+                          isRedirected: true,
+                          redirectedPath: `/dialog-boards/mobile/${boardId}`,
+                        })
+                      }}
+                    >
+                      XEM GIAO DIỆN MOBILE
+                    </CButton>
+                  )}
                 </CCol>
               </CRow>
             )}

@@ -1,0 +1,7 @@
+html, body {margin: 0; height: 100%; overflow-x: hidden}
+.plyr {
+    margin: 10px;
+    border-radius: 10px;
+    margin: 20px 10px 0 10px !important;
+    padding-bottom: 0;
+}
