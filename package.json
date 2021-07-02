@@ -3,8 +3,8 @@
     "version": "1.0.0",
     "scripts": {
       "heroku-postbuild": "concurrently --kill-others-on-fail \"yarn server-build\" \"yarn client-build\"",
-      "client-build": "cd client && yarn install && yarn build",
-      "server-build": "cd server && yarn install",
+      "client-build": "cd client && yarn cache clean --all && yarn install && yarn build",
+      "server-build": "cd server && yarn cache clean --all && yarn install",
       "server-dev": "cd server && yarn dev",
       "server-prod": "cd server && yarn start",
       "dev": "yarn server-dev",
