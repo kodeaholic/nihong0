@@ -5,8 +5,8 @@ const TrackValidation = {
   content: Joi.string().allow(null, ''),
   contentMeaning: Joi.string().allow(null, ''),
   contentFurigana: Joi.string().allow(null, ''),
-  start: Joi.number().allow(null, 0),
-  stop: Joi.number().allow(null, 0),
+  start: Joi.string().allow(null, ''),
+  stop: Joi.string().allow(null, ''),
   role: Joi.number().allow(null, 0),
 }
 

@@ -1,0 +1,20 @@
+.time-without-am-pm::-webkit-datetime-edit-ampm-field {
+    display: none;
+}
+input[type=time]::-webkit-clear-button {
+-webkit-appearance: none;
+-moz-appearance: none;
+appearance: none;
+margin: 0; 
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+-webkit-appearance: none;
+-moz-appearance: none;
+appearance: none;
+margin: 0; 
+}
+input[type="time"]::-webkit-calendar-picker-indicator {
+    background: none;
+}

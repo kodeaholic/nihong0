@@ -18,11 +18,13 @@ const Track = mongoose.Schema(
             required: false
         },
         start: {
-            type: Number,
+            type: String,
+            default: '00:00:00',
             required: false
         },
         stop: {
-            type: Number,
+            type: String,
+            default: '00:00:00',
             required: false
         },
         role: {
