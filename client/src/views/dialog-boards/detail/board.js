@@ -96,7 +96,9 @@ const Track = (props) => {
       <CRow>
         <CCol sm="12" style={{ marginTop: '10px' }}>
           <CInputGroup>
-            <CInputGroupText id={`content-label-${id}`}>Lời {id + 1} tiếng Nhật</CInputGroupText>
+            <CInputGroupText id={`content-label-${id}`}>
+              Lời {id + 1} tiếng Nhật (không rắc Hiragana)
+            </CInputGroupText>
             {!disabled && (
               <CFormControl
                 name="content"
@@ -172,7 +174,7 @@ const Track = (props) => {
         <CCol sm="12" style={{ marginTop: '10px' }}>
           <CInputGroup>
             <CInputGroupText id={`contentFurigana-label-${id}`}>
-              Lời {id + 1} tiếng Nhật phủ Hiragana
+              Lời {id + 1} tiếng Nhật (có rắc Hiragana)
             </CInputGroupText>
             {!disabled && (
               <CFormControl
@@ -637,7 +639,7 @@ const DialogBoard = (props) => {
                         LƯU BÀI HỌC
                       </CButton>
                       <CButton onClick={addTrack} color="success">
-                        CHIA LỜI THOẠI
+                        THÊM PHÂN ĐOẠN LỜI THOẠI
                       </CButton>
                     </CButtonGroup>
                   </CCol>
