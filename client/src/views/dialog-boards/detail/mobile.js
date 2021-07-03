@@ -258,7 +258,7 @@ const MobileDialogBoard = (props) => {
               <div className="subtitle-container" id="subtitleContainer">
                 <img src="avatars/boy_white.png" width={40} height={40} />
                 <img src="avatars/girl_white.png" width={40} height={40} />
-                <span className="subtitle-text">Chọn vai nam/nữ để bắt đầu bài học</span>
+                <span className="subtitle-text">Tuỳ chọn tắt tiếng nam/nữ</span>
               </div>
               <Plyr
                 source={src}
@@ -301,6 +301,23 @@ const MobileDialogBoard = (props) => {
               <button className="button" type="button" onClick={() => toggleScript()}>
                 Xem lời thoại Việt
               </button>
+            </div>
+            <div className="fab">
+              <span className="fab-action-button">
+                <i className="fab-action-button__icon"></i>
+              </span>
+              <ul className="fab-buttons">
+                <li className="fab-buttons__item">
+                  <a href="#" className="fab-buttons__link" data-tooltip="Nam">
+                    <i className="icon-material icon-material_fb"></i>
+                  </a>
+                </li>
+                <li className="fab-buttons__item">
+                  <a href="#" className="fab-buttons__link" data-tooltip="Nữ">
+                    <i className="icon-material icon-material_tw"></i>
+                  </a>
+                </li>
+              </ul>
             </div>
           </CCol>
         </CRow>
