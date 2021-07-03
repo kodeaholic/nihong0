@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 import React, { useState, useEffect, useRef } from 'react'
 import { toast } from 'react-toastify'
 import PropTypes, { string } from 'prop-types'
@@ -10,6 +11,7 @@ import renderHTML from 'react-render-html'
 import Plyr from 'plyr-react'
 import 'plyr-react/dist/plyr.css'
 import './mobile.css'
+import { hhmmssToSeconds } from 'src/helpers/time.helper'
 const DIALOG = {
   STANDARD_SPEED_RATE: 1,
   MALE: 1,
@@ -41,6 +43,32 @@ const MobileDialogBoard = (props) => {
   window.currentSpeedRate = DIALOG.STANDARD_SPEED_RATE
   window.playerStatus = ''
   window.duration = 0
+  const updateSubtitle = () => {
+    let index = _.findIndex(
+      window.tracks,
+      function (item) {
+        return item.start <= window.currentTime && item.stop >= window.currentTime
+      },
+      0,
+    )
+    if (index > -1) {
+      const subtitleContainer = document.getElementById('subtitleContainer')
+      while (subtitleContainer.firstChild) {
+        subtitleContainer.removeChild(subtitleContainer.lastChild)
+      }
+      let found = window.tracks[index]
+      let imgSrc = found.role === DIALOG.MALE ? `avatars/boy_white.png` : `avatars/girl_white.png`
+      const img = document.createElement('img')
+      img.src = imgSrc
+      img.width = 40
+      img.height = 40
+      const span = document.createElement('span')
+      span.className = 'subtitle-text'
+      span.innerHTML = found.content
+      subtitleContainer.appendChild(img)
+      subtitleContainer.appendChild(span)
+    }
+  }
   useEffect(() => {
     if (boardId) {
       dialogBoardService.getBoard(boardId).then((res) => {
@@ -76,9 +104,14 @@ const MobileDialogBoard = (props) => {
               newItem.contentFurigana = htmlEntityDecode(item.contentFurigana)
               if (_.isEmpty(item.start) || item.start >= 0) newItem.start = '00:00:00'
               if (_.isEmpty(item.stop) || item.stop >= 0) newItem.stop = '00:00:00'
+              newItem.start = hhmmssToSeconds(newItem.start)
+              newItem.stop = hhmmssToSeconds(newItem.stop)
               return newItem
             })
+
             setTracks(resultTracks)
+            window.tracks = resultTracks
+            console.log(resultTracks)
           }
         }
       })
@@ -96,6 +129,7 @@ const MobileDialogBoard = (props) => {
         let period = DIALOG.STANDARD_TIME_INTERVAL / window.currentSpeedRate
         // console.log('Play')
         let newInterval = setInterval(() => {
+          updateSubtitle()
           window.currentTime = window.currentTime + 0.1
           // console.log(window.currentTime)
         }, period)
@@ -112,6 +146,7 @@ const MobileDialogBoard = (props) => {
           // set new timeinterval
           let period = DIALOG.STANDARD_TIME_INTERVAL / window.currentSpeedRate
           let newInterval = setInterval(() => {
+            updateSubtitle()
             window.currentTime = window.currentTime + 0.1
             // console.log(window.currentTime)
           }, period)
@@ -138,11 +173,14 @@ const MobileDialogBoard = (props) => {
         }
         let newCurrentTime = e.detail.plyr.currentTime
         window.currentTime = newCurrentTime
-        if (window.playerStatus === DIALOG.PLAYING) {
+        if (window.currentTime === window.duration) {
+          window.currentTime = 0
+        } else if (window.playerStatus === DIALOG.PLAYING) {
           // console.log(window.playerStatus)
           // set new timeinterval
           let period = DIALOG.STANDARD_TIME_INTERVAL / window.currentSpeedRate
           let newInterval = setInterval(() => {
+            updateSubtitle()
             window.currentTime = window.currentTime + 0.1
             // console.log(window.currentTime)
           }, period)
@@ -179,7 +217,7 @@ const MobileDialogBoard = (props) => {
               style={{
                 width: '100%',
                 height: 'calc(50vh)',
-                paddingTop: 'calc(40vh)',
+                // paddingTop: 'calc(30vh)',
                 backgroundImage: `url('https://cdn.pixabay.com/photo/2017/08/30/01/05/milky-way-2695569__480.jpg')`,
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
@@ -189,6 +227,11 @@ const MobileDialogBoard = (props) => {
                 paddingBottom: '0',
               }}
             >
+              <div className="subtitle-container" id="subtitleContainer">
+                <img src="avatars/boy_white.png" width={40} height={40} />
+                <img src="avatars/girl_white.png" width={40} height={40} />
+                <span className="subtitle-text">Chọn vai nam/nữ để bắt đầu bài học</span>
+              </div>
               <Plyr
                 source={src}
                 ref={ref}
@@ -196,11 +239,13 @@ const MobileDialogBoard = (props) => {
                   resetOnEnd: true,
                   displayDuration: true,
                   speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] },
+                  controls: ['play', 'progress', 'current-time', 'settings'],
                 }}
               />
             </div>
             <div style={{ height: 'calc(50vh)', overflowY: 'scroll', margin: '10px' }}>
               {renderHTML(script)}
+              {/* {window.currentTime} */}
               <div style={{ textAlign: 'center' }}>
                 <CButton style={{ backgroundColor: '#65DD57', border: 'none' }}>
                   Xem lời thoại Việt
