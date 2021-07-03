@@ -53,20 +53,35 @@ const MobileDialogBoard = (props) => {
     )
     if (index > -1) {
       const subtitleContainer = document.getElementById('subtitleContainer')
+      const translateContainer = document.getElementById('translateContainer')
       while (subtitleContainer.firstChild) {
         subtitleContainer.removeChild(subtitleContainer.lastChild)
       }
+      while (translateContainer.firstChild) {
+        translateContainer.removeChild(translateContainer.lastChild)
+      }
       let found = window.tracks[index]
       let imgSrc = found.role === DIALOG.MALE ? `avatars/boy_white.png` : `avatars/girl_white.png`
-      const img = document.createElement('img')
-      img.src = imgSrc
-      img.width = 40
-      img.height = 40
-      const span = document.createElement('span')
-      span.className = 'subtitle-text'
-      span.innerHTML = found.content
-      subtitleContainer.appendChild(img)
-      subtitleContainer.appendChild(span)
+      /* content */
+      const imgContent = document.createElement('img')
+      imgContent.src = imgSrc
+      imgContent.width = 40
+      imgContent.height = 40
+      const content = document.createElement('span')
+      content.className = 'subtitle-text'
+      content.innerHTML = found.content
+      subtitleContainer.appendChild(imgContent)
+      subtitleContainer.appendChild(content)
+      /* translate */
+      const imgTranslate = document.createElement('img')
+      imgTranslate.src = imgSrc
+      imgTranslate.width = 40
+      imgTranslate.height = 40
+      const translate = document.createElement('span')
+      translate.className = 'subtitle-text'
+      translate.innerHTML = found.contentMeaning
+      translateContainer.appendChild(imgTranslate)
+      translateContainer.appendChild(translate)
     }
   }
   useEffect(() => {
@@ -227,6 +242,7 @@ const MobileDialogBoard = (props) => {
                 paddingBottom: '0',
               }}
             >
+              <div className="translate-container" id="translateContainer"></div>
               <div className="subtitle-container" id="subtitleContainer">
                 <img src="avatars/boy_white.png" width={40} height={40} />
                 <img src="avatars/girl_white.png" width={40} height={40} />
