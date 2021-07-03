@@ -273,7 +273,7 @@ const MobileDialogBoard = (props) => {
             </div>
             <div
               style={{
-                height: 'calc(40vh)',
+                height: 'calc(40vh - 10px)',
                 overflowY: 'scroll',
                 margin: '5px',
                 padding: '10px',
@@ -290,7 +290,14 @@ const MobileDialogBoard = (props) => {
               </div>
               {/* {window.currentTime} */}
             </div>
-            <div style={{ textAlign: 'center', height: 'calc(10vh)', backgroundColor: '#dbd4c8' }}>
+            <div
+              style={{
+                textAlign: 'center',
+                height: 'calc(10vh)',
+                backgroundColor: '#dbd4c8',
+                paddingTop: '10px',
+              }}
+            >
               <button className="button" type="button" onClick={() => toggleScript()}>
                 Xem lời thoại Việt
               </button>
