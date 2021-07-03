@@ -43,6 +43,18 @@ const MobileDialogBoard = (props) => {
   window.currentSpeedRate = DIALOG.STANDARD_SPEED_RATE
   window.playerStatus = ''
   window.duration = 0
+  const toggleScript = () => {
+    const script = document.getElementById('script-toggle')
+    const translate = document.getElementById('translate-toggle')
+    const current = script.className
+    if (current === 'visible') {
+      script.className = 'hidden'
+      translate.className = 'visible'
+    } else {
+      script.className = 'visible'
+      translate.className = 'hidden'
+    }
+  }
   const updateSubtitle = () => {
     let index = _.findIndex(
       window.tracks,
@@ -259,14 +271,29 @@ const MobileDialogBoard = (props) => {
                 }}
               />
             </div>
-            <div style={{ height: 'calc(50vh)', overflowY: 'scroll', margin: '10px' }}>
-              {renderHTML(script)}
-              {/* {window.currentTime} */}
-              <div style={{ textAlign: 'center' }}>
-                <CButton style={{ backgroundColor: '#65DD57', border: 'none' }}>
-                  Xem lời thoại Việt
-                </CButton>
+            <div
+              style={{
+                height: 'calc(40vh)',
+                overflowY: 'scroll',
+                margin: '5px',
+                padding: '10px',
+                backgroundColor: '#dbd4c8',
+                border: '1px solid #BCAC92',
+                borderRadius: '5px',
+              }}
+            >
+              <div id="script-toggle" className="visible">
+                {renderHTML(script)}
               </div>
+              <div id="translate-toggle" className="hidden">
+                {renderHTML(subtitle)}
+              </div>
+              {/* {window.currentTime} */}
+            </div>
+            <div style={{ textAlign: 'center', height: 'calc(10vh)', backgroundColor: '#dbd4c8' }}>
+              <button className="button" type="button" onClick={() => toggleScript()}>
+                Xem lời thoại Việt
+              </button>
             </div>
           </CCol>
         </CRow>

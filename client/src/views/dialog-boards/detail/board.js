@@ -355,7 +355,7 @@ const DialogBoard = (props) => {
       if (
         !(
           item.content &&
-          item.contentFurigana &&
+          // item.contentFurigana &&
           item.contentMeaning &&
           item.start &&
           item.stop &&
