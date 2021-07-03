@@ -6,7 +6,7 @@ html, body {margin: 0; height: 100%; overflow: hidden; background-color: #dbd4c8
     padding-bottom: 0;
     height: 52px;
     position: fixed;
-    bottom: calc(50vh + 5px);
+    top: calc(50vh - 57px);
     left: 0;
     width: auto;
     right: 0;

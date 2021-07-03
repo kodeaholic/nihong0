@@ -273,7 +273,7 @@ const MobileDialogBoard = (props) => {
             </div>
             <div
               style={{
-                height: 'calc(40vh - 10px)',
+                height: 'calc(35vh - 10px)',
                 overflowY: 'scroll',
                 margin: '5px',
                 padding: '10px',
@@ -295,7 +295,7 @@ const MobileDialogBoard = (props) => {
                 textAlign: 'center',
                 height: 'calc(10vh)',
                 backgroundColor: '#dbd4c8',
-                paddingTop: '10px',
+                paddingTop: '5px',
               }}
             >
               <button className="button" type="button" onClick={() => toggleScript()}>
