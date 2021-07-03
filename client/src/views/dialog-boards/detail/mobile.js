@@ -17,7 +17,7 @@ const DIALOG = {
   PLAYING: 'PLAYING',
   PAUSED: 'PAUSED',
   STOPPED: 'STOPPED',
-  STANDARD_TIME_INTERVAL: 1000,
+  STANDARD_TIME_INTERVAL: 100,
 }
 const MobileDialogBoard = (props) => {
   const { boardId } = useParams()
@@ -34,15 +34,13 @@ const MobileDialogBoard = (props) => {
   const [subtitle, setSubtitle] = useState('')
   const [displayScript, setDisplayScript] = useState(true)
   const [player, setPlayer] = useState(null)
-  const [timeInterval, setTimeInterval] = useState(DIALOG.STANDARD_TIME_INTERVAL)
-  const [playerState, setPlayerState] = useState({
-    status: '',
-    currentTime: 0,
-    currentSpeedRate: 1,
-    roleToMute: 0,
-  })
   const ref = useRef()
   /* Load item */
+  window.interval = undefined
+  window.currentTime = 0
+  window.currentSpeedRate = DIALOG.STANDARD_SPEED_RATE
+  window.playerStatus = ''
+  window.duration = 0
   useEffect(() => {
     if (boardId) {
       dialogBoardService.getBoard(boardId).then((res) => {
@@ -86,40 +84,82 @@ const MobileDialogBoard = (props) => {
       })
     }
   }, [boardId])
-  //   useEffect(() => {
-  //     const player = new Plyr('#player')
-  //   }, [])
   useEffect(() => {
-    console.log(ref.current.plyr)
+    // console.log(ref.current.plyr)
     if (ref.current && ref.current.plyr) {
       let pl = ref.current.plyr
+      pl.on('loadeddata', function (e) {
+        window.duration = e.detail.plyr.duration
+      })
       pl.on('play', function () {
-        const newPlayerState = { ...playerState }
-        newPlayerState.status = DIALOG.PLAYING
-        setPlayerState(newPlayerState)
-        let period = DIALOG.STANDARD_TIME_INTERVAL / newPlayerState.currentSpeedRate
-        console.log('Period: ', period)
+        window.playerStatus = DIALOG.PLAYING
+        let period = DIALOG.STANDARD_TIME_INTERVAL / window.currentSpeedRate
+        // console.log('Play')
         let newInterval = setInterval(() => {
-          const plState = { ...playerState }
-          plState.currentTime = plState.currentTime + 1
-          console.log(plState)
+          window.currentTime = window.currentTime + 0.1
+          // console.log(window.currentTime)
         }, period)
-        setTimeInterval(newInterval)
+        window.interval = newInterval
       })
       pl.on('ratechange', function (e) {
-        const newPlayerState = { ...playerState }
-        newPlayerState.currentSpeedRate = e.detail.plyr.speed
-        console.log(newPlayerState)
-        setPlayerState(newPlayerState)
+        // console.log('ratechange')
+        if (window.interval) {
+          clearInterval(window.interval)
+        }
+        window.currentSpeedRate = e.detail.plyr.speed
+        if (window.playerStatus === DIALOG.PLAYING) {
+          // console.log(window.playerStatus)
+          // set new timeinterval
+          let period = DIALOG.STANDARD_TIME_INTERVAL / window.currentSpeedRate
+          let newInterval = setInterval(() => {
+            window.currentTime = window.currentTime + 0.1
+            // console.log(window.currentTime)
+          }, period)
+          window.interval = newInterval
+        }
+      })
+      pl.on('pause', function (e) {
+        window.playerStatus = DIALOG.PAUSED
+        // console.log(DIALOG.PAUSED)
+        if (window.interval) clearInterval(window.interval)
+        if (window.currentTime + 0.1 >= window.duration) window.currentTime = 0 // stop and rewind
+      })
+      pl.on('stop', function (e) {
+        // console.log('stop')
+        window.playerStatus = DIALOG.STOPPED
+        // console.log(DIALOG.STOPPED)
+        if (window.interval) clearInterval(window.interval)
+        window.currentTime = 0
+      })
+      pl.on('seeked', function (e) {
+        // console.log('seeked')
+        if (window.interval) {
+          clearInterval(window.interval)
+        }
+        let newCurrentTime = e.detail.plyr.currentTime
+        window.currentTime = newCurrentTime
+        if (window.playerStatus === DIALOG.PLAYING) {
+          // console.log(window.playerStatus)
+          // set new timeinterval
+          let period = DIALOG.STANDARD_TIME_INTERVAL / window.currentSpeedRate
+          let newInterval = setInterval(() => {
+            window.currentTime = window.currentTime + 0.1
+            // console.log(window.currentTime)
+          }, period)
+          window.interval = newInterval
+        }
+      })
+      pl.on('cuechange', function (e) {
+        console.log('cuechange')
       })
       setPlayer(pl)
     }
   }, [])
-  useEffect(() => {
-    if (player) {
-      console.log(player)
-    }
-  }, [player])
+  // useEffect(() => {
+  //   if (player) {
+  //     console.log(player)
+  //   }
+  // }, [player])
   const src = {
     type: 'audio',
     sources: [
