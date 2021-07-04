@@ -48,14 +48,17 @@ const MobileDialogBoard = (props) => {
   window.duration = 0
   window.roleToMute = 0
   //window.player = undefined
-  const toggleScript = () => {
+  const toggleScript = (e) => {
+    const button = e.target
     const script = document.getElementById('script-toggle')
     const translate = document.getElementById('translate-toggle')
     const current = script.className
     if (current === 'visible') {
+      button.innerHTML = 'Xem lời thoại gốc'
       script.className = 'hidden'
       translate.className = 'visible'
     } else {
+      button.innerHTML = 'Xem lời dịch'
       script.className = 'visible'
       translate.className = 'hidden'
     }
@@ -331,7 +334,7 @@ const MobileDialogBoard = (props) => {
                 paddingTop: '5px',
               }}
             >
-              <button className="button" type="button" onClick={() => toggleScript()}>
+              <button className="button" type="button" onClick={(e) => toggleScript(e)}>
                 Xem lời thoại Việt
               </button>
             </div>
