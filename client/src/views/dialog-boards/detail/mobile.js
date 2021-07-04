@@ -12,7 +12,7 @@ import Plyr from 'plyr-react'
 import 'plyr-react/dist/plyr.css'
 import './mobile.css'
 import { hhmmssToSeconds } from 'src/helpers/time.helper'
-import { maleAvatarBase64Src, femaleAvatarBase64Src } from './image'
+import { maleAvatarBase64Src, femaleAvatarBase64Src, coupleAvatarBase64Src } from './image'
 import { makeElementDraggableOnMobile } from './drag'
 const DIALOG = {
   STANDARD_SPEED_RATE: 1,
@@ -313,13 +313,19 @@ const MobileDialogBoard = (props) => {
                 </span>
                 <ul className="fab-buttons">
                   <li className="fab-buttons__item">
-                    <a className="fab-buttons__link" data-tooltip="Nữ">
-                      <i className="icon-material icon-material_fb"></i>
+                    <a className="fab-buttons__link" data-tooltip="Tắt tiếng nữ">
+                      <i className="icon-material icon-material_female"></i>
                     </a>
                   </li>
                   <li className="fab-buttons__item">
-                    <a className="fab-buttons__link" data-tooltip="Nam">
-                      <i className="icon-material icon-material_tw"></i>
+                    <a className="fab-buttons__link" data-tooltip="Tắt tiếng nam">
+                      <i className="icon-material icon-material_male"></i>
+                    </a>
+                  </li>
+                  <li className="fab-buttons__item">
+                    <a className="fab-buttons__link" data-tooltip="Không tắt tiếng">
+                      <i className="icon-material icon-material_couple"></i>
+                      {/* <img src={coupleAvatarBase64Src} width="35" height="35" /> */}
                     </a>
                   </li>
                 </ul>
