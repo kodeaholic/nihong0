@@ -13,7 +13,7 @@ import 'plyr-react/dist/plyr.css'
 import './mobile.css'
 import { hhmmssToSeconds } from 'src/helpers/time.helper'
 import { maleAvatarBase64Src, femaleAvatarBase64Src } from './image'
-import { dragElement } from './drag'
+import { makeElementDraggableOnMobile } from './drag'
 const DIALOG = {
   STANDARD_SPEED_RATE: 1,
   MALE: 1,
@@ -148,8 +148,7 @@ const MobileDialogBoard = (props) => {
   }, [boardId])
   useEffect(() => {
     // FAB
-    dragElement(document.getElementById('fabContainer'))
-
+    makeElementDraggableOnMobile('fabContainer')
     // console.log(ref.current.plyr)
     if (ref.current && ref.current.plyr) {
       let pl = ref.current.plyr
@@ -314,12 +313,12 @@ const MobileDialogBoard = (props) => {
                 </span>
                 <ul className="fab-buttons">
                   <li className="fab-buttons__item">
-                    <a href="#" className="fab-buttons__link" data-tooltip="Nữ">
+                    <a className="fab-buttons__link" data-tooltip="Nữ">
                       <i className="icon-material icon-material_fb"></i>
                     </a>
                   </li>
                   <li className="fab-buttons__item">
-                    <a href="#" className="fab-buttons__link" data-tooltip="Nam">
+                    <a className="fab-buttons__link" data-tooltip="Nam">
                       <i className="icon-material icon-material_tw"></i>
                     </a>
                   </li>

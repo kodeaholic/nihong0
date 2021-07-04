@@ -42,4 +42,58 @@ function dragElement(elmnt) {
   }
 }
 
-export { dragElement }
+function makeElementDraggableOnMobile(elementId) {
+  const draggable = document.getElementById(elementId)
+  var isMouseDown,
+    initX,
+    initY,
+    height = draggable.offsetHeight,
+    width = draggable.offsetWidth
+
+  draggable.addEventListener('touchstart', function (e) {
+    // console.log('touchstart')
+    isMouseDown = true
+    document.body.classList.add('no-select')
+
+    const clientX = e.touches[0].clientX
+    const clientY = e.touches[0].clientY
+    initX = clientX
+    initY = clientY
+    // console.log(initX, initY)
+  })
+
+  document.addEventListener('touchmove', function (e) {
+    if (isMouseDown) {
+      const touch = e.touches[0] || e.changedTouches[0]
+      const x = touch.pageX
+      const y = touch.pageY
+      //   console.log(x, y)
+      var cx = x - initX,
+        cy = y - initY
+      if (cx < 0) {
+        cx = 0
+      }
+      if (cy < 0) {
+        cy = 0
+      }
+      if (window.innerWidth - x + initX < width) {
+        cx = window.innerWidth - width
+      }
+      if (y > window.innerHeight - height + initY) {
+        cy = window.innerHeight - height
+      }
+      //   console.log(cx, cy)
+      //   draggable.style.right = cx + 'px'
+      //   draggable.style.top = cy + 'px'
+      draggable.style.left = x + 'px'
+      draggable.style.top = y + 'px'
+    }
+  })
+
+  draggable.addEventListener('touchend', function () {
+    // console.log('touchend')
+    isMouseDown = false
+    document.body.classList.remove('no-select')
+  })
+}
+export { dragElement, makeElementDraggableOnMobile }
