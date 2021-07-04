@@ -84,12 +84,22 @@ body {
     font-family: Arial, sans-serif;
   }
   
-  .fab {
-    position: fixed;
-    width: 56px;
-    right: 10px;
+  #fabContainer {
+    position: absolute;
+    z-index: 9;
     top: calc(25vh);
+    right: 10px;
+    /* width: 56px; */
+  }
+  .fab {
+    /* position: absolute; */
+    width: 56px;
+    /* right: 10px; */
+    /* top: calc(25vh); */
     margin-left: -28px;
+    z-index: 10;
+    cursor: move;
+    width: 56px;
   }
   
   .fab:hover .fab-buttons {
@@ -123,8 +133,8 @@ body {
   
   .fab-buttons {
     position: absolute;
-    left: 0;
-    right: 0;
+    /* left: 0; */
+    right: 10px;
     bottom: 50px;
     list-style: none;
     margin: 0;

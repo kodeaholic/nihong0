@@ -12,6 +12,8 @@ import Plyr from 'plyr-react'
 import 'plyr-react/dist/plyr.css'
 import './mobile.css'
 import { hhmmssToSeconds } from 'src/helpers/time.helper'
+import { maleAvatarBase64Src, femaleAvatarBase64Src } from './image'
+import { dragElement } from './drag'
 const DIALOG = {
   STANDARD_SPEED_RATE: 1,
   MALE: 1,
@@ -73,7 +75,7 @@ const MobileDialogBoard = (props) => {
         translateContainer.removeChild(translateContainer.lastChild)
       }
       let found = window.tracks[index]
-      let imgSrc = found.role === DIALOG.MALE ? `avatars/boy_white.png` : `avatars/girl_white.png`
+      let imgSrc = found.role === DIALOG.MALE ? maleAvatarBase64Src : femaleAvatarBase64Src
       /* content */
       const imgContent = document.createElement('img')
       imgContent.src = imgSrc
@@ -145,6 +147,9 @@ const MobileDialogBoard = (props) => {
     }
   }, [boardId])
   useEffect(() => {
+    // FAB
+    dragElement(document.getElementById('fabContainer'))
+
     // console.log(ref.current.plyr)
     if (ref.current && ref.current.plyr) {
       let pl = ref.current.plyr
@@ -256,8 +261,8 @@ const MobileDialogBoard = (props) => {
             >
               <div className="translate-container" id="translateContainer"></div>
               <div className="subtitle-container" id="subtitleContainer">
-                <img src="avatars/boy_white.png" width={40} height={40} />
-                <img src="avatars/girl_white.png" width={40} height={40} />
+                <img src={maleAvatarBase64Src} width={40} height={40} />
+                <img src={femaleAvatarBase64Src} width={40} height={40} />
                 <span className="subtitle-text">Tuỳ chọn tắt tiếng nam/nữ</span>
               </div>
               <Plyr
@@ -302,22 +307,24 @@ const MobileDialogBoard = (props) => {
                 Xem lời thoại Việt
               </button>
             </div>
-            <div className="fab">
-              <span className="fab-action-button">
-                <i className="fab-action-button__icon"></i>
-              </span>
-              <ul className="fab-buttons">
-                <li className="fab-buttons__item">
-                  <a href="#" className="fab-buttons__link" data-tooltip="Nam">
-                    <i className="icon-material icon-material_fb"></i>
-                  </a>
-                </li>
-                <li className="fab-buttons__item">
-                  <a href="#" className="fab-buttons__link" data-tooltip="Nữ">
-                    <i className="icon-material icon-material_tw"></i>
-                  </a>
-                </li>
-              </ul>
+            <div id="fabContainer">
+              <div className="fab" id="fab">
+                <span className="fab-action-button">
+                  <i className="fab-action-button__icon"></i>
+                </span>
+                <ul className="fab-buttons">
+                  <li className="fab-buttons__item">
+                    <a href="#" className="fab-buttons__link" data-tooltip="Nữ">
+                      <i className="icon-material icon-material_fb"></i>
+                    </a>
+                  </li>
+                  <li className="fab-buttons__item">
+                    <a href="#" className="fab-buttons__link" data-tooltip="Nam">
+                      <i className="icon-material icon-material_tw"></i>
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </div>
           </CCol>
         </CRow>
