@@ -301,25 +301,28 @@ const MobileDialogBoard = (props) => {
                 }}
               />
             </div>
-            <div
-              style={{
-                height: 'calc(35vh - 10px)',
-                overflowY: 'scroll',
-                margin: '5px',
-                padding: '10px',
-                backgroundColor: '#dbd4c8',
-                border: '1px solid #BCAC92',
-                borderRadius: '5px',
-              }}
-            >
-              <div id="script-toggle" className="visible">
-                {renderHTML(script)}
+            <div className="animated-box in" style={{ margin: '5px', padding: '5px' }}>
+              <div
+                style={{
+                  height: 'calc(35vh - 10px)',
+                  overflowY: 'scroll',
+                  margin: '5px',
+                  padding: '10px',
+                  backgroundColor: '#dbd4c8',
+                  // border: '1px solid #BCAC92',
+                  borderRadius: '5px',
+                }}
+              >
+                <div id="script-toggle" className="visible">
+                  {renderHTML(script)}
+                </div>
+                <div id="translate-toggle" className="hidden">
+                  {renderHTML(subtitle)}
+                </div>
+                {/* {window.currentTime} */}
               </div>
-              <div id="translate-toggle" className="hidden">
-                {renderHTML(subtitle)}
-              </div>
-              {/* {window.currentTime} */}
             </div>
+
             <div
               style={{
                 textAlign: 'center',
