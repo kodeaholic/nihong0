@@ -6,6 +6,7 @@ const svgRoute = require('./svg.route');
 const cardRoute = require('./card.route');
 const boardRoute = require('./board.route');
 const listeningBoardRoute = require('./listeningBoard.route');
+const dialogBoardRoute = require('./dialogBoard.route');
 const topicRoute = require('./topic.route');
 const chapterRoute = require('./chapter.route');
 const lessonRoute = require('./lesson.route');
@@ -55,6 +56,10 @@ const defaultRoutes = [
   {
     path: '/listening-boards',
     route: listeningBoardRoute
+  },
+  {
+    path: '/dialog-boards',
+    route: dialogBoardRoute
   }
 ];
 

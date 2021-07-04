@@ -65,6 +65,8 @@ const Board = React.lazy(() => import('./views/boards/detail/board'))
 const Boards = React.lazy(() => import('./views/boards/master/boards'))
 const ListeningBoard = React.lazy(() => import('./views/listening-boards/detail/board'))
 const ListeningBoards = React.lazy(() => import('./views/listening-boards/master/boards'))
+const DialogBoard = React.lazy(() => import('./views/dialog-boards/detail/board'))
+const DialogBoards = React.lazy(() => import('./views/dialog-boards/master/boards'))
 const Topics = React.lazy(() => import('./views/topics/index'))
 const TopicDetails = React.lazy(() => import('./views/topics/detail'))
 const ChapterDetails = React.lazy(() => import('./views/lessons/index'))
@@ -187,6 +189,25 @@ const routes = [
     path: '/listening-boards/editBoard/:cardId',
     name: 'Sửa',
     component: ListeningBoard,
+    specificName: 'editBoard',
+  },
+  { path: '/dialog-boards', name: 'Bài học hội thoại', component: DialogBoards, exact: true },
+  {
+    path: '/dialog-boards/addBoard',
+    name: 'Thêm mới',
+    component: DialogBoard,
+    specificName: 'addBoard',
+  },
+  {
+    path: '/dialog-boards/getBoard/:cardId',
+    name: 'Thông tin bài học',
+    component: DialogBoard,
+    specificName: 'getBoard',
+  },
+  {
+    path: '/dialog-boards/editBoard/:cardId',
+    name: 'Sửa',
+    component: DialogBoard,
     specificName: 'editBoard',
   },
 ]
