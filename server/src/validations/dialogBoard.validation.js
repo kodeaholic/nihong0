@@ -7,6 +7,7 @@ const TrackValidation = {
   contentFurigana: Joi.string().allow(null, ''),
   start: Joi.string().allow(null, ''),
   stop: Joi.string().allow(null, ''),
+  audioSrc: Joi.string().allow(null, ''),
   role: Joi.number().allow(null, 0),
 }
 
