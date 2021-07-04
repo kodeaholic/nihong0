@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable jsx-a11y/alt-text */
 import React, { useState, useEffect, useRef } from 'react'
 import { toast } from 'react-toastify'
@@ -45,6 +46,8 @@ const MobileDialogBoard = (props) => {
   window.currentSpeedRate = DIALOG.STANDARD_SPEED_RATE
   window.playerStatus = ''
   window.duration = 0
+  window.roleToMute = 0
+  //window.player = undefined
   const toggleScript = () => {
     const script = document.getElementById('script-toggle')
     const translate = document.getElementById('translate-toggle')
@@ -66,6 +69,18 @@ const MobileDialogBoard = (props) => {
       0,
     )
     if (index > -1) {
+      let found = window.tracks[index]
+
+      /* mute if needed */
+      // console.log(window.roleToMute)
+      // console.log(window.player)
+      if (found.role === window.roleToMute) {
+        if (window.player) window.player.muted = true
+      } else {
+        if (window.player) window.player.muted = false
+      }
+      /* end mute */
+
       const subtitleContainer = document.getElementById('subtitleContainer')
       const translateContainer = document.getElementById('translateContainer')
       while (subtitleContainer.firstChild) {
@@ -74,7 +89,6 @@ const MobileDialogBoard = (props) => {
       while (translateContainer.firstChild) {
         translateContainer.removeChild(translateContainer.lastChild)
       }
-      let found = window.tracks[index]
       let imgSrc = found.role === DIALOG.MALE ? maleAvatarBase64Src : femaleAvatarBase64Src
       /* content */
       const imgContent = document.createElement('img')
@@ -97,6 +111,16 @@ const MobileDialogBoard = (props) => {
       translateContainer.appendChild(imgTranslate)
       translateContainer.appendChild(translate)
     }
+  }
+  const muteRole = (roleToMute = 0) => {
+    // 0 = ko mute
+    // console.log('Role to mute: ', roleToMute)
+    if (roleToMute) {
+      window.roleToMute = roleToMute
+    } else window.roleToMute = 0
+    // const fab = document.getElementById('fab')
+    // fab.style.pointerEvents = 'none'
+    // fab.style.pointerEvents = 'auto'
   }
   useEffect(() => {
     if (boardId) {
@@ -140,7 +164,7 @@ const MobileDialogBoard = (props) => {
 
             setTracks(resultTracks)
             window.tracks = resultTracks
-            console.log(resultTracks)
+            // console.log(resultTracks)
           }
         }
       })
@@ -221,6 +245,8 @@ const MobileDialogBoard = (props) => {
       pl.on('cuechange', function (e) {
         console.log('cuechange')
       })
+      window.player = pl
+      console.log(window.player)
       setPlayer(pl)
     }
   }, [])
@@ -306,6 +332,7 @@ const MobileDialogBoard = (props) => {
                 Xem lời thoại Việt
               </button>
             </div>
+            <div id="click"></div>
             <div id="fabContainer">
               <div className="fab" id="fab">
                 <span className="fab-action-button">
@@ -313,18 +340,39 @@ const MobileDialogBoard = (props) => {
                 </span>
                 <ul className="fab-buttons">
                   <li className="fab-buttons__item">
-                    <a className="fab-buttons__link" data-tooltip="Tắt tiếng nữ">
-                      <i className="icon-material icon-material_female"></i>
+                    <a
+                      className="fab-buttons__link"
+                      data-tooltip="Tắt tiếng nữ"
+                      onClick={() => muteRole(DIALOG.FEMALE)}
+                    >
+                      <i
+                        className="icon-material icon-material_female"
+                        onClick={() => muteRole(DIALOG.FEMALE)}
+                      ></i>
                     </a>
                   </li>
                   <li className="fab-buttons__item">
-                    <a className="fab-buttons__link" data-tooltip="Tắt tiếng nam">
-                      <i className="icon-material icon-material_male"></i>
+                    <a
+                      className="fab-buttons__link"
+                      data-tooltip="Tắt tiếng nam"
+                      onClick={() => muteRole(DIALOG.MALE)}
+                    >
+                      <i
+                        className="icon-material icon-material_male"
+                        onClick={() => muteRole(DIALOG.MALE)}
+                      ></i>
                     </a>
                   </li>
                   <li className="fab-buttons__item">
-                    <a className="fab-buttons__link" data-tooltip="Không tắt tiếng">
-                      <i className="icon-material icon-material_couple"></i>
+                    <a
+                      className="fab-buttons__link"
+                      data-tooltip="Không tắt tiếng"
+                      onClick={() => muteRole(0)}
+                    >
+                      <i
+                        className="icon-material icon-material_couple"
+                        onClick={() => muteRole(0)}
+                      ></i>
                       {/* <img src={coupleAvatarBase64Src} width="35" height="35" /> */}
                     </a>
                   </li>
