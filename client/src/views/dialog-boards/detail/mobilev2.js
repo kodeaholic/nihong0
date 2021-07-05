@@ -48,9 +48,9 @@ const ListItem = (props) => {
     }
   }, [audio])
   return (
-    <div className="listItem animated-bordered-box in">
+    <div className="listItem">
       <div className={`listItem_left ${audioButtonClassName}`} onClick={onButtonClick} />
-      <div className="listItem_right animated-bordered-box in">
+      <div className="listItem_right">
         <div className={`listItem_avatar ${avatarClass}`} />
         <div className="content">{renderHTML(htmlEntityDecode(data.contentFurigana))}</div>
       </div>
