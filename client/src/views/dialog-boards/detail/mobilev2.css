@@ -38,7 +38,7 @@ html, body {margin: 0; height: 100%; overflow: hidden;}
 .listItem {
   margin: 5px;
   width: calc(100% - 8px);
-  min-height: 70px;
+  min-height: 120px;
   height: auto;
   display: flex;
   flex-direction: row;
