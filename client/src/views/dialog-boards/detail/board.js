@@ -63,7 +63,14 @@ Tracks.propTypes = {
 const Track = (props) => {
   let { data, id, parentTracks, onChange, disabled } = props
   if (_.isEmpty(data))
-    data = { content: '', contentMeaning: '', contentFurigana: '', start: 0, stop: 0, role: 1 }
+    data = {
+      content: '',
+      contentMeaning: '',
+      contentFurigana: '',
+      start: '00:00:00',
+      stop: '00:00:00',
+      role: 1,
+    }
 
   const handleInputChange = (e) => {
     let { id, name, value } = e.target
@@ -425,6 +432,8 @@ const DialogBoard = (props) => {
       let resultTracks = newTracks.map(function (item) {
         let newItem = { ...item }
         newItem.contentFurigana = htmlEntityEncode(item.contentFurigana)
+        newItem.start = '00:00:00'
+        newItem.stop = '00:00:00'
         return newItem
       })
       console.log(resultTracks)
