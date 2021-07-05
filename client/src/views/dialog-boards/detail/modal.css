@@ -7,7 +7,7 @@ html {
 body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: #f9fafb;
+    /* background-color: #f9fafb; */
     font-size: 70%;
     line-height: 1.4;
     font-family: "SawarabiMincho", sans-serif;
