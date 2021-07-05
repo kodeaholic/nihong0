@@ -19,6 +19,7 @@ const Login = React.lazy(() => import('./views/pages/login/Login'))
 const Page404 = React.lazy(() => import('./views/pages/page404/Page404'))
 // const Page500 = React.lazy(() => import('./views/pages/page500/Page500'))
 const MobileDialogBoard = React.lazy(() => import('./views/dialog-boards/detail/mobile'))
+const MobileDialogBoardV2 = React.lazy(() => import('./views/dialog-boards/detail/mobilev2'))
 class App extends Component {
   render() {
     return (
@@ -39,6 +40,16 @@ class App extends Component {
                 return (
                   <>
                     <MobileDialogBoard {...props} />
+                  </>
+                )
+              }}
+            />
+            <Route
+              path="/dialog-boards/mobilev2/:boardId"
+              render={(props) => {
+                return (
+                  <>
+                    <MobileDialogBoardV2 {...props} />
                   </>
                 )
               }}

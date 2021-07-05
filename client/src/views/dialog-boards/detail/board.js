@@ -562,7 +562,7 @@ const DialogBoard = (props) => {
                 />
               </CCol>
             </fieldset>
-            {/* <CRow>
+            <CRow>
               <CCol xs="12" sm="2" lg="2" style={{ marginBottom: '5px' }}>
                 <CFormLabel htmlFor="audioSrc">
                   URL file audio <span style={{ color: 'red' }}>*</span>
@@ -590,7 +590,7 @@ const DialogBoard = (props) => {
                   </audio>
                 </CCol>
               </CRow>
-            )} */}
+            )}
             <CRow>
               <CFormLabel className="col-sm-2 col-form-label">Các phân đoạn lời thoại</CFormLabel>
               <CCol sm="10">
@@ -772,7 +772,7 @@ const DialogBoard = (props) => {
                 </CCol>
               </CRow>
             )}
-            {viewAction === 'get' && (
+            {/* {viewAction === 'get' && (
               <CRow>
                 <CCol className="col-sm-3">
                   {saving && <CSpinner />}
@@ -783,6 +783,26 @@ const DialogBoard = (props) => {
                         setRedirecTo({
                           isRedirected: true,
                           redirectedPath: `/dialog-boards/mobile/${boardId}`,
+                        })
+                      }}
+                    >
+                      XEM GIAO DIỆN MOBILE
+                    </CButton>
+                  )}
+                </CCol>
+              </CRow>
+            )} */}
+            {viewAction === 'get' && (
+              <CRow>
+                <CCol className="col-sm-3">
+                  {saving && <CSpinner />}
+                  {!saving && (
+                    <CButton
+                      style={{ color: 'white', marginBottom: '10px' }}
+                      onClick={() => {
+                        setRedirecTo({
+                          isRedirected: true,
+                          redirectedPath: `/dialog-boards/mobilev2/${boardId}`,
                         })
                       }}
                     >
