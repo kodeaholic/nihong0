@@ -52,7 +52,7 @@ const ListItem = (props) => {
       <div className={`listItem_left ${audioButtonClassName}`} onClick={onButtonClick} />
       <div className="listItem_right animated-bordered-box in">
         <div className={`listItem_avatar ${avatarClass}`} />
-        <div className="content">{renderHTML(`わかりました`)}</div>
+        <div className="content">{renderHTML(htmlEntityDecode(data.contentFurigana))}</div>
       </div>
     </div>
   )

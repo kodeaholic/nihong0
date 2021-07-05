@@ -33,6 +33,7 @@ html, body {margin: 0; height: 100%; overflow: hidden;}
 .listContainer {
   height: calc(100% - 40px - 40px - 52px);
   margin: 10px;
+  padding-top: 15px;
 }
 .listItem {
   margin: 5px;
@@ -54,6 +55,7 @@ html, body {margin: 0; height: 100%; overflow: hidden;}
   font-family: 'SawarabiMincho';
   margin: auto 5px auto 5px;
   flex: 5;
+  font-size: 1rem;
 }
 .listItem_avatar {
   flex: 1;
