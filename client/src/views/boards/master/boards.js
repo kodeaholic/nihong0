@@ -11,7 +11,7 @@ import {
   CSpinner,
   CCardSubtitle,
   CCardTitle,
-  CCardText,
+  CFormSelect,
   CBadge,
 } from '@coreui/react'
 import { toast } from 'react-toastify'
@@ -20,6 +20,7 @@ const Boards = () => {
   const [boards, setBoards] = useState([])
   const [searchKey, setSearchKey] = useState('')
   const [searching, setSearching] = useState(false)
+  const [level, setLevel] = useState('')
   const [redirect, setRedirect] = useState({ redirect: false, path: '' })
   const refresh = () => {
     boardService.getBoards().then((res) => {
@@ -39,13 +40,47 @@ const Boards = () => {
   useEffect(() => {
     refresh()
   }, [])
-  const isDisabled = searchKey.length === 0
+  const isDisabled = searchKey.length === 0 && !level
+  const search = () => {
+    if (!searchKey.length && !level) {
+      toast.error(`Nhập từ khoá hoặc chọn level trước khi tìm kiếm`, {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      })
+    } else {
+      setSearching(true)
+      let searchObject = { title: searchKey, level: level }
+      if (!searchObject.title) delete searchObject.title
+      if (!searchObject.level) delete searchObject.level
+      console.log(searchObject)
+      boardService.getBoards(searchObject).then((res) => {
+        setSearching(false)
+        const result = res.results
+        if (!result.length)
+          toast.success(`Không thấy kết quả tương tự`, {
+            position: 'top-right',
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          })
+        setBoards(result)
+      })
+    }
+  }
   if (redirect.redirect) return <Redirect to={redirect.path} />
   else
     return (
       <>
         <CRow>
-          <CCol xs="12" sm="6" lg="3">
+          <CCol xs="12" sm="12" lg="6">
             <CInputGroup className="mb-3">
               <CFormControl
                 type="text"
@@ -56,51 +91,33 @@ const Boards = () => {
                 }}
                 id="search-key"
               />
-              <CButton
-                type="button"
-                color="secondary"
-                disabled={isDisabled}
-                onClick={() => {
-                  if (!searchKey.length) {
-                    toast.error(`Nhập từ khoá trước khi tìm kiếm`, {
-                      position: 'top-right',
-                      autoClose: 3000,
-                      hideProgressBar: true,
-                      closeOnClick: true,
-                      pauseOnHover: true,
-                      draggable: true,
-                      progress: undefined,
-                    })
-                  } else {
-                    setSearching(true)
-                    boardService.getBoards({ title: searchKey }).then((res) => {
-                      setSearching(false)
-                      const result = res.results
-                      if (!result.length)
-                        toast.success(`Không thấy kết quả tương tự`, {
-                          position: 'top-right',
-                          autoClose: 3000,
-                          hideProgressBar: true,
-                          closeOnClick: true,
-                          pauseOnHover: true,
-                          draggable: true,
-                          progress: undefined,
-                        })
-                      setBoards(result)
-                    })
-                  }
+              <CFormSelect
+                aria-label="Level"
+                onChange={(e) => {
+                  setLevel(e.target.value)
                 }}
+                id="searchByLevel"
               >
+                <option value="">Tìm theo level</option>
+                <option value="N1">N1</option>
+                <option value="N2">N2</option>
+                <option value="N3">N3</option>
+                <option value="N4">N4</option>
+                <option value="N5">N5</option>
+              </CFormSelect>
+              <CButton type="button" color="secondary" disabled={isDisabled} onClick={search}>
                 Tìm
               </CButton>
               <CButton
                 type="button"
                 color="danger"
                 onClick={() => {
+                  setLevel('')
                   setSearchKey('')
                   refresh()
                   // remove search
                   document.getElementById('search-key').value = ''
+                  document.getElementById('searchByLevel').selectedIndex = 0
                 }}
                 style={{ color: 'white' }}
               >
