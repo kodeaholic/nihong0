@@ -63,7 +63,14 @@ Tracks.propTypes = {
 const Track = (props) => {
   let { data, id, parentTracks, onChange, disabled } = props
   if (_.isEmpty(data))
-    data = { content: '', contentMeaning: '', contentFurigana: '', start: 0, stop: 0, role: 1 }
+    data = {
+      content: '',
+      contentMeaning: '',
+      contentFurigana: '',
+      start: '00:00:00',
+      stop: '00:00:00',
+      role: 1,
+    }
 
   const handleInputChange = (e) => {
     let { id, name, value } = e.target
@@ -81,6 +88,7 @@ const Track = (props) => {
     }
   }
   const handleDeleteClicked = (e) => {
+    // console.log(e.target)
     let { id } = e.target
     id = id.replace('delete_', '')
     let index = parseInt(id)
@@ -94,7 +102,7 @@ const Track = (props) => {
   return (
     <>
       <CRow>
-        <CCol sm="12" style={{ marginTop: '10px' }}>
+        {/* <CCol sm="12" style={{ marginTop: '10px' }}>
           <CInputGroup>
             <CInputGroupText id={`content-label-${id}`}>
               Lời {id + 1} tiếng Nhật (không rắc Hiragana)
@@ -124,6 +132,60 @@ const Track = (props) => {
                 }}
               >
                 {renderHTML(data.content)}
+              </div>
+            )}
+            {!disabled && (
+              <CInputGroupText
+                id={`delete_${id}`}
+                onClick={handleDeleteClicked}
+                style={{ cursor: 'pointer' }}
+              >
+                Gỡ bỏ lời {id + 1}
+              </CInputGroupText>
+            )}
+          </CInputGroup>
+        </CCol> */}
+        <CCol sm="12" style={{ marginTop: '10px' }}>
+          <CInputGroup>
+            <CInputGroupText id={`contentFurigana-label-${id}`}>
+              Lời {id + 1} tiếng Nhật
+            </CInputGroupText>
+            {!disabled && (
+              <CFormControl
+                name="contentFurigana"
+                id={`contentFurigana-${id}`}
+                aria-describedby="contentFurigana-label"
+                defaultValue={data.contentFurigana}
+                onChange={handleInputChange}
+                disabled={disabled}
+                type="text"
+                component="textarea"
+                rows="3"
+                onFocus={(e) => {
+                  const contentFuriganaEditor = window.CKEDITOR.replace(`contentFurigana-${id}`)
+                  contentFuriganaEditor.on('change', function (e) {
+                    let index = parseInt(id)
+                    let tracks = [...parentTracks]
+                    if (tracks[index]) {
+                      tracks[index]['contentFurigana'] = contentFuriganaEditor.getData()
+                      onChange(tracks)
+                    }
+                  })
+                }}
+              />
+            )}
+            {disabled && (
+              <div
+                style={{
+                  border: '1px solid grey',
+                  borderRadius: '0 5px 5px 0',
+                  backgroundColor: '#fff',
+                  paddingRight: '5px',
+                  paddingLeft: '5px',
+                  paddingTop: '5px',
+                }}
+              >
+                {renderHTML(data.contentFurigana)}
               </div>
             )}
             {!disabled && (
@@ -171,51 +233,6 @@ const Track = (props) => {
             )}
           </CInputGroup>
         </CCol>
-        <CCol sm="12" style={{ marginTop: '10px' }}>
-          <CInputGroup>
-            <CInputGroupText id={`contentFurigana-label-${id}`}>
-              Lời {id + 1} tiếng Nhật (có rắc Hiragana)
-            </CInputGroupText>
-            {!disabled && (
-              <CFormControl
-                name="contentFurigana"
-                id={`contentFurigana-${id}`}
-                aria-describedby="contentFurigana-label"
-                defaultValue={data.contentFurigana}
-                onChange={handleInputChange}
-                disabled={disabled}
-                type="text"
-                component="textarea"
-                rows="3"
-                onFocus={(e) => {
-                  const contentFuriganaEditor = window.CKEDITOR.replace(`contentFurigana-${id}`)
-                  contentFuriganaEditor.on('change', function (e) {
-                    let index = parseInt(id)
-                    let tracks = [...parentTracks]
-                    if (tracks[index]) {
-                      tracks[index]['contentFurigana'] = contentFuriganaEditor.getData()
-                      onChange(tracks)
-                    }
-                  })
-                }}
-              />
-            )}
-            {disabled && (
-              <div
-                style={{
-                  border: '1px solid grey',
-                  borderRadius: '0 5px 5px 0',
-                  backgroundColor: '#fff',
-                  paddingRight: '5px',
-                  paddingLeft: '5px',
-                  paddingTop: '5px',
-                }}
-              >
-                {renderHTML(data.contentFurigana)}
-              </div>
-            )}
-          </CInputGroup>
-        </CCol>
       </CRow>
       <CRow>
         <CCol sm="4" style={{ marginTop: '5px', marginBottom: '5px' }}>
@@ -234,7 +251,7 @@ const Track = (props) => {
             </CFormSelect>
           </CInputGroup>
         </CCol>
-        <CCol sm="4" style={{ marginTop: '5px', marginBottom: '5px' }}>
+        {/* <CCol sm="4" style={{ marginTop: '5px', marginBottom: '5px' }}>
           <CInputGroup>
             <CInputGroupText id={`start-${id}`}>Thời điểm bắt đầu</CInputGroupText>
             <TimePicker
@@ -269,8 +286,48 @@ const Track = (props) => {
               }}
             />
           </CInputGroup>
+        </CCol> */}
+        <CCol sm="8" style={{ marginTop: '5px' }}>
+          <CInputGroup>
+            <CInputGroupText id={`audioSrc-label-${id}`}>Link audio</CInputGroupText>
+            {!disabled && (
+              <CFormControl
+                name="audioSrc"
+                id={`audioSrc-${id}`}
+                aria-describedby="audioSrc-label"
+                defaultValue={data.audioSrc}
+                onChange={handleInputChange}
+                disabled={disabled}
+                type="text"
+              />
+            )}
+            {disabled && (
+              <div
+                style={{
+                  border: '1px solid grey',
+                  borderRadius: '0 5px 5px 0',
+                  backgroundColor: '#fff',
+                  paddingRight: '5px',
+                  paddingLeft: '5px',
+                  paddingTop: '5px',
+                }}
+              >
+                {data.audioSrc}
+              </div>
+            )}
+          </CInputGroup>
         </CCol>
       </CRow>
+      {!_.isEmpty(data.audioSrc) && (
+        <CRow>
+          <CCol xs="12" sm="12" lg="12" md="12">
+            <audio controls style={{ width: '100%' }} preload="auto" type="audio/mpeg">
+              <source src={data.audioSrc} />
+              Your browser does not support the audio element.
+            </audio>
+          </CCol>
+        </CRow>
+      )}
     </>
   )
 }
@@ -354,12 +411,13 @@ const DialogBoard = (props) => {
     tracks.forEach((item) => {
       if (
         !(
-          item.content &&
-          // item.contentFurigana &&
+          item.contentFurigana &&
           item.contentMeaning &&
-          item.start &&
-          item.stop &&
-          item.role
+          // item.start &&
+          // item.stop &&
+          // item.content &&
+          item.role &&
+          item.audioSrc
         )
       )
         valid = false
@@ -374,6 +432,8 @@ const DialogBoard = (props) => {
       let resultTracks = newTracks.map(function (item) {
         let newItem = { ...item }
         newItem.contentFurigana = htmlEntityEncode(item.contentFurigana)
+        newItem.start = '00:00:00'
+        newItem.stop = '00:00:00'
         return newItem
       })
       console.log(resultTracks)
@@ -546,7 +606,7 @@ const DialogBoard = (props) => {
                 <Tracks tracks={tracks} onItemChange={setTracks} disabled={viewAction === 'get'} />
               </CCol>
             </CRow>
-            <CRow className="mb-3">
+            {/* <CRow className="mb-3">
               <CFormLabel htmlFor="script" className="col-sm-2 col-form-label">
                 Lời thoại tiếng Nhật
               </CFormLabel>
@@ -585,7 +645,7 @@ const DialogBoard = (props) => {
                   </div>
                 )}
               </CCol>
-            </CRow>
+            </CRow> */}
             <CRow className="mb-3">
               <CFormLabel htmlFor="subtitle" className="col-sm-2 col-form-label">
                 Lời thoại dịch tiếng Việt
@@ -721,7 +781,7 @@ const DialogBoard = (props) => {
                 </CCol>
               </CRow>
             )}
-            {viewAction === 'get' && (
+            {/* {viewAction === 'get' && (
               <CRow>
                 <CCol className="col-sm-3">
                   {saving && <CSpinner />}
@@ -732,6 +792,26 @@ const DialogBoard = (props) => {
                         setRedirecTo({
                           isRedirected: true,
                           redirectedPath: `/dialog-boards/mobile/${boardId}`,
+                        })
+                      }}
+                    >
+                      XEM GIAO DIỆN MOBILE
+                    </CButton>
+                  )}
+                </CCol>
+              </CRow>
+            )} */}
+            {viewAction === 'get' && (
+              <CRow>
+                <CCol className="col-sm-3">
+                  {saving && <CSpinner />}
+                  {!saving && (
+                    <CButton
+                      style={{ color: 'white', marginBottom: '10px' }}
+                      onClick={() => {
+                        setRedirecTo({
+                          isRedirected: true,
+                          redirectedPath: `/dialog-boards/mobilev2/${boardId}`,
                         })
                       }}
                     >

@@ -31,7 +31,12 @@ const Track = mongoose.Schema(
             type: Number,
             required: false,
             default: userGender.MALE, // 1 for male: 2 for female
-        }        
+        },
+        audioSrc: {
+            type: String,
+            required: false,
+            trim: false,
+        },        
     }, {
         _id: false,
     }
