@@ -51,7 +51,7 @@ const ListItem = (props) => {
     <div className="listItem">
       <div className={`listItem_left ${audioButtonClassName}`} onClick={onButtonClick} />
       <div className="listItem_right">
-        <div className={`listItem_avatar ${avatarClass}`} />
+        {/* <div className={`listItem_avatar ${avatarClass}`} /> */}
         <div className="content">{renderHTML(htmlEntityDecode(data.contentFurigana))}</div>
       </div>
     </div>
