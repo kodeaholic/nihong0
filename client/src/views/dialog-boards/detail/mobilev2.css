@@ -6,7 +6,7 @@
     src: url('../../../fonts/SawarabiMincho-Regular.ttf');
 }
 
-html, body {margin: 0; height: 100%; overflow: hidden; background-color: #FFEFDD;}
+html, body {margin: 0; height: 100%; overflow: hidden; background-color: #FFEFDD; background-color: #F7D4D6;}
 .viewContainer {
   width: 100%;
   padding-bottom: 15px;  /* for android bottom navigation */
