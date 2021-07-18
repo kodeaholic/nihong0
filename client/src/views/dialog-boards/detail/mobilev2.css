@@ -6,17 +6,15 @@
     src: url('../../../fonts/SawarabiMincho-Regular.ttf');
 }
 
-html, body {margin: 0; height: 100%; overflow: hidden; background-color: #B0F0FA;}
+html, body {margin: 0; height: 100%; overflow: hidden; background-color: #FFEFDD;}
 .viewContainer {
   width: 100%;
   padding-bottom: 15px;  /* for android bottom navigation */
-  height: calc(100vh);
-  /* border: 1px solid;
-  background-image: url('https://cdn.pixabay.com/photo/2017/08/30/01/05/milky-way-2695569__480.jpg');
+  height: calc(100vh + 10px);
+  background-image: url('https://png.pngtree.com/thumb_back/fw800/back_our/20190621/ourmid/pngtree-winter-travel-food-japanese-style-image_180716.jpg');
   background-position: 'center';
   background-repeat: 'no-repeat';
-  background-size: 'cover'; */
-  background-color: #B0F0FA;
+  background-size: 'cover';
 }
 .mainAudioPlayerContainer {
   height: 52px;
@@ -59,6 +57,7 @@ html, body {margin: 0; height: 100%; overflow: hidden; background-color: #B0F0FA
   margin: auto 5px auto 5px;
   flex: 5;
   font-size: 1rem;
+  font-weight: bold;
 }
 .listItem_avatar {
   flex: 1;
