@@ -2,7 +2,7 @@
     border: 1px solid #b1b7c1;
     border-radius: 4px;
     width: 294px;
-    height: 220px;
+    min-height: 220px;
     background-color: #ffffff;
     margin-bottom: 10px;
 }
