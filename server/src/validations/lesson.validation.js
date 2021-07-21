@@ -49,7 +49,7 @@ const deleteLesson = {
 
 const VocabItemToSort = {
   id: Joi.required().custom(objectId),
-  orderInLesson: Joi.number().required(),
+  orderInParent: Joi.number().required(),
 }
 const sortVocab = {
   params: Joi.object().keys({

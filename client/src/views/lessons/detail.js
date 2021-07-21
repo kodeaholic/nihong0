@@ -525,7 +525,7 @@ const ModalSort = ({ visible, setVisible, refresh, setRefresh, tags, setTags, le
             onClick={() => {
               setSaving(true)
               const orderedList = tags.map((item, index) => {
-                return { id: item.id, orderInLesson: index + 1 }
+                return { id: item.id, orderInParent: index + 1 }
               })
               lessonService
                 .sortVocab(lessonId, {
