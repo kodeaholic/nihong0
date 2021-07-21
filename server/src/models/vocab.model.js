@@ -36,6 +36,11 @@ const VocabSchema = mongoose.Schema(
         lesson: {
             type: Schema.Types.ObjectId, ref: 'Lesson',
             required: false,
+        },
+        orderInParent: {
+            type: Number,
+            required: false,
+            default: 1000, // latest vocab created will be at the bottom of the vocab list
         }
     },
     { timestamps: true }

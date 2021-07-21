@@ -47,11 +47,24 @@ const deleteLesson = {
     }),
   };
 
+const VocabItemToSort = {
+  id: Joi.required().custom(objectId),
+  orderInParent: Joi.number().required(),
+}
+const sortVocab = {
+  params: Joi.object().keys({
+      lessonId: Joi.required().custom(objectId)
+  }),
+  body: Joi.object().keys({
+    orderedList: Joi.array().items(VocabItemToSort)
+  }),
+};
 module.exports = {
   deleteLesson,
   createLesson,
   updateLesson,
   getLesson,
   getLessons,
+  sortVocab
 };
 
