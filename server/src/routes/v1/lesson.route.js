@@ -15,5 +15,7 @@ router
     .get(auth('getLessons'), validate(lessonValidation.getLesson), lessonController.getLesson)
     .patch(auth('admin'), validate(lessonValidation.updateLesson), lessonController.updateLesson)
     .delete(auth('admin'), validate(lessonValidation.deleteLesson), lessonController.deleteLesson);
-
+router
+    .route('/:lessonId/sortVocab')
+    .patch(auth('admin'), validate(lessonValidation.sortVocab), lessonController.sortVocab)
 module.exports = router;

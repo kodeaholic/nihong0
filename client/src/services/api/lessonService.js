@@ -6,6 +6,7 @@ export const lessonService = {
   updateLesson,
   deleteLesson,
   getLesson,
+  sortVocab,
 }
 
 async function getLessons(
@@ -61,6 +62,24 @@ async function updateLesson(lessonId, data) {
     body: JSON.stringify(data),
   }
   let url = `${config.apiEndpoint}/lessons/${lessonId}`
+  try {
+    const response = await fetch(url, requestOptions)
+    const res = await response.json()
+    return res
+  } catch (e) {
+    return {
+      failed: true,
+    }
+  }
+}
+
+async function sortVocab(lessonId, data) {
+  const requestOptions = {
+    method: 'PATCH',
+    headers: authHeader(),
+    body: JSON.stringify(data),
+  }
+  let url = `${config.apiEndpoint}/lessons/${lessonId}/sortVocab`
   try {
     const response = await fetch(url, requestOptions)
     const res = await response.json()

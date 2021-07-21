@@ -32,6 +32,8 @@ import { vocabService } from 'src/services/api/vocabService'
 import { generateRubyAnnotationString } from 'src/helpers/furigana'
 import parse from 'html-react-parser'
 import { htmlEntityEncode, htmlEntityDecode } from '../../helpers/htmlentities'
+import './style.css'
+import { DraggableArea } from 'react-draggable-tags'
 const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
   const [saving, setSaving] = useState(false)
   const [vocab, setVocab] = useState('')
@@ -483,6 +485,108 @@ const EditModal = ({
   )
 }
 
+const ModalSort = ({ visible, setVisible, refresh, setRefresh, tags, setTags, lessonId }) => {
+  const [saving, setSaving] = useState(false)
+  return (
+    <CModal visible={visible} onDismiss={() => setVisible(false)}>
+      <CModalHeader onDismiss={() => setVisible(false)}>
+        <CModalTitle>SẮP XẾP TỪ VỰNG</CModalTitle>
+      </CModalHeader>
+      <CModalBody>
+        <CRow>
+          <CFormLabel className="col-sm-2 col-form-label"></CFormLabel>
+          <CCol sm="3">
+            <div className="list-tags">
+              <DraggableArea
+                isList
+                tags={tags}
+                render={({ tag, index }) => (
+                  <div className="row-tag">
+                    <span className="delete-tag">{index + 1}</span>
+                    {parse(htmlEntityDecode(tag.content))}
+                  </div>
+                )}
+                onChange={(tags) => {
+                  setTags(tags)
+                }}
+              />
+            </div>
+          </CCol>
+        </CRow>
+      </CModalBody>
+      <CModalFooter>
+        <CButton color="secondary" onClick={() => setVisible(false)}>
+          HUỶ BỎ
+        </CButton>
+        {saving && <CSpinner />}
+        {!saving && (
+          <CButton
+            color="success"
+            onClick={() => {
+              setSaving(true)
+              const orderedList = tags.map((item, index) => {
+                return { id: item.id, orderInLesson: index + 1 }
+              })
+              lessonService
+                .sortVocab(lessonId, {
+                  orderedList: orderedList,
+                })
+                .then((res) => {
+                  setSaving(false)
+                  if (
+                    res.ok ||
+                    (res.status !== 404 &&
+                      res.status !== 400 &&
+                      res.code !== 500 &&
+                      res.code !== 400)
+                  ) {
+                    toast.success(`Sắp xếp thành công`, {
+                      position: 'top-right',
+                      autoClose: 2500,
+                      hideProgressBar: true,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: true,
+                      progress: undefined,
+                    })
+                    // setVisible(false)
+                    setRefresh(refresh + 1)
+                  } else {
+                    if (res.code === 400) {
+                      toast.error(`${res.message}`, {
+                        position: 'top-right',
+                        autoClose: 2500,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                      })
+                    } else
+                      toast.error(
+                        `Không thể sắp xếp. Liên hệ web developer để biết thêm chi tiết`,
+                        {
+                          position: 'top-right',
+                          autoClose: 2500,
+                          hideProgressBar: true,
+                          closeOnClick: true,
+                          pauseOnHover: true,
+                          draggable: true,
+                          progress: undefined,
+                        },
+                      )
+                  }
+                })
+            }}
+          >
+            LƯU
+          </CButton>
+        )}
+      </CModalFooter>
+    </CModal>
+  )
+}
+
 AddModal.propTypes = {
   visible: PropTypes.bool,
   setVisible: PropTypes.func,
@@ -505,6 +609,17 @@ EditModal.propTypes = {
   lessonId: PropTypes.string,
   vocabId: PropTypes.string,
 }
+
+ModalSort.propTypes = {
+  visible: PropTypes.bool,
+  setVisible: PropTypes.func,
+  onSuccess: PropTypes.func,
+  refresh: PropTypes.number,
+  setRefresh: PropTypes.func,
+  tags: PropTypes.array,
+  setTags: PropTypes.func,
+  lessonId: PropTypes.string,
+}
 const LessonDetail = (props) => {
   const { lessonId } = useParams()
   const [topicId, setTopicId] = useState('')
@@ -516,6 +631,7 @@ const LessonDetail = (props) => {
   const [visibleModalDelete, setVisibleModalDelete] = useState(false)
   const [visibleModalAdd, setVisibleModalAdd] = useState(false)
   const [visibleModalEdit, setVisibleModalEdit] = useState(false)
+  const [visibleModalSort, setVisibleModalSort] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [itemToDelete, setItemToDelete] = useState({})
   const [itemToEdit, setItemToEdit] = useState({})
@@ -524,6 +640,7 @@ const LessonDetail = (props) => {
   const [chapter, setChapter] = useState({})
   const [topicName, setTopicName] = useState('')
   const [vocab, setVocab] = useState([])
+  const [tags, setTags] = useState([])
   const refreshList = () => {
     lessonService.getLesson(lessonId).then((res) => {
       if (res.status === 404) {
@@ -544,6 +661,11 @@ const LessonDetail = (props) => {
       setTopicId(res['chapter']['topic']['id'])
       setChapterId(res['chapter']['id'])
       setVocab(res['vocabs'])
+      // console.log(res['vocabs'])
+      const list = res['vocabs'].map((item) => {
+        return { id: item.id, content: item.vocab }
+      })
+      setTags(list)
       if (!res['vocabs'].length)
         toast.success(`Hiện tại chưa có từ vựng nào được thêm`, {
           position: 'top-right',
@@ -559,6 +681,9 @@ const LessonDetail = (props) => {
   useEffect(() => {
     refreshList()
   }, [refresh])
+  useEffect(() => {
+    console.log('Tags: ', tags)
+  }, [tags])
   const isDisabledSearch = searchKey.length === 0
   if (redirect.redirect) return <Redirect to={redirect.path} />
   else
@@ -702,6 +827,15 @@ const LessonDetail = (props) => {
               >
                 &#x2B; Thêm từ vựng
               </CButton>
+              <CButton
+                color="success"
+                style={{ color: 'white', marginBottom: '5px' }}
+                onClick={() => {
+                  setVisibleModalSort(true)
+                }}
+              >
+                &#9650; &#9660; Sắp xếp lại từ vựng
+              </CButton>
             </CButtonGroup>
           </CCol>
           {lesson && lesson.audioSrc && (
@@ -720,6 +854,16 @@ const LessonDetail = (props) => {
               refresh={refresh}
               lessonId={lessonId}
               setRefresh={setRefresh}
+            />
+            <ModalSort
+              visible={visibleModalSort}
+              setVisible={setVisibleModalSort}
+              onSuccess={setRefresh}
+              refresh={refresh}
+              tags={tags}
+              setRefresh={setRefresh}
+              setTags={setTags}
+              lessonId={lessonId}
             />
             {!_.isEmpty(itemToEdit) && (
               <EditModal

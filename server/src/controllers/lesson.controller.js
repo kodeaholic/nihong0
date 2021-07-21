@@ -35,10 +35,19 @@ const deleteLesson = catchAsync(async (req, res) => {
   res.send(lesson);
 });
 
+const sortVocab = catchAsync(async (req, res) => {
+  const lesson = await lessonService.sortVocab(req.params.lessonId, req.body);
+  if (!lesson) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Lesson không tồn tại hoặc đã bị xoá');
+  }
+  res.send(lesson);
+});
+
 module.exports = {
   createLesson,
   getLessons,
   getLesson,
   updateLesson,
   deleteLesson,
+  sortVocab
 };

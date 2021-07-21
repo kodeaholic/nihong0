@@ -49,7 +49,7 @@ const getLessonById = async (id) => {
   let vocabs = []
   if (lesson) {
       // get lessons
-      vocabs = await Vocab.find({"lesson": id}, null, {sort: { createdAt : 'asc' }}, function(err, docs) {});
+      vocabs = await Vocab.find({"lesson": id}, null, {sort: { orderInLesson: 'asc', createdAt : 'asc' }}, function(err, docs) {});
       const { name, description, meaning, topic, chapter, audioSrc } = lesson
       return { name, description, meaning, topic, chapter, vocabs, audioSrc }
   }
@@ -85,10 +85,31 @@ const deleteLessonById = async (lessonId) => {
   return lesson;
 };
 
+const sortVocab = async (lessonId, updateBody) => {
+  const lesson = await Lesson.findById(lessonId);
+  if (!lesson) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Bài học không tồn tại hoặc đã bị xoá');
+  }
+  else {
+    const vocabs = await Vocab.find({"lesson": lessonId}, null, {sort: { orderInLesson: 'asc', createdAt : 'asc' }}, function(err, docs) {});
+    const orderedObject = {};
+    for (let i = 0; i < updateBody.orderedList.length; i++) {
+      orderedObject[updateBody.orderedList[i].id] = updateBody.orderedList[i].orderInLesson;
+    }
+    await Promise.all(vocabs.map(async (vocab) => {
+      const item = await Vocab.findById(vocab._id);
+      Object.assign(item, {orderInLesson: orderedObject[vocab._id]})
+      item.save()
+    }));
+  }
+  return lesson;
+};
+
 module.exports = {
   createLesson,
   queryLessons,
   getLessonById,
   updateLessonById,
   deleteLessonById,
+  sortVocab
 };
