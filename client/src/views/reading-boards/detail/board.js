@@ -506,7 +506,7 @@ const ReadingBoard = (props) => {
                       })
                     }}
                   >
-                    {renderHTML(content)}
+                    {content ? renderHTML(content) : renderHTML('&nbsp;')}
                   </div>
                 )}
                 {viewAction === 'get' && (
@@ -521,7 +521,7 @@ const ReadingBoard = (props) => {
                       marginTop: '7px',
                     }}
                   >
-                    {renderHTML(content)}
+                    {content ? renderHTML(content) : renderHTML('&nbsp;')}
                   </div>
                 )}
               </CCol>
@@ -551,7 +551,7 @@ const ReadingBoard = (props) => {
                       })
                     }}
                   >
-                    {renderHTML(contentVn)}
+                    {contentVn ? renderHTML(contentVn) : renderHTML('&nbsp;')}
                   </div>
                 )}
                 {viewAction === 'get' && (
@@ -566,7 +566,7 @@ const ReadingBoard = (props) => {
                       marginTop: '7px',
                     }}
                   >
-                    {renderHTML(contentVn)}
+                    {contentVn ? renderHTML(contentVn) : renderHTML('&nbsp;')}
                   </div>
                 )}
               </CCol>
