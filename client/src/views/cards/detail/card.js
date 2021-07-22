@@ -29,6 +29,7 @@ import { svgService } from '../../../services/api/svgService'
 import { cardService } from '../../../services/api/cardService'
 import { Redirect } from 'react-router-dom'
 import parse from 'html-react-parser'
+import renderHTML from 'react-render-html'
 const Card = (props) => {
   const pathName = props.location.pathname
   const viewAction = getViewAction(pathName)
@@ -51,7 +52,6 @@ const Card = (props) => {
   const [redirectTo, setRedirecTo] = useState({ isRedirected: false, redirectedPath: '' })
   const [visible, setVisible] = useState(false)
   const [deleting, setDeleting] = useState(false)
-  const guide = '(để xuống dòng, thêm <br />)'
   useEffect(() => {
     // fetch svg src
     if (searchKey) {
@@ -234,38 +234,44 @@ const Card = (props) => {
               </div>
               <div className="mb-3">
                 <CFormLabel htmlFor="onExample">
-                  Ví dụ ON {viewAction === 'get' ? '' : guide}
+                  Ví dụ ON {viewAction === 'get' ? '' : ''}
                 </CFormLabel>
                 {viewAction !== 'get' && (
-                  <CFormControl
-                    component="textarea"
-                    onChange={(e) => setOnExample(e.target.value)}
+                  <div
                     id="onExample"
-                    rows="3"
-                    disabled={viewAction === 'get'}
-                    defaultValue={onExample}
-                    onFocus={(e) => {
+                    style={{
+                      border: '1px solid grey',
+                      borderRadius: '5px 5px 5px 5px',
+                      backgroundColor: '#fff',
+                      paddingRight: '5px',
+                      paddingLeft: '5px',
+                      paddingTop: '5px',
+                      marginTop: '7px',
+                      cursor: 'text',
+                    }}
+                    onClick={(e) => {
                       const onExampleEditor = window.CKEDITOR.replace('onExample')
                       onExampleEditor.on('change', function (e) {
                         setOnExample(onExampleEditor.getData())
                       })
                     }}
-                  ></CFormControl>
+                  >
+                    {renderHTML(onExample)}
+                  </div>
                 )}
                 {viewAction === 'get' && (
                   <div
                     style={{
-                      fontSize: '30px',
-                      border: '1px solid',
-                      marginTop: '5px',
-                      height: 'auto',
-                      borderRadius: 5,
-                      borderColor: '#b1b7c1',
-                      backgroundColor: '#d8dbe0',
-                      paddingLeft: 10,
+                      border: '1px solid grey',
+                      borderRadius: '5px 5px 5px 5px',
+                      backgroundColor: '#D8DBE0',
+                      paddingRight: '5px',
+                      paddingLeft: '5px',
+                      paddingTop: '5px',
+                      marginTop: '7px',
                     }}
                   >
-                    {parse(onExample)}
+                    {renderHTML(onExample)}
                   </div>
                 )}
               </div>
@@ -281,38 +287,44 @@ const Card = (props) => {
               </div>
               <div className="mb-3">
                 <CFormLabel htmlFor="kunExample">
-                  Ví dụ KUN {viewAction === 'get' ? '' : guide}
+                  Ví dụ KUN {viewAction === 'get' ? '' : ''}
                 </CFormLabel>
                 {viewAction !== 'get' && (
-                  <CFormControl
-                    component="textarea"
-                    onChange={(e) => setKunExample(e.target.value)}
+                  <div
                     id="kunExample"
-                    rows="3"
-                    disabled={viewAction === 'get'}
-                    defaultValue={kunExample}
-                    onFocus={(e) => {
+                    style={{
+                      border: '1px solid grey',
+                      borderRadius: '5px 5px 5px 5px',
+                      backgroundColor: '#fff',
+                      paddingRight: '5px',
+                      paddingLeft: '5px',
+                      paddingTop: '5px',
+                      marginTop: '7px',
+                      cursor: 'text',
+                    }}
+                    onClick={(e) => {
                       const kunExampleEditor = window.CKEDITOR.replace('kunExample')
                       kunExampleEditor.on('change', function (e) {
                         setKunExample(kunExampleEditor.getData())
                       })
                     }}
-                  ></CFormControl>
+                  >
+                    {renderHTML(kunExample)}
+                  </div>
                 )}
                 {viewAction === 'get' && (
                   <div
                     style={{
-                      fontSize: '30px',
-                      border: '1px solid',
-                      marginTop: '5px',
-                      height: 'auto',
-                      borderRadius: 5,
-                      borderColor: '#b1b7c1',
-                      backgroundColor: '#d8dbe0',
-                      paddingLeft: 10,
+                      border: '1px solid grey',
+                      borderRadius: '5px 5px 5px 5px',
+                      backgroundColor: '#D8DBE0',
+                      paddingRight: '5px',
+                      paddingLeft: '5px',
+                      paddingTop: '5px',
+                      marginTop: '7px',
                     }}
                   >
-                    {parse(kunExample)}
+                    {renderHTML(kunExample)}
                   </div>
                 )}
               </div>
