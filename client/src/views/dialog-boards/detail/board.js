@@ -150,17 +150,17 @@ const Track = (props) => {
               Lời {id + 1} tiếng Nhật
             </CInputGroupText>
             {!disabled && (
-              <CFormControl
-                name="contentFurigana"
-                id={`contentFurigana-${id}`}
-                aria-describedby="contentFurigana-label"
-                defaultValue={data.contentFurigana}
-                onChange={handleInputChange}
-                disabled={disabled}
-                type="text"
-                component="textarea"
-                rows="3"
-                onFocus={(e) => {
+              <div
+                style={{
+                  border: '1px solid #b1b7c1',
+                  backgroundColor: '#fff',
+                  paddingRight: '5px',
+                  paddingLeft: '5px',
+                  paddingTop: '5px',
+                  cursor: 'text',
+                  width: 'auto',
+                }}
+                onClick={(e) => {
                   const contentFuriganaEditor = window.CKEDITOR.replace(`contentFurigana-${id}`)
                   contentFuriganaEditor.on('change', function (e) {
                     let index = parseInt(id)
@@ -171,20 +171,34 @@ const Track = (props) => {
                     }
                   })
                 }}
-              />
+                name="contentFurigana"
+                id={`contentFurigana-${id}`}
+                aria-describedby="contentFurigana-label"
+                defaultValue={data.contentFurigana}
+                onChange={handleInputChange}
+                disabled={disabled}
+                type="text"
+                component="textarea"
+                rows="3"
+              >
+                {renderHTML(parentTracks[parseInt(id)]['contentFurigana'])}
+              </div>
             )}
             {disabled && (
               <div
                 style={{
-                  border: '1px solid grey',
-                  borderRadius: '0 5px 5px 0',
+                  border: '1px solid #b1b7c1',
                   backgroundColor: '#fff',
                   paddingRight: '5px',
                   paddingLeft: '5px',
                   paddingTop: '5px',
+                  cursor: 'text',
+                  borderTopRightRadius: '5px',
+                  borderBottomRightRadius: '5px',
+                  width: 'auto',
                 }}
               >
-                {renderHTML(data.contentFurigana)}
+                {renderHTML(parentTracks[parseInt(id)]['contentFurigana'])}
               </div>
             )}
             {!disabled && (
@@ -219,12 +233,15 @@ const Track = (props) => {
             {disabled && (
               <div
                 style={{
-                  border: '1px solid grey',
-                  borderRadius: '0 5px 5px 0',
+                  border: '1px solid #b1b7c1',
                   backgroundColor: '#fff',
                   paddingRight: '5px',
                   paddingLeft: '5px',
                   paddingTop: '5px',
+                  cursor: 'text',
+                  borderTopRightRadius: '5px',
+                  borderBottomRightRadius: '5px',
+                  width: 'auto',
                 }}
               >
                 {renderHTML(data.contentMeaning)}
@@ -651,29 +668,34 @@ const DialogBoard = (props) => {
               </CFormLabel>
               <CCol sm="10">
                 {viewAction !== 'get' && (
-                  <CFormControl
-                    type="text"
+                  <div
                     id="subtitle"
-                    placeholder="Phần II: Câu hỏi + Lời thoại tiếng Nhật"
-                    component="textarea"
-                    rows="5"
-                    onChange={(e) => setSubtitle(e.target.value)}
-                    defaultValue={subtitle}
-                    disabled={viewAction === 'get'}
-                    onFocus={(e) => {
+                    style={{
+                      border: '1px solid grey',
+                      borderRadius: '5px 5px 5px 5px',
+                      backgroundColor: '#fff',
+                      paddingRight: '5px',
+                      paddingLeft: '5px',
+                      paddingTop: '5px',
+                      marginTop: '7px',
+                      cursor: 'text',
+                    }}
+                    onClick={(e) => {
                       const subtitleEditor = window.CKEDITOR.replace('subtitle')
                       subtitleEditor.on('change', function (e) {
                         setSubtitle(subtitleEditor.getData())
                       })
                     }}
-                  />
+                  >
+                    {renderHTML(subtitle)}
+                  </div>
                 )}
                 {viewAction === 'get' && (
                   <div
                     style={{
                       border: '1px solid grey',
                       borderRadius: '5px 5px 5px 5px',
-                      backgroundColor: '#fff',
+                      backgroundColor: '#D8DBE0',
                       paddingRight: '5px',
                       paddingLeft: '5px',
                       paddingTop: '5px',
