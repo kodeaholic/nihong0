@@ -1,35 +1,26 @@
 import React, { useState, useEffect } from 'react'
-import { toast } from 'react-toastify'
-import PropTypes from 'prop-types'
-import { getViewAction, getLastPartFromPathName } from 'src/services/helpers/routeHelper'
 import './style.css'
-import {
-  CForm,
-  CFormCheck,
-  CRow,
-  CBadge,
-  CCol,
-  CFormLabel,
-  CFormControl,
-  CButton,
-  CSpinner,
-  CModal,
-  CModalFooter,
-  CModalHeader,
-  CModalBody,
-  CModalTitle,
-  CInputGroup,
-  CInputGroupText,
-  CFormSelect,
-  CButtonGroup,
-} from '@coreui/react'
-import { Redirect, useParams } from 'react-router-dom'
+import './switch.css'
+import { CFormCheck } from '@coreui/react'
+import { useParams } from 'react-router-dom'
 import { readingBoardService } from 'src/services/api/readingBoardService'
 import _ from 'lodash'
 import renderHTML from 'react-render-html'
 import { htmlEntityDecode } from '../../../helpers/htmlentities'
 import PageNotFoundComponent from 'src/components/404'
 import './webview.css'
+const removeColor = (elem) => {
+  if (_.get(elem, 'style.color')) {
+    elem.style.color = ''
+  }
+}
+const allDescendants = (node) => {
+  for (var i = 0; i < node.childNodes.length; i++) {
+    var child = node.childNodes[i]
+    allDescendants(child)
+    removeColor(child)
+  }
+}
 const ReadingBoardWebView = (props) => {
   const { boardId } = useParams()
   const [title, setTitle] = useState('')
@@ -39,6 +30,28 @@ const ReadingBoardWebView = (props) => {
   const [contentVn, setContentVn] = useState('')
   const [quiz, setQuiz] = useState([])
   const [pageNotFound, setPageNotFound] = useState(false)
+  const [answeredQuiz, setAnsweredQuiz] = useState({})
+  const onQuizAnswered = (e, index) => {
+    const { value } = e.target
+    let clone = { ...answeredQuiz }
+    clone[index] = value
+    setAnsweredQuiz(clone)
+    const correctOption = quiz[index].answer
+    const colorForAnsweredOption = value === correctOption ? '#65DD57' : '#ff0000'
+    const colorForCorrectAnswer = '#65DD57'
+    const answeredLabel = document.querySelector(`label[for='quiz-${index}-${value}']`)
+    const correctLabel = document.querySelector(`label[for='quiz-${index}-${correctOption}']`)
+    if (correctLabel) {
+      allDescendants(correctLabel)
+      correctLabel.style.color = colorForCorrectAnswer
+      correctLabel.style.fontWeight = 'bold'
+    }
+    if (answeredLabel) {
+      allDescendants(answeredLabel)
+      answeredLabel.style.color = colorForAnsweredOption
+      answeredLabel.style.fontWeight = 'bold'
+    }
+  }
   /* Load item */
   useEffect(() => {
     if (boardId) {
@@ -81,41 +94,85 @@ const ReadingBoardWebView = (props) => {
     return (
       <>
         <div className="page">
-          <header tabIndex="0"> {`Luyện đọc ${level} - ${title}`} </header>{' '}
+          <header tabIndex="0"> {`Luyện đọc ${level} - ${title}`} </header>
           <div id="nav-container">
-            <div className="bg"> </div>{' '}
+            <div className="bg"> </div>
             <div className="button" tabIndex="0">
-              <span className="icon-bar"> </span> <span className="icon-bar"> </span>{' '}
-              <span className="icon-bar"> </span>{' '}
-            </div>{' '}
+              <span className="icon-bar"> </span> <span className="icon-bar"> </span>
+              <span className="icon-bar"> </span>
+            </div>
             <div id="nav-content" tabIndex="0">
-              <ul>
-                <li>
-                  <a href="#0"> Home </a>{' '}
-                </li>{' '}
-                <li>
-                  <a href="#0"> Services </a>{' '}
-                </li>{' '}
-              </ul>{' '}
-            </div>{' '}
-          </div>{' '}
+              <div id="toggles">
+                <div className="switch-wrapper">
+                  <div className="switch">
+                    <input type="checkbox" name="checkbox1" id="checkbox1" className="ios-toggle" />
+                    <label htmlFor="checkbox1" className="checkbox-label" />
+                  </div>
+                  <div className="switch-label">Giao diện ban đêm</div>
+                </div>
+                {/* <div className="switch-wrapper">
+                  <input type="checkbox" name="checkbox2" id="checkbox2" className="ios-toggle" />
+                  <label htmlFor="checkbox2" className="checkbox-label" />
+                </div> */}
+                <div className="switch-wrapper">
+                  <div className="switch">
+                    <input type="checkbox" name="checkbox2" id="checkbox2" className="ios-toggle" />
+                    <label htmlFor="checkbox2" className="checkbox-label" />
+                  </div>
+                  <div className="switch-label">Hiragana</div>
+                </div>
+              </div>
+            </div>
+          </div>
           <main>
-            <div className="content">
-              <h2>
-                Off - screen navigation using <span>: focus - within </span>{' '}
-              </h2>{' '}
-              <p>
-                {' '}
-                {`Adding yet another pure CSS technique to the list of off-screen navigation by
-                "hacking" the :focus-within pseudo-class. Have a look at the code to see how it
-                works.`}{' '}
-              </p>{' '}
-              <small>
-                <strong> NB! </strong> Use a browser that supports :focus-within{' '}
-              </small>{' '}
-            </div>{' '}
-          </main>{' '}
-        </div>{' '}
+            <div className="content">{renderHTML(content)}</div>
+            <div className="quiz-container">
+              {quiz.map((item, index) => {
+                return (
+                  <div className="quiz-item-container" key={`quiz-${index}`}>
+                    <div className="quiz-question">{renderHTML(item.question)}</div>
+                    <CFormCheck
+                      type="radio"
+                      label={renderHTML(item.A)}
+                      name={'quiz-' + index}
+                      onClick={(e) => onQuizAnswered(e, index)}
+                      value="A"
+                      disabled={!_.isEmpty(answeredQuiz[index])}
+                      id={`quiz-${index}-A`}
+                    />
+                    <CFormCheck
+                      type="radio"
+                      label={renderHTML(item.B)}
+                      name={'quiz-' + index}
+                      onClick={(e) => onQuizAnswered(e, index)}
+                      value="B"
+                      disabled={!_.isEmpty(answeredQuiz[index])}
+                      id={`quiz-${index}-B`}
+                    />
+                    <CFormCheck
+                      type="radio"
+                      label={renderHTML(item.C)}
+                      name={'quiz-' + index}
+                      onClick={(e) => onQuizAnswered(e, index)}
+                      value="C"
+                      disabled={!_.isEmpty(answeredQuiz[index])}
+                      id={`quiz-${index}-C`}
+                    />
+                    <CFormCheck
+                      type="radio"
+                      label={renderHTML(item.D)}
+                      name={'quiz-' + index}
+                      onClick={(e) => onQuizAnswered(e, index)}
+                      value="D"
+                      disabled={!_.isEmpty(answeredQuiz[index])}
+                      id={`quiz-${index}-D`}
+                    />
+                  </div>
+                )
+              })}
+            </div>
+          </main>
+        </div>
       </>
     )
 }

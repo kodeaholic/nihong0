@@ -36,34 +36,6 @@ header {
     font-family: 'Shippori Mincho', serif;
 }
 
-main {
-    padding: 70px 20px 0;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    font-family: 'Shippori Mincho', serif;
-}
-
-main>div {
-    margin: auto;
-    max-width: 600px;
-}
-
-main h2 span {
-    color: #BF7497;
-}
-
-main p {
-    line-height: 1.5;
-    font-weight: 200;
-    margin: 20px 0;
-}
-
-main small {
-    font-weight: 300;
-    color: #888;
-}
-
 #nav-container {
     position: fixed;
     height: 100vh;
@@ -143,7 +115,7 @@ main small {
 
 #nav-content {
     margin-top: 70px;
-    padding: 20px;
+    padding: 20px 5px;
     width: 80%;
     max-width: 250px;
     position: absolute;
@@ -242,7 +214,20 @@ img {
     height: auto;
     width: 100%;
 }
-
+main {
+    font-family: 'Shippori Mincho', serif;
+    padding: 80px 10px 10px 10px;
+    display: flex;
+    flex-direction: column;
+    font-weight: normal;
+    overflow-y: scroll;
+}
 .content {
     font-family: 'Shippori Mincho', serif;
+    font-weight: normal;
+    line-height: 220%;
+}
+
+.form-check-input[disabled] ~ .form-check-label, .form-check-input:disabled ~ .form-check-label {
+    opacity: 1 !important;
 }
