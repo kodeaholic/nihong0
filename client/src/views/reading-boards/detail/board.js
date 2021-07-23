@@ -1017,13 +1017,57 @@ const ReadingBoard = (props) => {
                       cursor: 'text',
                     }}
                     onClick={(e) => {
-                      const contentEditor = window.CKEDITOR.replace('content', {
+                      const editor = window.CKEDITOR.replace('content', {
                         on: {
                           instanceReady: function (evt) {
                             document.getElementById(evt.editor.id + '_top').style.display = 'none'
                           },
                           change: function (e) {
-                            setContent(contentEditor.getData())
+                            const traverseTopLevel = (node) => {
+                              let sentences = []
+                              let content = ''
+                              let dictionary = {}
+                              for (let i = 0; i < node.childNodes.length; i++) {
+                                let child = node.childNodes[i]
+                                if (child.innerHTML) {
+                                  child.removeAttribute('data-id')
+                                  child.setAttribute('data-id', i)
+                                  // xử lý tách câu
+                                  let paragraphInnerText = child.innerHTML
+                                  let arrayOfSentences = paragraphInnerText.split('。')
+                                  //console.log('Original:', arrayOfSentences)
+                                  arrayOfSentences = arrayOfSentences.filter(
+                                    (item) => !_.isEmpty(item),
+                                  )
+                                  //console.log('Filtered: ', arrayOfSentences)
+                                  let count = 0
+                                  let paragraph = ''
+                                  arrayOfSentences.map((sentence) => {
+                                    count++
+                                    let newSentence = `<span data-sentence-count='${count}' data-paragraph-id='${i}'>${sentence}。</span>`
+                                    //console.log('newSentence: ', newSentence)
+                                    sentences.push(newSentence)
+                                    paragraph += newSentence
+                                    const obj = { ...dictionary[i] }
+                                    obj[count] = newSentence
+                                    dictionary[i] = obj
+                                    return ''
+                                  })
+                                  paragraph = `<p data-id='${i}'>${paragraph}</p>`
+                                  content += paragraph
+                                }
+                              }
+                              return { content, sentences, dictionary }
+                            }
+                            // xử lý data
+                            let originalContent = editor.getData()
+                            setContent(originalContent)
+                            originalContent = originalContent.replaceAll('<b>', '')
+                            originalContent = originalContent.replaceAll('</b>', '')
+                            let wrapper = document.createElement('div')
+                            wrapper.innerHTML = originalContent
+                            let { content, sentences, dictionary } = traverseTopLevel(wrapper)
+                            console.log(dictionary)
                           },
                         },
                       })
@@ -1049,7 +1093,7 @@ const ReadingBoard = (props) => {
                 )}
               </CCol>
             </CRow>
-            <CRow className="mb-3">
+            {/* <CRow className="mb-3">
               <CFormLabel htmlFor="contentVn" className="col-sm-2 col-form-label">
                 Bài đọc dịch nghĩa
               </CFormLabel>
@@ -1099,7 +1143,7 @@ const ReadingBoard = (props) => {
                   </div>
                 )}
               </CCol>
-            </CRow>
+            </CRow> */}
             <CRow>
               <CFormLabel className="col-sm-2 col-form-label">Bài tập củng cố</CFormLabel>
               <CCol sm="12">
