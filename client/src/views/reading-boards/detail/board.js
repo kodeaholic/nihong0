@@ -1126,6 +1126,24 @@ const ReadingBoard = (props) => {
                 </CCol>
               </CRow>
             )}
+            {viewAction === 'get' && (
+              <CRow>
+                <CCol className="col-sm-3">
+                  <CButton
+                    style={{ color: 'white', marginTop: '10px' }}
+                    color="success"
+                    onClick={() => {
+                      setRedirecTo({
+                        isRedirected: true,
+                        redirectedPath: `/reading-boards/getBoard/webview/${boardId}`,
+                      })
+                    }}
+                  >
+                    XEM UI MOBILE
+                  </CButton>
+                </CCol>
+              </CRow>
+            )}
           </CForm>
         </CRow>
       </>

@@ -4,6 +4,8 @@ import './scss/style.scss'
 import { AuthRoute } from './components/AuthRoute'
 import { useDispatch } from 'react-redux'
 import { authConstants } from './constants/auth.constants'
+import PageNotFoundComponent from './components/404'
+import ReadingBoardWebView from './views/reading-boards/detail/webview'
 const loading = (
   <div className="pt-3 text-center">
     <div className="sk-spinner sk-spinner-pulse"></div>
@@ -50,6 +52,16 @@ class App extends Component {
                 return (
                   <>
                     <MobileDialogBoardV2 {...props} />
+                  </>
+                )
+              }}
+            />
+            <Route
+              path="/reading-boards/getBoard/webview/:boardId"
+              render={(props) => {
+                return (
+                  <>
+                    <ReadingBoardWebView {...props} />
                   </>
                 )
               }}
