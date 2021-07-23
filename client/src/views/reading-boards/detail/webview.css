@@ -130,6 +130,7 @@ header {
     will-change: transform;
     contain: paint;
     font-family: 'Shippori Mincho', serif;
+    z-index: 10000;
 }
 
 #nav-content ul {
