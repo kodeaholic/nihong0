@@ -107,12 +107,18 @@ const QuizItem = (props) => {
                   width: 'auto',
                 }}
                 onClick={(e) => {
-                  const questionEditor = window.CKEDITOR.replace(`question-${id}`)
-                  questionEditor.on('change', function (e) {
-                    let index = parseInt(id)
-                    let quizes = [...parentQuiz]
-                    quizes[index]['question'] = questionEditor.getData()
-                    onChange(quizes)
+                  const editor = window.CKEDITOR.replace(`question-${id}`, {
+                    on: {
+                      instanceReady: function (evt) {
+                        document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                      },
+                      change: function (e) {
+                        let index = parseInt(id)
+                        let quizes = [...parentQuiz]
+                        quizes[index]['question'] = editor.getData()
+                        onChange(quizes)
+                      },
+                    },
                   })
                 }}
                 name="question"
@@ -171,12 +177,18 @@ const QuizItem = (props) => {
                   width: 'auto',
                 }}
                 onClick={(e) => {
-                  const questionEditor = window.CKEDITOR.replace(`question_vn-${id}`)
-                  questionEditor.on('change', function (e) {
-                    let index = parseInt(id)
-                    let quizes = [...parentQuiz]
-                    quizes[index]['question_vn'] = questionEditor.getData()
-                    onChange(quizes)
+                  const editor = window.CKEDITOR.replace(`question_vn-${id}`, {
+                    on: {
+                      instanceReady: function (evt) {
+                        document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                      },
+                      change: function (e) {
+                        let index = parseInt(id)
+                        let quizes = [...parentQuiz]
+                        quizes[index]['question_vn'] = editor.getData()
+                        onChange(quizes)
+                      },
+                    },
                   })
                 }}
                 name="question_vn"
@@ -228,12 +240,18 @@ const QuizItem = (props) => {
                   borderBottomRightRadius: '5px',
                 }}
                 onClick={(e) => {
-                  const editor = window.CKEDITOR.replace(`A-${id}`)
-                  editor.on('change', function (e) {
-                    let index = parseInt(id)
-                    let quizes = [...parentQuiz]
-                    quizes[index]['A'] = editor.getData()
-                    onChange(quizes)
+                  const editor = window.CKEDITOR.replace(`A-${id}`, {
+                    on: {
+                      instanceReady: function (evt) {
+                        document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                      },
+                      change: function (e) {
+                        let index = parseInt(id)
+                        let quizes = [...parentQuiz]
+                        quizes[index]['A'] = editor.getData()
+                        onChange(quizes)
+                      },
+                    },
                   })
                 }}
                 name="A"
@@ -285,12 +303,18 @@ const QuizItem = (props) => {
                   borderBottomRightRadius: '5px',
                 }}
                 onClick={(e) => {
-                  const editor = window.CKEDITOR.replace(`B-${id}`)
-                  editor.on('change', function (e) {
-                    let index = parseInt(id)
-                    let quizes = [...parentQuiz]
-                    quizes[index]['B'] = editor.getData()
-                    onChange(quizes)
+                  const editor = window.CKEDITOR.replace(`B-${id}`, {
+                    on: {
+                      instanceReady: function (evt) {
+                        document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                      },
+                      change: function (e) {
+                        let index = parseInt(id)
+                        let quizes = [...parentQuiz]
+                        quizes[index]['B'] = editor.getData()
+                        onChange(quizes)
+                      },
+                    },
                   })
                 }}
                 name="B"
@@ -342,12 +366,18 @@ const QuizItem = (props) => {
                   borderBottomRightRadius: '5px',
                 }}
                 onClick={(e) => {
-                  const editor = window.CKEDITOR.replace(`C-${id}`)
-                  editor.on('change', function (e) {
-                    let index = parseInt(id)
-                    let quizes = [...parentQuiz]
-                    quizes[index]['C'] = editor.getData()
-                    onChange(quizes)
+                  const editor = window.CKEDITOR.replace(`C-${id}`, {
+                    on: {
+                      instanceReady: function (evt) {
+                        document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                      },
+                      change: function (e) {
+                        let index = parseInt(id)
+                        let quizes = [...parentQuiz]
+                        quizes[index]['C'] = editor.getData()
+                        onChange(quizes)
+                      },
+                    },
                   })
                 }}
                 name="C"
@@ -399,12 +429,18 @@ const QuizItem = (props) => {
                   borderBottomRightRadius: '5px',
                 }}
                 onClick={(e) => {
-                  const editor = window.CKEDITOR.replace(`D-${id}`)
-                  editor.on('change', function (e) {
-                    let index = parseInt(id)
-                    let quizes = [...parentQuiz]
-                    quizes[index]['D'] = editor.getData()
-                    onChange(quizes)
+                  const editor = window.CKEDITOR.replace(`D-${id}`, {
+                    on: {
+                      instanceReady: function (evt) {
+                        document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                      },
+                      change: function (e) {
+                        let index = parseInt(id)
+                        let quizes = [...parentQuiz]
+                        quizes[index]['D'] = editor.getData()
+                        onChange(quizes)
+                      },
+                    },
                   })
                 }}
                 name="D"
@@ -456,12 +492,18 @@ const QuizItem = (props) => {
                   borderBottomRightRadius: '5px',
                 }}
                 onClick={(e) => {
-                  const editor = window.CKEDITOR.replace(`A_vn-${id}`)
-                  editor.on('change', function (e) {
-                    let index = parseInt(id)
-                    let quizes = [...parentQuiz]
-                    quizes[index]['A_vn'] = editor.getData()
-                    onChange(quizes)
+                  const editor = window.CKEDITOR.replace(`A_vn-${id}`, {
+                    on: {
+                      instanceReady: function (evt) {
+                        document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                      },
+                      change: function (e) {
+                        let index = parseInt(id)
+                        let quizes = [...parentQuiz]
+                        quizes[index]['A_vn'] = editor.getData()
+                        onChange(quizes)
+                      },
+                    },
                   })
                 }}
                 name="A_vn"
@@ -513,12 +555,18 @@ const QuizItem = (props) => {
                   borderBottomRightRadius: '5px',
                 }}
                 onClick={(e) => {
-                  const editor = window.CKEDITOR.replace(`B_vn-${id}`)
-                  editor.on('change', function (e) {
-                    let index = parseInt(id)
-                    let quizes = [...parentQuiz]
-                    quizes[index]['B_vn'] = editor.getData()
-                    onChange(quizes)
+                  const editor = window.CKEDITOR.replace(`B_vn-${id}`, {
+                    on: {
+                      instanceReady: function (evt) {
+                        document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                      },
+                      change: function (e) {
+                        let index = parseInt(id)
+                        let quizes = [...parentQuiz]
+                        quizes[index]['B_vn'] = editor.getData()
+                        onChange(quizes)
+                      },
+                    },
                   })
                 }}
                 name="B_vn"
@@ -570,12 +618,18 @@ const QuizItem = (props) => {
                   borderBottomRightRadius: '5px',
                 }}
                 onClick={(e) => {
-                  const editor = window.CKEDITOR.replace(`C_vn-${id}`)
-                  editor.on('change', function (e) {
-                    let index = parseInt(id)
-                    let quizes = [...parentQuiz]
-                    quizes[index]['C_vn'] = editor.getData()
-                    onChange(quizes)
+                  const editor = window.CKEDITOR.replace(`C_vn-${id}`, {
+                    on: {
+                      instanceReady: function (evt) {
+                        document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                      },
+                      change: function (e) {
+                        let index = parseInt(id)
+                        let quizes = [...parentQuiz]
+                        quizes[index]['C_vn'] = editor.getData()
+                        onChange(quizes)
+                      },
+                    },
                   })
                 }}
                 name="C_vn"
@@ -627,12 +681,18 @@ const QuizItem = (props) => {
                   borderBottomRightRadius: '5px',
                 }}
                 onClick={(e) => {
-                  const editor = window.CKEDITOR.replace(`D_vn-${id}`)
-                  editor.on('change', function (e) {
-                    let index = parseInt(id)
-                    let quizes = [...parentQuiz]
-                    quizes[index]['D_vn'] = editor.getData()
-                    onChange(quizes)
+                  const editor = window.CKEDITOR.replace(`D_vn-${id}`, {
+                    on: {
+                      instanceReady: function (evt) {
+                        document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                      },
+                      change: function (e) {
+                        let index = parseInt(id)
+                        let quizes = [...parentQuiz]
+                        quizes[index]['D_vn'] = editor.getData()
+                        onChange(quizes)
+                      },
+                    },
                   })
                 }}
                 name="D_vn"
@@ -957,9 +1017,15 @@ const ReadingBoard = (props) => {
                       cursor: 'text',
                     }}
                     onClick={(e) => {
-                      const contentEditor = window.CKEDITOR.replace('content')
-                      contentEditor.on('change', function (e) {
-                        setContent(contentEditor.getData())
+                      const contentEditor = window.CKEDITOR.replace('content', {
+                        on: {
+                          instanceReady: function (evt) {
+                            document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                          },
+                          change: function (e) {
+                            setContent(contentEditor.getData())
+                          },
+                        },
                       })
                     }}
                   >
@@ -1002,9 +1068,15 @@ const ReadingBoard = (props) => {
                       cursor: 'text',
                     }}
                     onClick={(e) => {
-                      const contentVnEditor = window.CKEDITOR.replace('contentVn')
-                      contentVnEditor.on('change', function (e) {
-                        setContentVn(contentVnEditor.getData())
+                      const contentVnEditor = window.CKEDITOR.replace('contentVn', {
+                        on: {
+                          instanceReady: function (evt) {
+                            document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                          },
+                          change: function (e) {
+                            setContent(contentVnEditor.getData())
+                          },
+                        },
                       })
                     }}
                   >
