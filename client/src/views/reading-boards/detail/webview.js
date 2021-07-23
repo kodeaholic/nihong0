@@ -9,6 +9,10 @@ import renderHTML from 'react-render-html'
 import { htmlEntityDecode } from '../../../helpers/htmlentities'
 import PageNotFoundComponent from 'src/components/404'
 import './webview.css'
+const onMenuClick = (e) => {
+  alert('Click!')
+  console.log(e)
+}
 const removeColor = (elem) => {
   if (_.get(elem, 'style.color')) {
     elem.style.color = ''
@@ -87,7 +91,15 @@ const ReadingBoardWebView = (props) => {
       })
     }
   }, [boardId])
-
+  //   useEffect(() => {
+  //     const menuButton = document.getElementById('menuButton')
+  //     if (menuButton) {
+  //       console.log(menuButton)
+  //       menuButton.addEventListener('click', function (event) {
+  //         alert('Hi')
+  //       })
+  //     }
+  //   })
   if (pageNotFound) {
     return <PageNotFoundComponent />
   } else
@@ -97,18 +109,18 @@ const ReadingBoardWebView = (props) => {
           <header tabIndex="0"> {`Luyện đọc ${level} - ${title}`} </header>
           <div id="nav-container">
             <div className="bg"> </div>
-            <div className="button" tabIndex="0">
+            <div className="button" tabIndex="0" id="menuButton">
               <span className="icon-bar"> </span> <span className="icon-bar"> </span>
               <span className="icon-bar"> </span>
             </div>
             <div id="nav-content" tabIndex="0">
               <div id="toggles">
                 <div className="switch-wrapper">
-                  <div className="switch">
+                  {/* <div className="switch">
                     <input type="checkbox" name="checkbox1" id="checkbox1" className="ios-toggle" />
                     <label htmlFor="checkbox1" className="checkbox-label" />
                   </div>
-                  <div className="switch-label">Giao diện ban đêm</div>
+                  <div className="switch-label">Giao diện ban đêm</div> */}
                 </div>
                 {/* <div className="switch-wrapper">
                   <input type="checkbox" name="checkbox2" id="checkbox2" className="ios-toggle" />
@@ -119,13 +131,14 @@ const ReadingBoardWebView = (props) => {
                     <input type="checkbox" name="checkbox2" id="checkbox2" className="ios-toggle" />
                     <label htmlFor="checkbox2" className="checkbox-label" />
                   </div>
-                  <div className="switch-label">Hiragana</div>
+                  <div className="switch-label">Hiển thị cách đọc</div>
                 </div>
               </div>
             </div>
           </div>
           <main>
             <div className="content">{renderHTML(content)}</div>
+            <hr />
             <div className="quiz-container">
               {quiz.map((item, index) => {
                 return (

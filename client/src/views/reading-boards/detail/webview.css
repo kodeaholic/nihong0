@@ -121,7 +121,8 @@ header {
     position: absolute;
     top: 0;
     left: 0;
-    height: calc(100% - 70px);
+    /* height: calc(100% - 70px); */
+    height: 80px;
     background: #ececec;
     pointer-events: auto;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -130,7 +131,6 @@ header {
     will-change: transform;
     contain: paint;
     font-family: 'Shippori Mincho', serif;
-    z-index: 10000;
 }
 
 #nav-content ul {
@@ -173,48 +173,6 @@ header {
     transform: none;
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-html,
-body {
-    height: 100%;
-}
-
-a,
-a:visited,
-a:focus,
-a:active,
-a:link {
-    text-decoration: none;
-    outline: 0;
-}
-
-a {
-    color: currentColor;
-    transition: 0.2s ease-in-out;
-}
-
-h1,
-h2,
-h3,
-h4 {
-    margin: 0;
-}
-
-ul {
-    padding: 0;
-    list-style: none;
-}
-
-img {
-    vertical-align: middle;
-    height: auto;
-    width: 100%;
-}
 main {
     font-family: 'Shippori Mincho', serif;
     padding: 80px 10px 10px 10px;
@@ -227,8 +185,24 @@ main {
     font-family: 'Shippori Mincho', serif;
     font-weight: normal;
     line-height: 220%;
+    word-break: break-word;
 }
 
 .form-check-input[disabled] ~ .form-check-label, .form-check-input:disabled ~ .form-check-label {
     opacity: 1 !important;
 }
+
+.quiz-item-container {
+    margin-top: 10px;
+}
+
+.quiz-question {
+    margin-top: 5px;
+}
+
+hr.rounded {
+    margin-left: 10px;
+    margin-right: 10px;
+    border-top: 5px solid #d3d3d3;
+    border-radius: 10px;
+  }
