@@ -197,6 +197,13 @@ main {
     opacity: 1 !important;
 }
 
+label.form-check-label {
+    width: 100%;
+}
+.form-check-label * {
+    width: 100%;
+}
+
 .quiz-item-container {
     margin-top: 10px;
 }
@@ -272,4 +279,8 @@ span[data-sentence-index] {
 }
 .quiz-tooltip * {
     font-family: 'Source Sans Pro', sans-serif;
+}
+.option-tooltip-text * {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: normal;
 }

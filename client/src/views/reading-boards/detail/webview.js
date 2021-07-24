@@ -9,9 +9,14 @@ import renderHTML from 'react-render-html'
 import { htmlEntityDecode } from '../../../helpers/htmlentities'
 import PageNotFoundComponent from 'src/components/404'
 import './webview.css'
-const onMenuClick = (e) => {
-  alert('Click!')
-  console.log(e)
+const removeRedundantTags = (e, fontOption = false) => {
+  let result = e.replaceAll('<b>', '')
+  result = result.replaceAll('</b>', '')
+  if (fontOption) {
+    result = result.replaceAll('Arial', 'Source Sans Pro')
+  }
+  console.log(result)
+  return result
 }
 const removeColor = (elem) => {
   if (_.get(elem, 'style.color')) {
@@ -155,7 +160,15 @@ const ReadingBoardWebView = (props) => {
                     </span>
                     <CFormCheck
                       type="radio"
-                      label={renderHTML(item.A)}
+                      label={renderHTML(`<span
+                      className="dictionary-tooltip option-tooltip"
+                      style={{ marginBottom: '5px' }}
+                    >
+                      ${removeRedundantTags(item.A)}
+                      <span className="dictionary-tooltiptext option-tooltip-text">
+                        ${removeRedundantTags(item.A_vn, true)}
+                      </span>
+                    </span>`)}
                       name={'quiz-' + index}
                       onClick={(e) => onQuizAnswered(e, index)}
                       value="A"
@@ -164,7 +177,15 @@ const ReadingBoardWebView = (props) => {
                     />
                     <CFormCheck
                       type="radio"
-                      label={renderHTML(item.B)}
+                      label={renderHTML(`<span
+                      className="dictionary-tooltip option-tooltip"
+                      style={{ marginBottom: '5px' }}
+                    >
+                      ${removeRedundantTags(item.B)}
+                      <span className="dictionary-tooltiptext option-tooltip-text">
+                        ${removeRedundantTags(item.B_vn, true)}
+                      </span>
+                    </span>`)}
                       name={'quiz-' + index}
                       onClick={(e) => onQuizAnswered(e, index)}
                       value="B"
@@ -173,7 +194,15 @@ const ReadingBoardWebView = (props) => {
                     />
                     <CFormCheck
                       type="radio"
-                      label={renderHTML(item.C)}
+                      label={renderHTML(`<span
+                      className="dictionary-tooltip option-tooltip"
+                      style={{ marginBottom: '5px' }}
+                    >
+                      ${removeRedundantTags(item.C)}
+                      <span className="dictionary-tooltiptext option-tooltip-text">
+                        ${removeRedundantTags(item.C_vn, true)}
+                      </span>
+                    </span>`)}
                       name={'quiz-' + index}
                       onClick={(e) => onQuizAnswered(e, index)}
                       value="C"
@@ -182,7 +211,15 @@ const ReadingBoardWebView = (props) => {
                     />
                     <CFormCheck
                       type="radio"
-                      label={renderHTML(item.D)}
+                      label={renderHTML(`<span
+                      className="dictionary-tooltip option-tooltip"
+                      style={{ marginBottom: '5px' }}
+                    >
+                      ${removeRedundantTags(item.D)}
+                      <span className="dictionary-tooltiptext option-tooltip-text">
+                        ${removeRedundantTags(item.D_vn, true)}
+                      </span>
+                    </span>`)}
                       name={'quiz-' + index}
                       onClick={(e) => onQuizAnswered(e, index)}
                       value="D"
