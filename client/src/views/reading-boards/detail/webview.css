@@ -233,7 +233,7 @@ hr.rounded {
  .dictionary-tooltiptext {
     /* z-index: 2000; */
     visibility: hidden;
-    /* width: 100%; */
+    width: 100%;
     /* background-color: black; */
     background-image: linear-gradient(to right, #ff87bd, #eda6d6);
     color: #fff;
