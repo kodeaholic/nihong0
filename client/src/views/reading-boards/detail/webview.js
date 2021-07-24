@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import './style.css'
-import './switch.css'
 import { CFormCheck } from '@coreui/react'
 import { useParams } from 'react-router-dom'
 import { readingBoardService } from 'src/services/api/readingBoardService'
@@ -8,14 +7,14 @@ import _ from 'lodash'
 import renderHTML from 'react-render-html'
 import { htmlEntityDecode } from '../../../helpers/htmlentities'
 import PageNotFoundComponent from 'src/components/404'
-import './webview.css'
+import Loader from 'src/components/Loader'
+import { sleep } from 'src/helpers/common'
 const removeRedundantTags = (e, fontOption = false) => {
   let result = e.replaceAll('<b>', '')
   result = result.replaceAll('</b>', '')
   if (fontOption) {
     result = result.replaceAll('Arial', 'Source Sans Pro')
   }
-  console.log(result)
   return result
 }
 const removeColor = (elem) => {
@@ -41,6 +40,8 @@ const ReadingBoardWebView = (props) => {
   const [pageNotFound, setPageNotFound] = useState(false)
   const [answeredQuiz, setAnsweredQuiz] = useState({})
   const [showFurigana, setShowFurigana] = useState(true)
+  const [showTranslator, setShowTranslator] = useState(true)
+  const [loading, setLoading] = useState(true)
   const onQuizAnswered = (e, index) => {
     const { value } = e.target
     let clone = { ...answeredQuiz }
@@ -92,87 +93,144 @@ const ReadingBoardWebView = (props) => {
               return newItem
             })
             setQuiz(resultQuizes)
+            sleep(1500).then(() => {
+              setLoading(false)
+            })
           }
         }
       })
     }
   }, [boardId])
+
+  /** ComponentDidMount */
+
   useEffect(() => {
-    if (boardId) window.Alert7.alert('Chạm để dịch')
-  }, [boardId])
+    const removeAllElementsWithClass = (e) => {
+      const paras = document.getElementsByClassName(e)
+      while (paras[0]) paras[0].parentNode.removeChild(paras[0])
+    }
+    /* load css on the fly */
+    const css = ['css/reading-boards/webview.css', 'css/reading-boards/switch.css']
+    css.forEach((item) => {
+      const link = document.createElement('link')
+      // set the attributes for link element
+      link.rel = 'stylesheet'
+      link.type = 'text/css'
+      link.href = item
+      link.classList.add('css-on-the-fly')
+      // Get HTML head element to append
+      // link element to it
+      console.log(link)
+      document.getElementsByTagName('HEAD')[0].appendChild(link)
+    })
+    return () => {
+      removeAllElementsWithClass('css-on-the-fly')
+    }
+  }, [])
   if (pageNotFound) {
     return <PageNotFoundComponent />
   } else
     return (
       <>
-        {!showFurigana && <link rel="stylesheet" type="text/css" href="css/furigana.css" />}
-        <div className="page">
-          <header tabIndex="0"> {`Luyện đọc ${level} - ${title}`} </header>
-          <div id="nav-container">
-            <div className="bg"> </div>
-            <div className="button" tabIndex="0" id="menuButton">
-              <span className="icon-bar"> </span> <span className="icon-bar"> </span>
-              <span className="icon-bar"> </span>
-            </div>
-            <div id="nav-content" tabIndex="0">
-              <div id="toggles">
-                <div className="switch-wrapper">
-                  {/* <div className="switch">
-                    <input type="checkbox" name="checkbox1" id="checkbox1" className="ios-toggle" />
-                    <label htmlFor="checkbox1" className="checkbox-label" />
+        {!showFurigana && (
+          <link
+            rel="stylesheet"
+            type="text/css"
+            href="css/reading-boards/furigana.css"
+            className="css-on-the-fly"
+          />
+        )}
+        {!showTranslator && (
+          <link
+            rel="stylesheet"
+            type="text/css"
+            href="css/reading-boards/tooltip.css"
+            className="css-on-the-fly"
+          />
+        )}
+        <Loader loading={loading} />
+        {!loading && (
+          <div className="page">
+            <header tabIndex="0"> {`Luyện đọc ${level} - ${title}`} </header>
+            {/* {loading && (
+            <main>
+              <CSpinner />
+            </main>
+          )} */}
+            {true && (
+              <>
+                <div id="nav-container">
+                  <div className="bg"> </div>
+                  <div className="button" tabIndex="0" id="menuButton">
+                    <span className="icon-bar"> </span> <span className="icon-bar"> </span>
+                    <span className="icon-bar"> </span>
                   </div>
-                  <div className="switch-label">Giao diện ban đêm</div> */}
-                </div>
-                {/* <div className="switch-wrapper">
-                  <input type="checkbox" name="checkbox2" id="checkbox2" className="ios-toggle" />
-                  <label htmlFor="checkbox2" className="checkbox-label" />
-                </div> */}
-                <div className="switch-wrapper">
-                  <div className="switch">
-                    <input
-                      type="checkbox"
-                      name="checkbox2"
-                      id="checkbox2"
-                      className="ios-toggle"
-                      defaultChecked={showFurigana}
-                      onChange={() => {
-                        console.log('Changed!')
-                        setShowFurigana(!showFurigana)
-                      }}
-                    />
-                    <label htmlFor="checkbox2" className="checkbox-label" />
+                  <div id="nav-content" tabIndex="0">
+                    <div id="toggles">
+                      <div className="switch-wrapper">
+                        <div className="switch">
+                          <input
+                            type="checkbox"
+                            name="checkbox2"
+                            id="checkbox2"
+                            className="ios-toggle"
+                            defaultChecked={showFurigana}
+                            onChange={() => {
+                              setShowFurigana(!showFurigana)
+                            }}
+                          />
+                          <label htmlFor="checkbox2" className="checkbox-label" />
+                        </div>
+                        <div className="switch-label">Hiển thị cách đọc</div>
+                      </div>
+                      <div className="switch-wrapper">
+                        <div className="switch">
+                          <input
+                            type="checkbox"
+                            name="checkbox1"
+                            id="checkbox1"
+                            className="ios-toggle"
+                            defaultChecked={showTranslator}
+                            onChange={(e) => {
+                              // if (showTranslator) {
+                              //   window.Alert7.alert('Đã tắt dịch')
+                              // } else window.Alert7.alert('Chạm để dịch')
+                              setShowTranslator(!showTranslator)
+                            }}
+                          />
+                          <label htmlFor="checkbox1" className="checkbox-label" />
+                        </div>
+                        <div className="switch-label">Chạm vào để dịch</div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="switch-label">Hiển thị cách đọc</div>
                 </div>
-              </div>
-            </div>
-          </div>
-          <main>
-            <div className="content">{renderHTML(contentVn)}</div>
-            <hr />
-            <div className="quiz-container">
-              {quiz.map((item, index) => {
-                let question = item.question
-                let question_vn = item.question_vn
-                question = question.replaceAll('<b>', '')
-                question = question.replaceAll('</b>', '')
-                question_vn = question_vn.replaceAll('<b>', '')
-                question_vn = question_vn.replaceAll('</b>', '')
-                question_vn = question_vn.replaceAll('Arial', 'Source Sans Pro')
-                return (
-                  <div className="quiz-item-container" key={`quiz-${index}`}>
-                    <span
-                      className="quiz-question dictionary-tooltip"
-                      style={{ marginBottom: '5px' }}
-                    >
-                      {renderHTML(question.replace('<b>', ''))}
-                      <span className="dictionary-tooltiptext quiz-tooltip">
-                        {renderHTML(question_vn)}
-                      </span>
-                    </span>
-                    <CFormCheck
-                      type="radio"
-                      label={renderHTML(`<span
+                <main>
+                  <div className="content">{renderHTML(contentVn)}</div>
+                  <hr />
+                  <div className="quiz-container">
+                    {quiz.map((item, index) => {
+                      let question = item.question
+                      let question_vn = item.question_vn
+                      question = question.replaceAll('<b>', '')
+                      question = question.replaceAll('</b>', '')
+                      question_vn = question_vn.replaceAll('<b>', '')
+                      question_vn = question_vn.replaceAll('</b>', '')
+                      question_vn = question_vn.replaceAll('Arial', 'Source Sans Pro')
+                      return (
+                        <div className="quiz-item-container" key={`quiz-${index}`}>
+                          <span
+                            className="quiz-question dictionary-tooltip"
+                            style={{ marginBottom: '5px' }}
+                          >
+                            {renderHTML(question.replace('<b>', ''))}
+                            <span className="dictionary-tooltiptext quiz-tooltip">
+                              {renderHTML(question_vn)}
+                            </span>
+                          </span>
+                          <CFormCheck
+                            type="radio"
+                            label={renderHTML(`<span
                       className="dictionary-tooltip option-tooltip"
                       style={{ marginBottom: '5px' }}
                     >
@@ -181,15 +239,15 @@ const ReadingBoardWebView = (props) => {
                         ${removeRedundantTags(item.A_vn, true)}
                       </span>
                     </span>`)}
-                      name={'quiz-' + index}
-                      onClick={(e) => onQuizAnswered(e, index)}
-                      value="A"
-                      disabled={!_.isEmpty(answeredQuiz[index])}
-                      id={`quiz-${index}-A`}
-                    />
-                    <CFormCheck
-                      type="radio"
-                      label={renderHTML(`<span
+                            name={'quiz-' + index}
+                            onClick={(e) => onQuizAnswered(e, index)}
+                            value="A"
+                            disabled={!_.isEmpty(answeredQuiz[index])}
+                            id={`quiz-${index}-A`}
+                          />
+                          <CFormCheck
+                            type="radio"
+                            label={renderHTML(`<span
                       className="dictionary-tooltip option-tooltip"
                       style={{ marginBottom: '5px' }}
                     >
@@ -198,15 +256,15 @@ const ReadingBoardWebView = (props) => {
                         ${removeRedundantTags(item.B_vn, true)}
                       </span>
                     </span>`)}
-                      name={'quiz-' + index}
-                      onClick={(e) => onQuizAnswered(e, index)}
-                      value="B"
-                      disabled={!_.isEmpty(answeredQuiz[index])}
-                      id={`quiz-${index}-B`}
-                    />
-                    <CFormCheck
-                      type="radio"
-                      label={renderHTML(`<span
+                            name={'quiz-' + index}
+                            onClick={(e) => onQuizAnswered(e, index)}
+                            value="B"
+                            disabled={!_.isEmpty(answeredQuiz[index])}
+                            id={`quiz-${index}-B`}
+                          />
+                          <CFormCheck
+                            type="radio"
+                            label={renderHTML(`<span
                       className="dictionary-tooltip option-tooltip"
                       style={{ marginBottom: '5px' }}
                     >
@@ -215,15 +273,15 @@ const ReadingBoardWebView = (props) => {
                         ${removeRedundantTags(item.C_vn, true)}
                       </span>
                     </span>`)}
-                      name={'quiz-' + index}
-                      onClick={(e) => onQuizAnswered(e, index)}
-                      value="C"
-                      disabled={!_.isEmpty(answeredQuiz[index])}
-                      id={`quiz-${index}-C`}
-                    />
-                    <CFormCheck
-                      type="radio"
-                      label={renderHTML(`<span
+                            name={'quiz-' + index}
+                            onClick={(e) => onQuizAnswered(e, index)}
+                            value="C"
+                            disabled={!_.isEmpty(answeredQuiz[index])}
+                            id={`quiz-${index}-C`}
+                          />
+                          <CFormCheck
+                            type="radio"
+                            label={renderHTML(`<span
                       className="dictionary-tooltip option-tooltip"
                       style={{ marginBottom: '5px' }}
                     >
@@ -232,18 +290,21 @@ const ReadingBoardWebView = (props) => {
                         ${removeRedundantTags(item.D_vn, true)}
                       </span>
                     </span>`)}
-                      name={'quiz-' + index}
-                      onClick={(e) => onQuizAnswered(e, index)}
-                      value="D"
-                      disabled={!_.isEmpty(answeredQuiz[index])}
-                      id={`quiz-${index}-D`}
-                    />
+                            name={'quiz-' + index}
+                            onClick={(e) => onQuizAnswered(e, index)}
+                            value="D"
+                            disabled={!_.isEmpty(answeredQuiz[index])}
+                            id={`quiz-${index}-D`}
+                          />
+                        </div>
+                      )
+                    })}
                   </div>
-                )
-              })}
-            </div>
-          </main>
-        </div>
+                </main>
+              </>
+            )}
+          </div>
+        )}
       </>
     )
 }

@@ -130,7 +130,7 @@ header {
     top: 0;
     left: 0;
     /* height: calc(100% - 70px); */
-    height: 80px;
+    height: 140px;
     background: #ececec;
     pointer-events: auto;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);

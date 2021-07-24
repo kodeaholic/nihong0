@@ -1,0 +1,17 @@
+.dictionary-tooltiptext {
+    display: none !important;
+}
+
+.dictionary-tooltip:hover .dictionary-tooltiptext {
+    display: none !important;
+}
+}
+
+.dictionary-tooltiptext::after {
+    display: none !important;
+}
+
+.dictionary-tooltip:hover {
+    /* font-weight: bold; */
+    color: #000 !important;
+}
