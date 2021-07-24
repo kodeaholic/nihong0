@@ -427,6 +427,22 @@ const _nav = [
     anchor: 'Thêm bài học hội thoại',
     to: '/dialog-boards/addBoard',
   },
+  {
+    _component: 'CNavTitle',
+    anchor: 'Bài luyện đọc',
+  },
+  {
+    _component: 'CNavItem',
+    as: NavLink,
+    anchor: 'Danh sách bài luyện đọc',
+    to: '/reading-boards',
+  },
+  {
+    _component: 'CNavItem',
+    as: NavLink,
+    anchor: 'Thêm bài học luyện đọc',
+    to: '/reading-boards/addBoard',
+  },
 ]
 
 export default _nav

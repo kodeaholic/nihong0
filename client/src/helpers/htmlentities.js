@@ -1,4 +1,5 @@
 function htmlEntityEncode(str) {
+  if (!str || !str.length) return ''
   var buf = []
 
   for (var i = str.length - 1; i >= 0; i--) {
@@ -9,6 +10,7 @@ function htmlEntityEncode(str) {
 }
 
 function htmlEntityDecode(str) {
+  if (!str || !str.length) return ''
   return str.replace(/&#(\d+);/g, function (match, dec) {
     return String.fromCharCode(dec)
   })

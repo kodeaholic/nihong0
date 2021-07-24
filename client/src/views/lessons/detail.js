@@ -4,16 +4,11 @@ import _ from 'lodash'
 import PropTypes from 'prop-types'
 import {
   CCol,
-  CCardBody,
   CRow,
-  CCard,
   CFormControl,
   CButton,
   CSpinner,
-  CCardSubtitle,
-  CCardTitle,
   CBadge,
-  CCardHeader,
   CModal,
   CModalFooter,
   CModalHeader,
@@ -21,30 +16,26 @@ import {
   CModalTitle,
   CFormLabel,
   CButtonGroup,
-  CImage,
 } from '@coreui/react'
 import { toast } from 'react-toastify'
-import { topicService } from '../../services/api/topicService'
 import { sleep } from '../../helpers/common'
 import RedirectButton from '../components/back-navigation'
 import { lessonService } from 'src/services/api/lessonService'
 import { vocabService } from 'src/services/api/vocabService'
-import { generateRubyAnnotationString } from 'src/helpers/furigana'
 import parse from 'html-react-parser'
 import { htmlEntityEncode, htmlEntityDecode } from '../../helpers/htmlentities'
 import './style.css'
 import { DraggableArea } from 'react-draggable-tags'
+import renderHTML from 'react-render-html'
 const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
   const [saving, setSaving] = useState(false)
   const [vocab, setVocab] = useState('')
   const [vocabMeaning, setVocabMeaning] = useState('')
-  const [chinese, setChinese] = useState('')
+  const [chinese] = useState('')
   const [example, setExample] = useState('')
   const [exampleMeaning, setExampleMeaning] = useState('')
   const [audioSrc, setAudioSrc] = useState('')
   const isDisabled = vocab.length > 0 ? false : true
-  const [vocabPreview, setVocabPreview] = useState('')
-  const [examplePreview, setExamplePreview] = useState('')
   return (
     <CModal visible={visible} onDismiss={() => setVisible(false)}>
       <CModalHeader onDismiss={() => setVisible(false)}>
@@ -58,18 +49,29 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
             </CFormLabel>
           </CCol>
           <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
-            <CFormControl
-              type="text"
-              id="vocab"
-              placeholder="Ví dụ: 新[あたら]しい"
-              onFocus={(e) => {
-                const vocabEditor = window.CKEDITOR.replace('vocab')
-                vocabEditor.setData(htmlEntityDecode(vocab))
-                vocabEditor.on('change', function (e) {
-                  setVocab(vocabEditor.getData())
-                })
-              }}
-            />
+            {true && (
+              <div
+                id="vocab"
+                style={{
+                  border: '1px solid grey',
+                  borderRadius: '5px 5px 5px 5px',
+                  backgroundColor: '#fff',
+                  paddingRight: '5px',
+                  paddingLeft: '5px',
+                  paddingTop: '5px',
+                  cursor: 'text',
+                  width: '100%',
+                }}
+                onClick={(e) => {
+                  const vocabEditor = window.CKEDITOR.replace('vocab')
+                  vocabEditor.on('change', function (e) {
+                    setVocab(vocabEditor.getData())
+                  })
+                }}
+              >
+                {vocab ? renderHTML(vocab) : renderHTML('&nbsp;')}
+              </div>
+            )}
           </CCol>
         </CRow>
         {/* <CRow>
@@ -105,20 +107,29 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
             <CFormLabel htmlFor="example">Ví dụ</CFormLabel>
           </CCol>
           <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
-            <CFormControl
-              type="text"
-              component="textarea"
-              id="example"
-              placeholder="身内に医者がいると、何かと安心だ。"
-              onFocus={(e) => {
-                const exampleEditor = window.CKEDITOR.replace('example')
-                exampleEditor.setData(htmlEntityDecode(example))
-                exampleEditor.on('change', function (e) {
-                  setExample(exampleEditor.getData())
-                })
-              }}
-              rows={3}
-            />
+            {true && (
+              <div
+                id="example"
+                style={{
+                  border: '1px solid grey',
+                  borderRadius: '5px 5px 5px 5px',
+                  backgroundColor: '#fff',
+                  paddingRight: '5px',
+                  paddingLeft: '5px',
+                  paddingTop: '5px',
+                  cursor: 'text',
+                  width: '100%',
+                }}
+                onClick={(e) => {
+                  const exampleEditor = window.CKEDITOR.replace('example')
+                  exampleEditor.on('change', function (e) {
+                    setExample(exampleEditor.getData())
+                  })
+                }}
+              >
+                {example ? renderHTML(example) : renderHTML('&nbsp;')}
+              </div>
+            )}
           </CCol>
         </CRow>
         <CRow>
@@ -253,13 +264,11 @@ const EditModal = ({
   const [saving, setSaving] = useState(false)
   const [vocab, setVocab] = useState(htmlEntityDecode(item.vocab))
   const [vocabMeaning, setVocabMeaning] = useState(item.vocabMeaning)
-  const [chinese, setChinese] = useState(item.chinese)
+  const [chinese] = useState(item.chinese)
   const [example, setExample] = useState(htmlEntityDecode(item.example))
   const [exampleMeaning, setExampleMeaning] = useState(item.exampleMeaning)
   const [audioSrc, setAudioSrc] = useState(item.audioSrc)
   const isDisabled = vocab.length > 0 ? false : true
-  const [vocabPreview, setVocabPreview] = useState(generateRubyAnnotationString(vocab))
-  const [examplePreview, setExamplePreview] = useState(generateRubyAnnotationString(example))
   return (
     <CModal
       visible={visible}
@@ -286,19 +295,30 @@ const EditModal = ({
                 </CFormLabel>
               </CCol>
               <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
-                <CFormControl
-                  type="text"
-                  id="vocab"
-                  placeholder="Ví dụ: 新[あたら]しい"
-                  onFocus={(e) => {
-                    const vocabEditor = window.CKEDITOR.replace('vocab')
-                    vocabEditor.setData(vocab)
-                    vocabEditor.on('change', function (e) {
-                      setVocab(vocabEditor.getData())
-                    })
-                  }}
-                  defaultValue={item.vocab}
-                />
+                {true && (
+                  <div
+                    id="vocab"
+                    style={{
+                      border: '1px solid grey',
+                      borderRadius: '5px 5px 5px 5px',
+                      backgroundColor: '#fff',
+                      paddingRight: '5px',
+                      paddingLeft: '5px',
+                      paddingTop: '5px',
+                      cursor: 'text',
+                      width: '100%',
+                    }}
+                    onClick={(e) => {
+                      const vocabEditor = window.CKEDITOR.replace('vocab')
+                      vocabEditor.setData(vocab)
+                      vocabEditor.on('change', function (e) {
+                        setVocab(vocabEditor.getData())
+                      })
+                    }}
+                  >
+                    {vocab ? renderHTML(vocab) : renderHTML('&nbsp;')}
+                  </div>
+                )}
               </CCol>
             </CRow>
             {/* <CRow>
@@ -336,21 +356,30 @@ const EditModal = ({
                 <CFormLabel htmlFor="example">Ví dụ</CFormLabel>
               </CCol>
               <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
-                <CFormControl
-                  type="text"
-                  component="textarea"
-                  id="example"
-                  placeholder="身内に医者がいると、何かと安心だ。"
-                  onFocus={(e) => {
-                    const exampleEditor = window.CKEDITOR.replace('example')
-                    exampleEditor.setData(example)
-                    exampleEditor.on('change', function (e) {
-                      setExample(exampleEditor.getData())
-                    })
-                  }}
-                  rows={3}
-                  defaultValue={item.example}
-                />
+                {true && (
+                  <div
+                    id="example"
+                    style={{
+                      border: '1px solid grey',
+                      borderRadius: '5px 5px 5px 5px',
+                      backgroundColor: '#fff',
+                      paddingRight: '5px',
+                      paddingLeft: '5px',
+                      paddingTop: '5px',
+                      cursor: 'text',
+                      width: '100%',
+                    }}
+                    onClick={(e) => {
+                      const exampleEditor = window.CKEDITOR.replace('example')
+                      exampleEditor.setData(example)
+                      exampleEditor.on('change', function (e) {
+                        setExample(exampleEditor.getData())
+                      })
+                    }}
+                  >
+                    {example ? renderHTML(example) : renderHTML('&nbsp;')}
+                  </div>
+                )}
               </CCol>
             </CRow>
             <CRow>

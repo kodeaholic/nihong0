@@ -1,0 +1,286 @@
+@import url('https://fonts.googleapis.com/css?family=Encode+Sans+Condensed:400,600');
+@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@200&display=swap');
+* {
+    outline: none;
+    word-break: break-word;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+strong {
+    font-weight: 600;
+}
+
+.page {
+    width: 100%;
+    height: 100vh;
+    background: #fdfdfd;
+    font-family: 'Encode Sans Condensed', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: #212121;
+}
+
+header {
+    z-index: 1000;
+    display: flex;
+    position: fixed;
+    width: 100%;
+    height: 70px;
+    /* background: #212121; */
+    background: #65DD57;
+    color: #fff;
+    justify-content: center;
+    align-items: center;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+#nav-container {
+    position: fixed;
+    height: 100vh;
+    width: 100%;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+#nav-container .bg {
+    position: absolute;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 70px);
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.3s;
+    background: #000;
+    font-family: 'Shippori Mincho', serif;
+}
+
+#nav-container:focus-within .bg {
+    visibility: visible;
+    opacity: .6;
+}
+
+#nav-container * {
+    visibility: visible;
+}
+
+.button {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 1;
+    -webkit-appearance: none;
+    border: 0;
+    background: transparent;
+    border-radius: 0;
+    height: 70px;
+    width: 30px;
+    cursor: pointer;
+    pointer-events: auto;
+    margin-left: 25px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+.icon-bar {
+    display: block;
+    width: 100%;
+    height: 3px;
+    /* background: #aaa; */
+    background: #fff;
+    transition: 0.3s;
+}
+
+.icon-bar+.icon-bar {
+    margin-top: 5px;
+}
+
+#nav-container:focus-within .button {
+    pointer-events: none;
+}
+
+#nav-container:focus-within .icon-bar:nth-of-type(1) {
+    transform: translate3d(0, 8px, 0) rotate(45deg);
+}
+
+#nav-container:focus-within .icon-bar:nth-of-type(2) {
+    opacity: 0;
+}
+
+#nav-container:focus-within .icon-bar:nth-of-type(3) {
+    transform: translate3d(0, -8px, 0) rotate(-45deg);
+}
+
+#nav-content {
+    margin-top: 70px;
+    padding: 20px 5px;
+    width: 80%;
+    max-width: 250px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* height: calc(100% - 70px); */
+    height: 80px;
+    background: #ececec;
+    pointer-events: auto;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+    will-change: transform;
+    contain: paint;
+    font-family: 'Shippori Mincho', serif;
+}
+
+#nav-content ul {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#nav-content li a {
+    padding: 10px 5px;
+    display: block;
+    text-transform: uppercase;
+    transition: color 0.1s;
+}
+
+#nav-content li a:hover {
+    color: #BF7497;
+}
+
+#nav-content li:not(.small)+.small {
+    margin-top: auto;
+}
+
+.small {
+    display: flex;
+    align-self: center;
+}
+
+.small a {
+    font-size: 12px;
+    font-weight: 400;
+    color: #888;
+}
+
+.small a+a {
+    margin-left: 15px;
+}
+
+#nav-container:focus-within #nav-content {
+    transform: none;
+}
+
+main {
+    font-family: 'Shippori Mincho', serif;
+    padding: 80px 10px 10px;
+    display: flex;
+    flex-direction: column;
+    font-weight: normal;
+    overflow-y: scroll;
+}
+.content {
+    font-family: 'Shippori Mincho', serif;
+    font-weight: normal;
+    line-height: 220%;
+    word-break: break-word;
+}
+
+.form-check-input[disabled] ~ .form-check-label,
+.form-check-input:disabled ~ .form-check-label {
+    opacity: 1 !important;
+}
+
+label.form-check-label {
+    width: 100%;
+}
+.form-check-label * {
+    width: 100%;
+}
+
+.quiz-item-container {
+    margin-top: 10px;
+}
+
+.quiz-question {
+    margin-top: 5px;
+}
+
+hr.rounded {
+    margin-left: 10px;
+    margin-right: 10px;
+    border-top: 5px solid #d3d3d3;
+    border-radius: 10px;
+}
+
+
+/* Tooltip */
+.dictionary-tooltip {
+    position: relative;
+    display: inline-block;
+    /* border-bottom: 1px dotted black; */
+}
+
+ .dictionary-tooltiptext {
+    z-index: 100;
+    visibility: hidden;
+    width: 100%;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    /* padding: 5px 0; */
+    position: absolute;
+    top: 100%;
+    left: 0px;
+    margin-top: 5px;
+    font-family: 'Source Sans Pro', sans-serif;
+    /* Fade in dictionary-tooltip - takes 1 second to go from 0% to 100% opac: */
+    opacity: 0;
+    /* transition: opacity 1s; */
+}
+
+.dictionary-tooltip:hover .dictionary-tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+ .dictionary-tooltiptext::after {
+    content: " ";
+    position: absolute;
+    bottom: 100%;  /* At the top of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent black transparent;
+  }
+
+.dictionary-tooltip:hover {
+    color: #fff;
+    background-color: #65DD57;
+}
+.alert7-title {
+    font-weight: normal !important;
+    color: #000;
+}
+.paragraph-dictionary-tooltip {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+span[data-sentence-index] {
+    margin-bottom: 10px;
+}
+.quiz-tooltip * {
+    font-family: 'Source Sans Pro', sans-serif;
+}
+.option-tooltip-text * {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: normal;
+}

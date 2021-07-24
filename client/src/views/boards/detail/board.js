@@ -114,7 +114,7 @@ const QuizItem = (props) => {
         </CCol>
       </CRow>
       <CRow>
-        <CCol sm="2" style={{ marginTop: '5px' }}>
+        <CCol sm="3" style={{ marginTop: '5px' }}>
           <CInputGroup>
             <CInputGroupText id={`optionA-label-${id}`}>A</CInputGroupText>
             <CFormControl
@@ -124,10 +124,12 @@ const QuizItem = (props) => {
               defaultValue={data.A}
               onChange={handleInputChange}
               disabled={disabled}
+              component="textarea"
+              rows="2"
             />
           </CInputGroup>
         </CCol>
-        <CCol sm="2" style={{ marginTop: '5px' }}>
+        <CCol sm="3" style={{ marginTop: '5px' }}>
           <CInputGroup>
             <CInputGroupText id={`optionB-label-${id}`}>B</CInputGroupText>
             <CFormControl
@@ -137,10 +139,12 @@ const QuizItem = (props) => {
               defaultValue={data.B}
               onChange={handleInputChange}
               disabled={disabled}
+              component="textarea"
+              rows="2"
             />
           </CInputGroup>
         </CCol>
-        <CCol sm="2" style={{ marginTop: '5px' }}>
+        <CCol sm="3" style={{ marginTop: '5px' }}>
           <CInputGroup>
             <CInputGroupText id={`optionC-label-${id}`}>C</CInputGroupText>
             <CFormControl
@@ -150,10 +154,12 @@ const QuizItem = (props) => {
               defaultValue={data.C}
               onChange={handleInputChange}
               disabled={disabled}
+              component="textarea"
+              rows="2"
             />
           </CInputGroup>
         </CCol>
-        <CCol sm="2" style={{ marginTop: '5px' }}>
+        <CCol sm="3" style={{ marginTop: '5px' }}>
           <CInputGroup>
             <CInputGroupText id={`optionD-label-${id}`}>D</CInputGroupText>
             <CFormControl
@@ -163,10 +169,12 @@ const QuizItem = (props) => {
               defaultValue={data.D}
               onChange={handleInputChange}
               disabled={disabled}
+              component="textarea"
+              rows="2"
             />
           </CInputGroup>
         </CCol>
-        <CCol sm="4" style={{ marginTop: '5px' }}>
+        <CCol sm="3" style={{ marginTop: '5px' }}>
           <CInputGroup>
             <CFormSelect
               id={`${id}`}
