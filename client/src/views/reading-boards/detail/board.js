@@ -28,6 +28,44 @@ import { readingBoardService } from 'src/services/api/readingBoardService'
 import _ from 'lodash'
 import renderHTML from 'react-render-html'
 import { htmlEntityEncode, htmlEntityDecode } from '../../../helpers/htmlentities'
+const DictionaryForm = (props) => {
+  const { dictionary, onChange } = props
+  return (
+    <>
+      <CForm>
+        {dictionary.map((sentence, index) => {
+          return (
+            <div className="mb-3" key={`sentence-${index}`}>
+              <CFormLabel htmlFor={`sentence-${index}`}>
+                Câu {`${index + 1}`} - {renderHTML(sentence['sentence'])}
+              </CFormLabel>
+              <CFormControl
+                type="text"
+                name={`sentence-${index}`}
+                id={`sentence-${index}`}
+                placeholder="Dịch"
+                component="textarea"
+                rows="2"
+                onChange={(e) => {
+                  const { name, value } = e.target
+                  const index = parseInt(name.replace('sentence-', ''))
+                  const newSentences = [...dictionary]
+                  newSentences[index]['trans'] = value
+                  // console.log(newSentences[index])
+                  onChange(newSentences)
+                }}
+              />
+            </div>
+          )
+        })}
+      </CForm>
+    </>
+  )
+}
+DictionaryForm.propTypes = {
+  dictionary: PropTypes.array,
+  onChange: PropTypes.func,
+}
 const Exercise = (props) => {
   const { quiz, onQuizItemChange, disabled } = props
   return (
@@ -78,7 +116,6 @@ const QuizItem = (props) => {
     }
   }
   const handleDeleteClicked = (e) => {
-    console.log(e.target)
     let { id } = e.target
     id = id.replace('delete_', '')
     let index = parseInt(id)
@@ -774,6 +811,8 @@ const ReadingBoard = (props) => {
   const [visible, setVisible] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [quiz, setQuiz] = useState([])
+  const [translateableContent, setTranslateableContent] = useState('')
+  const [sentences, setSentences] = useState([])
   const addQuiz = () => {
     const data = {
       question: '',
@@ -973,7 +1012,6 @@ const ReadingBoard = (props) => {
                   aria-label="Level"
                   onChange={(e) => {
                     setLevel(e.target.value)
-                    console.log(e.target.value)
                   }}
                   id="searchByLevel"
                   disabled={viewAction === 'get'}
@@ -1024,40 +1062,41 @@ const ReadingBoard = (props) => {
                           },
                           change: function (e) {
                             const traverseTopLevel = (node) => {
-                              let sentences = []
-                              let content = ''
-                              let dictionary = {}
+                              let newSentences = [...sentences]
+                              let newContent = ''
+                              let sentenceIndex = 0
                               for (let i = 0; i < node.childNodes.length; i++) {
-                                let child = node.childNodes[i]
+                                let paragraphIndex = i
+                                let child = node.childNodes[paragraphIndex]
                                 if (child.innerHTML) {
-                                  child.removeAttribute('data-id')
-                                  child.setAttribute('data-id', i)
                                   // xử lý tách câu
                                   let paragraphInnerText = child.innerHTML
                                   let arrayOfSentences = paragraphInnerText.split('。')
-                                  //console.log('Original:', arrayOfSentences)
                                   arrayOfSentences = arrayOfSentences.filter(
                                     (item) => !_.isEmpty(item),
                                   )
-                                  //console.log('Filtered: ', arrayOfSentences)
-                                  let count = 0
                                   let paragraph = ''
-                                  arrayOfSentences.map((sentence) => {
-                                    count++
-                                    let newSentence = `<span data-sentence-count='${count}' data-paragraph-id='${i}'>${sentence}。</span>`
-                                    //console.log('newSentence: ', newSentence)
-                                    sentences.push(newSentence)
-                                    paragraph += newSentence
-                                    const obj = { ...dictionary[i] }
-                                    obj[count] = newSentence
-                                    dictionary[i] = obj
-                                    return ''
-                                  })
-                                  paragraph = `<p data-id='${i}'>${paragraph}</p>`
-                                  content += paragraph
+                                  for (let i = 0; i < arrayOfSentences.length; i++) {
+                                    let sentence = arrayOfSentences[i]
+                                    if (!_.isEmpty(sentence)) {
+                                      let newSentence = `<span data-sentence-index='${sentenceIndex}'>${sentence}。</span>`
+                                      let toPush = sentences[sentenceIndex]
+                                        ? sentences[sentenceIndex]
+                                        : {}
+                                      toPush['sentence'] = newSentence
+                                      newSentences[sentenceIndex] = toPush
+                                      paragraph += newSentence
+                                      sentenceIndex++
+                                    }
+                                  }
+                                  if (!_.isEmpty(paragraph)) {
+                                    paragraph = `<p data-id='${paragraphIndex}'>${paragraph}</p>`
+                                    newContent += paragraph
+                                  }
                                 }
                               }
-                              return { content, sentences, dictionary }
+                              setTranslateableContent(newContent)
+                              setSentences(newSentences)
                             }
                             // xử lý data
                             let originalContent = editor.getData()
@@ -1066,8 +1105,7 @@ const ReadingBoard = (props) => {
                             originalContent = originalContent.replaceAll('</b>', '')
                             let wrapper = document.createElement('div')
                             wrapper.innerHTML = originalContent
-                            let { content, sentences, dictionary } = traverseTopLevel(wrapper)
-                            console.log(dictionary)
+                            traverseTopLevel(wrapper)
                           },
                         },
                       })
@@ -1093,6 +1131,14 @@ const ReadingBoard = (props) => {
                 )}
               </CCol>
             </CRow>
+            {!_.isEmpty(sentences) && (
+              <CRow className="mb-3">
+                <CFormLabel className="col-sm-2 col-form-label">Dịch nghĩa</CFormLabel>
+                <CCol sm="12">
+                  <DictionaryForm dictionary={sentences} onChange={setSentences} />
+                </CCol>
+              </CRow>
+            )}
             {/* <CRow className="mb-3">
               <CFormLabel htmlFor="contentVn" className="col-sm-2 col-form-label">
                 Bài đọc dịch nghĩa
