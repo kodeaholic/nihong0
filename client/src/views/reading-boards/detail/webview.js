@@ -91,15 +91,9 @@ const ReadingBoardWebView = (props) => {
       })
     }
   }, [boardId])
-  //   useEffect(() => {
-  //     const menuButton = document.getElementById('menuButton')
-  //     if (menuButton) {
-  //       console.log(menuButton)
-  //       menuButton.addEventListener('click', function (event) {
-  //         alert('Hi')
-  //       })
-  //     }
-  //   })
+  useEffect(() => {
+    if (boardId) window.Alert7.alert('Chạm để dịch')
+  }, [boardId])
   if (pageNotFound) {
     return <PageNotFoundComponent />
   } else
@@ -141,9 +135,24 @@ const ReadingBoardWebView = (props) => {
             <hr />
             <div className="quiz-container">
               {quiz.map((item, index) => {
+                let question = item.question
+                let question_vn = item.question_vn
+                question = question.replaceAll('<b>', '')
+                question = question.replaceAll('</b>', '')
+                question_vn = question_vn.replaceAll('<b>', '')
+                question_vn = question_vn.replaceAll('</b>', '')
+                question_vn = question_vn.replaceAll('Arial', 'Source Sans Pro')
                 return (
                   <div className="quiz-item-container" key={`quiz-${index}`}>
-                    <div className="quiz-question">{renderHTML(item.question)}</div>
+                    <span
+                      className="quiz-question dictionary-tooltip"
+                      style={{ marginBottom: '5px' }}
+                    >
+                      {renderHTML(question.replace('<b>', ''))}
+                      <span className="dictionary-tooltiptext quiz-tooltip">
+                        {renderHTML(question_vn)}
+                      </span>
+                    </span>
                     <CFormCheck
                       type="radio"
                       label={renderHTML(item.A)}

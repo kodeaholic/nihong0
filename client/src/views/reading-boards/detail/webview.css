@@ -1,7 +1,9 @@
 @import url('https://fonts.googleapis.com/css?family=Encode+Sans+Condensed:400,600');
 @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@200&display=swap');
 * {
     outline: none;
+    word-break: break-word;
 }
 
 html {
@@ -34,7 +36,7 @@ header {
     justify-content: center;
     align-items: center;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    font-family: 'Shippori Mincho', serif;
+    font-family: 'Source Sans Pro', sans-serif;
 }
 
 #nav-container {
@@ -215,7 +217,7 @@ hr.rounded {
 .dictionary-tooltip {
     position: relative;
     display: inline-block;
-    border-bottom: 1px dotted black;
+    /* border-bottom: 1px dotted black; */
 }
 
  .dictionary-tooltiptext {
@@ -231,10 +233,10 @@ hr.rounded {
     top: 100%;
     left: 0px;
     margin-top: 5px;
-
+    font-family: 'Source Sans Pro', sans-serif;
     /* Fade in dictionary-tooltip - takes 1 second to go from 0% to 100% opac: */
     opacity: 0;
-    transition: opacity 1s;
+    /* transition: opacity 1s; */
 }
 
 .dictionary-tooltip:hover .dictionary-tooltiptext {
@@ -256,4 +258,18 @@ hr.rounded {
 .dictionary-tooltip:hover {
     color: #fff;
     background-color: #65DD57;
+}
+.alert7-title {
+    font-weight: normal !important;
+    color: #000;
+}
+.paragraph-dictionary-tooltip {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+span[data-sentence-index] {
+    margin-bottom: 10px;
+}
+.quiz-tooltip * {
+    font-family: 'Source Sans Pro', sans-serif;
 }
