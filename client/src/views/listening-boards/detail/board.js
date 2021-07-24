@@ -648,7 +648,7 @@ const ListeningBoard = (props) => {
                   <CFormControl
                     type="text"
                     id="subtitle"
-                    placeholder="Phần II: Câu hỏi + Lời thoại tiếng Nhật"
+                    placeholder="Phần II: Câu hỏi + Lời thoại tiếng Việt"
                     component="textarea"
                     rows="5"
                     onChange={(e) => setSubtitle(e.target.value)}

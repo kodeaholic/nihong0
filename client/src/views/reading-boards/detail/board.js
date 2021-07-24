@@ -48,10 +48,10 @@ const DictionaryForm = (props) => {
                 rows="2"
                 onChange={(e) => {
                   const { name, value } = e.target
+                  console.log(value)
                   const index = parseInt(name.replace('sentence-', ''))
                   const newSentences = [...dictionary]
                   newSentences[index]['trans'] = value
-                  // console.log(newSentences[index])
                   onChange(newSentences)
                 }}
               />
@@ -811,7 +811,6 @@ const ReadingBoard = (props) => {
   const [visible, setVisible] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [quiz, setQuiz] = useState([])
-  const [translateableContent, setTranslateableContent] = useState('')
   const [sentences, setSentences] = useState([])
   const addQuiz = () => {
     const data = {
@@ -908,18 +907,56 @@ const ReadingBoard = (props) => {
     })
     return clone
   }
+
+  const transofmContentVnToSave = () => {
+    let length = sentences.length
+    if (length > 0) {
+      let content = {}
+      for (let i = 0; i < length; i++) {
+        const wrapper = document.createElement('div')
+        let innerHTML = sentences[i]['sentence']
+        let trans = sentences[i]['trans']
+        innerHTML = innerHTML.replace("class=''", "class='dictionary-tooltip'")
+        innerHTML =
+          _.isEmpty(trans) || trans === undefined
+            ? innerHTML
+            : innerHTML.replace(
+                '</span>',
+                `<span class='dictionary-tooltiptext'>${trans}</span></span>`,
+              )
+        wrapper.innerHTML = innerHTML
+        const span = wrapper.childNodes[0]
+        const paragraphIndex = span.getAttribute('data-paragraph-index')
+        let sentence =
+          _.isEmpty(content[paragraphIndex]) || content[paragraphIndex] === undefined
+            ? ''
+            : content[paragraphIndex]
+        sentence += innerHTML
+        content[paragraphIndex] = sentence
+      }
+      let valuesArray = []
+      valuesArray = Object.values(content)
+      let result = ''
+      valuesArray.forEach((item) => {
+        result += `<p class="paragraph-dictionary-tooltip">${item}</p>`
+      })
+      console.log(result)
+      return result
+    }
+  }
   const handleSubmit = () => {
     if (isQuizValidated()) {
       setSaving(true)
       const quizToSave = transformQuizToSave()
-      const boardBody = {
+      let vnContent = transofmContentVnToSave()
+      let boardBody = {
         title,
         level,
         free,
         quiz: quizToSave,
         content: htmlEntityEncode(content),
-        content_vn: htmlEntityEncode(contentVn),
       }
+      if (!_.isEmpty(sentences)) boardBody.content_vn = htmlEntityEncode(vnContent)
       viewAction === 'add'
         ? readingBoardService.createBoard(boardBody).then(savingCallback)
         : readingBoardService.updateBoard(boardBody, boardId).then(savingCallback)
@@ -1063,7 +1100,6 @@ const ReadingBoard = (props) => {
                           change: function (e) {
                             const traverseTopLevel = (node) => {
                               let newSentences = [...sentences]
-                              let newContent = ''
                               let sentenceIndex = 0
                               for (let i = 0; i < node.childNodes.length; i++) {
                                 let paragraphIndex = i
@@ -1075,27 +1111,20 @@ const ReadingBoard = (props) => {
                                   arrayOfSentences = arrayOfSentences.filter(
                                     (item) => !_.isEmpty(item),
                                   )
-                                  let paragraph = ''
                                   for (let i = 0; i < arrayOfSentences.length; i++) {
                                     let sentence = arrayOfSentences[i]
                                     if (!_.isEmpty(sentence)) {
-                                      let newSentence = `<span data-sentence-index='${sentenceIndex}'>${sentence}。</span>`
+                                      let newSentence = `<span data-sentence-index='${sentenceIndex}' data-paragraph-index='${paragraphIndex}' class=''>${sentence}。</span>`
                                       let toPush = sentences[sentenceIndex]
                                         ? sentences[sentenceIndex]
                                         : {}
                                       toPush['sentence'] = newSentence
                                       newSentences[sentenceIndex] = toPush
-                                      paragraph += newSentence
                                       sentenceIndex++
                                     }
                                   }
-                                  if (!_.isEmpty(paragraph)) {
-                                    paragraph = `<p data-id='${paragraphIndex}'>${paragraph}</p>`
-                                    newContent += paragraph
-                                  }
                                 }
                               }
-                              setTranslateableContent(newContent)
                               setSentences(newSentences)
                             }
                             // xử lý data
@@ -1139,57 +1168,6 @@ const ReadingBoard = (props) => {
                 </CCol>
               </CRow>
             )}
-            {/* <CRow className="mb-3">
-              <CFormLabel htmlFor="contentVn" className="col-sm-2 col-form-label">
-                Bài đọc dịch nghĩa
-              </CFormLabel>
-              <CCol sm="10">
-                {viewAction !== 'get' && (
-                  <div
-                    id="contentVn"
-                    style={{
-                      border: '1px solid grey',
-                      borderRadius: '5px 5px 5px 5px',
-                      backgroundColor: '#fff',
-                      paddingRight: '5px',
-                      paddingLeft: '5px',
-                      paddingTop: '5px',
-                      marginTop: '7px',
-                      cursor: 'text',
-                    }}
-                    onClick={(e) => {
-                      const contentVnEditor = window.CKEDITOR.replace('contentVn', {
-                        on: {
-                          instanceReady: function (evt) {
-                            document.getElementById(evt.editor.id + '_top').style.display = 'none'
-                          },
-                          change: function (e) {
-                            setContent(contentVnEditor.getData())
-                          },
-                        },
-                      })
-                    }}
-                  >
-                    {contentVn ? renderHTML(contentVn) : renderHTML('&nbsp;&nbsp;')}
-                  </div>
-                )}
-                {viewAction === 'get' && (
-                  <div
-                    style={{
-                      border: '1px solid grey',
-                      borderRadius: '5px 5px 5px 5px',
-                      backgroundColor: '#D8DBE0',
-                      paddingRight: '5px',
-                      paddingLeft: '5px',
-                      paddingTop: '5px',
-                      marginTop: '7px',
-                    }}
-                  >
-                    {contentVn ? renderHTML(contentVn) : renderHTML('&nbsp;&nbsp;')}
-                  </div>
-                )}
-              </CCol>
-            </CRow> */}
             <CRow>
               <CFormLabel className="col-sm-2 col-form-label">Bài tập củng cố</CFormLabel>
               <CCol sm="12">

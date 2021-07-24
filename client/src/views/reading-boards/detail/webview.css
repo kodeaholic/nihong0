@@ -23,6 +23,7 @@ strong {
 }
 
 header {
+    z-index: 1000;
     display: flex;
     position: fixed;
     width: 100%;
@@ -41,6 +42,7 @@ header {
     height: 100vh;
     width: 100%;
     pointer-events: none;
+    z-index: 1000;
 }
 
 #nav-container .bg {
@@ -175,7 +177,7 @@ header {
 
 main {
     font-family: 'Shippori Mincho', serif;
-    padding: 80px 10px 10px 10px;
+    padding: 80px 10px 10px;
     display: flex;
     flex-direction: column;
     font-weight: normal;
@@ -188,7 +190,8 @@ main {
     word-break: break-word;
 }
 
-.form-check-input[disabled] ~ .form-check-label, .form-check-input:disabled ~ .form-check-label {
+.form-check-input[disabled] ~ .form-check-label,
+.form-check-input:disabled ~ .form-check-label {
     opacity: 1 !important;
 }
 
@@ -205,4 +208,52 @@ hr.rounded {
     margin-right: 10px;
     border-top: 5px solid #d3d3d3;
     border-radius: 10px;
+}
+
+
+/* Tooltip */
+.dictionary-tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+
+ .dictionary-tooltiptext {
+    z-index: 100;
+    visibility: hidden;
+    width: 100%;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    /* padding: 5px 0; */
+    position: absolute;
+    top: 100%;
+    left: 0px;
+    margin-top: 5px;
+
+    /* Fade in dictionary-tooltip - takes 1 second to go from 0% to 100% opac: */
+    opacity: 0;
+    transition: opacity 1s;
+}
+
+.dictionary-tooltip:hover .dictionary-tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+ .dictionary-tooltiptext::after {
+    content: " ";
+    position: absolute;
+    bottom: 100%;  /* At the top of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent black transparent;
   }
+
+.dictionary-tooltip:hover {
+    color: #fff;
+    background-color: #65DD57;
+}

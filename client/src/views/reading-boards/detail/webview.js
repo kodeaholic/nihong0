@@ -137,7 +137,7 @@ const ReadingBoardWebView = (props) => {
             </div>
           </div>
           <main>
-            <div className="content">{renderHTML(content)}</div>
+            <div className="content">{renderHTML(contentVn)}</div>
             <hr />
             <div className="quiz-container">
               {quiz.map((item, index) => {
