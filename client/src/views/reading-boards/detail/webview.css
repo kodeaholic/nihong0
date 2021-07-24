@@ -195,7 +195,6 @@ main {
     line-height: 220%;
     word-break: break-word;
 }
-
 .form-check-input[disabled] ~ .form-check-label,
 .form-check-input:disabled ~ .form-check-label {
     opacity: 1 !important;
@@ -232,43 +231,47 @@ hr.rounded {
 }
 
  .dictionary-tooltiptext {
-    z-index: 100;
+    /* z-index: 2000; */
     visibility: hidden;
-    width: 100%;
-    background-color: black;
+    /* width: 100%; */
+    /* background-color: black; */
+    background-image: linear-gradient(to right, #ff87bd, #eda6d6);
     color: #fff;
     text-align: center;
     border-radius: 6px;
     /* padding: 5px 0; */
     position: absolute;
-    top: 100%;
+    bottom: 100%;
     left: 0px;
-    margin-top: 5px;
+    margin-bottom: 5px;
     font-family: 'Source Sans Pro', sans-serif;
     /* Fade in dictionary-tooltip - takes 1 second to go from 0% to 100% opac: */
     opacity: 0;
-    /* transition: opacity 1s; */
+    transition: opacity 1s;
+    line-height: 105%;
+    padding: 2px;
 }
 
 .dictionary-tooltip:hover .dictionary-tooltiptext {
     visibility: visible;
     opacity: 1;
+    z-index: 2000;
 }
 
  .dictionary-tooltiptext::after {
     content: " ";
     position: absolute;
-    bottom: 100%;  /* At the top of the tooltip */
+    top: 100%;  /* At the top of the tooltip */
     left: 50%;
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: transparent transparent black transparent;
+    border-color: #ff87bd transparent transparent transparent;
   }
 
 .dictionary-tooltip:hover {
-    color: #fff;
-    background-color: #65DD57;
+    /* font-weight: bold; */
+    color: blue;
 }
 .alert7-title {
     font-weight: normal !important;
@@ -287,4 +290,11 @@ span[data-sentence-index] {
 .option-tooltip-text * {
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: normal;
+}
+
+.content > p:first-child {
+    font-weight: bold;
+}
+.quiz-item-container > span:first-child {
+    font-weight: bold;
 }
