@@ -40,6 +40,7 @@ const ReadingBoardWebView = (props) => {
   const [quiz, setQuiz] = useState([])
   const [pageNotFound, setPageNotFound] = useState(false)
   const [answeredQuiz, setAnsweredQuiz] = useState({})
+  const [showFurigana, setShowFurigana] = useState(true)
   const onQuizAnswered = (e, index) => {
     const { value } = e.target
     let clone = { ...answeredQuiz }
@@ -104,6 +105,7 @@ const ReadingBoardWebView = (props) => {
   } else
     return (
       <>
+        {!showFurigana && <link rel="stylesheet" type="text/css" href="css/furigana.css" />}
         <div className="page">
           <header tabIndex="0"> {`Luyện đọc ${level} - ${title}`} </header>
           <div id="nav-container">
@@ -127,7 +129,17 @@ const ReadingBoardWebView = (props) => {
                 </div> */}
                 <div className="switch-wrapper">
                   <div className="switch">
-                    <input type="checkbox" name="checkbox2" id="checkbox2" className="ios-toggle" />
+                    <input
+                      type="checkbox"
+                      name="checkbox2"
+                      id="checkbox2"
+                      className="ios-toggle"
+                      defaultChecked={showFurigana}
+                      onChange={() => {
+                        console.log('Changed!')
+                        setShowFurigana(!showFurigana)
+                      }}
+                    />
                     <label htmlFor="checkbox2" className="checkbox-label" />
                   </div>
                   <div className="switch-label">Hiển thị cách đọc</div>
