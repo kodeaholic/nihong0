@@ -1094,9 +1094,9 @@ const ReadingBoard = (props) => {
                     onClick={(e) => {
                       const editor = window.CKEDITOR.replace('content', {
                         on: {
-                          instanceReady: function (evt) {
-                            document.getElementById(evt.editor.id + '_top').style.display = 'none'
-                          },
+                          // instanceReady: function (evt) {
+                          //   document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                          // },
                           change: function (e) {
                             const traverseTopLevel = (node) => {
                               let newSentences = [...sentences]
