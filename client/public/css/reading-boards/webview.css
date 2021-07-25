@@ -276,6 +276,9 @@ hr.rounded {
 .highlight-tooltip {
     font-weight: bold;
 }
+.highlight-tooltip > .dictionary-tooltiptext {
+    font-weight: normal;
+}
 .alert7-title {
     font-weight: normal !important;
     color: #000;
