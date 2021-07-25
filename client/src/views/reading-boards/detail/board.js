@@ -55,6 +55,21 @@ const DictionaryForm = (props) => {
                   onChange(newSentences)
                 }}
               />
+              <fieldset className="row mb-3">
+                <CCol sm="10">
+                  <CFormCheck
+                    id="highlight"
+                    label="Quan trọng"
+                    defaultChecked={dictionary[index]['highlight']}
+                    onChange={(e) => {
+                      const current = dictionary[index]['highlight'] ? true : false
+                      const newSentences = [...dictionary]
+                      newSentences[index]['highlight'] = !current
+                      onChange(newSentences)
+                    }}
+                  />
+                </CCol>
+              </fieldset>
             </div>
           )
         })}
@@ -916,7 +931,11 @@ const ReadingBoard = (props) => {
         const wrapper = document.createElement('div')
         let innerHTML = sentences[i]['sentence']
         let trans = sentences[i]['trans']
-        innerHTML = innerHTML.replace("class=''", "class='dictionary-tooltip'")
+        let highlight = sentences[i]['highlight']
+        innerHTML = innerHTML.replace(
+          "class=''",
+          `class='dictionary-tooltip ${highlight ? 'highlight-tooltip' : ''}'`,
+        )
         innerHTML =
           _.isEmpty(trans) || trans === undefined
             ? innerHTML

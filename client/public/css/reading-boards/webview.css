@@ -230,7 +230,7 @@ hr.rounded {
     /* border-bottom: 1px dotted black; */
 }
 
- .dictionary-tooltiptext {
+.dictionary-tooltiptext {
     /* z-index: 2000; */
     visibility: hidden;
     width: 100%;
@@ -242,7 +242,7 @@ hr.rounded {
     /* padding: 5px 0; */
     position: absolute;
     bottom: 100%;
-    left: 0px;
+    left: 0;
     margin-bottom: 5px;
     font-family: 'Source Sans Pro', sans-serif;
     /* Fade in dictionary-tooltip - takes 1 second to go from 0% to 100% opac: */
@@ -258,20 +258,23 @@ hr.rounded {
     z-index: 2000;
 }
 
- .dictionary-tooltiptext::after {
+.dictionary-tooltiptext::after {
     content: " ";
     position: absolute;
-    top: 100%;  /* At the top of the tooltip */
+    top: 100%; /* At the top of the tooltip */
     left: 50%;
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
     border-color: #ff87bd transparent transparent transparent;
-  }
+}
 
 .dictionary-tooltip:hover {
     /* font-weight: bold; */
     color: blue;
+}
+.highlight-tooltip {
+    font-weight: bold;
 }
 .alert7-title {
     font-weight: normal !important;
