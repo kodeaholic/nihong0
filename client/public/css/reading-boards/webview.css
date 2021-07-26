@@ -272,12 +272,6 @@ hr.rounded {
     border-color: #ff87bd transparent transparent transparent;
 }
 
-.dictionary-tooltip:hover {
-    /* font-weight: bold; */
-    color: blue;
-    padding-bottom: 0;
-    border-bottom: 0.5px dotted;
-}
 .highlight-tooltip {
     font-weight: bold;
 }
@@ -331,7 +325,13 @@ span[data-sentence-index] {
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: normal;
 }
-.dictionary-tooltip:hover + .custom-tooltip {
+.tooltip-clicked {
+    /* font-weight: bold; */
+    color: blue;
+    padding-bottom: 0;
+    border-bottom: 0.5px dotted;
+}
+.tooltip-clicked + .custom-tooltip {
     display: block;
     opacity: 1;
     z-index: 2000;

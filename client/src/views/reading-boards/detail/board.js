@@ -48,7 +48,7 @@ const DictionaryForm = (props) => {
                 rows="2"
                 onChange={(e) => {
                   const { name, value } = e.target
-                  console.log(value)
+                  // console.log(value)
                   const index = parseInt(name.replace('sentence-', ''))
                   const newSentences = [...dictionary]
                   newSentences[index]['trans'] = value
@@ -1005,7 +1005,7 @@ const ReadingBoard = (props) => {
       valuesArray.forEach((item) => {
         result += `<p class="paragraph-dictionary-tooltip">${item}</p>`
       })
-      console.log(result)
+      // console.log(result)
       return result
     }
   }

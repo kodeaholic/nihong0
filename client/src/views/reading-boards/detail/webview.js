@@ -123,8 +123,20 @@ const ReadingBoardWebView = (props) => {
       // link element to it
       document.getElementsByTagName('HEAD')[0].appendChild(link)
     })
+
+    /** Add scroll event catching */
+    const removeClicked = () => {
+      const clicked = document.getElementsByClassName('tooltip-clicked')[0]
+      if (clicked) clicked.classList.remove('tooltip-clicked')
+    }
+    // document.addEventListener('touchmove', removeClicked, false)
+    document.addEventListener('touchstart', removeClicked, false)
+    // document.addEventListener('scroll', removeClicked, false)
     return () => {
       removeAllElementsWithClass('css-on-the-fly')
+      // document.removeEventListener('touchmove', removeClicked, true)
+      // document.removeEventListener('scroll', removeClicked, true)
+      document.removeEventListener('touchstart', removeClicked, true)
     }
   }, [])
   useEffect(() => {
@@ -141,16 +153,13 @@ const ReadingBoardWebView = (props) => {
           }
           item.addEventListener('click', function () {
             const retargetedItem = document.getElementById(id)
-            console.log(id)
+            retargetedItem.classList.add('tooltip-clicked')
             const tooltipTextElement = document.querySelector(`[data-tooltip-text-id="${id}"]`)
             tooltipTextElement.style.left = `${
               (window.innerWidth - tooltipTextElement.offsetWidth) / 2
             }px`
             const boundingClientRect = retargetedItem.getBoundingClientRect()
             const { y, width, height, top } = boundingClientRect
-            console.log(boundingClientRect)
-            console.log('tooltipTextElement.offsetTop: ', tooltipTextElement.offsetTop)
-            console.log('window.innerHeight: ', window.innerHeight)
             tooltipTextElement.style.bottom = `${window.innerHeight - top}px`
           })
           if (!nextSibling || (nextSibling && !nextSibling.getAttribute('data-type'))) {

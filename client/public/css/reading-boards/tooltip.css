@@ -5,7 +5,6 @@
 .dictionary-tooltip:hover .dictionary-tooltiptext {
     display: none !important;
 }
-}
 
 .dictionary-tooltiptext::after {
     display: none !important;
@@ -14,4 +13,12 @@
 .dictionary-tooltip:hover {
     /* font-weight: bold; */
     color: #000 !important;
+    border-bottom: none;
+}
+
+.custom-tooltip {
+    display: none;
+}
+.dictionary-tooltip:hover + .custom-tooltip {
+    display: none;
 }
