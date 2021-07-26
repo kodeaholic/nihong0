@@ -229,6 +229,9 @@ hr.rounded {
     display: inline-block;
     /* border-bottom: 1px dotted black; */
 }
+.dictionary-tooltip[data-sentence-index] {
+    display: inline;
+}
 
 .dictionary-tooltiptext {
     /* z-index: 2000; */
@@ -272,6 +275,8 @@ hr.rounded {
 .dictionary-tooltip:hover {
     /* font-weight: bold; */
     color: blue;
+    padding-bottom: 0;
+    border-bottom: 0.5px dotted;
 }
 .highlight-tooltip {
     font-weight: bold;
@@ -303,4 +308,42 @@ span[data-sentence-index] {
 }
 .quiz-item-container > span:first-child {
     font-weight: bold;
+}
+
+.custom-tooltip {
+    display: none;
+    min-width: 20px;
+    min-height: 30px;
+    width: auto;
+    height: auto;
+    max-width: calc(90vw);
+    padding: 5px;
+    margin: 5px 0 10px 0;
+    text-align: center;
+    z-index: 2000;
+    color: #fff;
+    /* background-image: linear-gradient(to right, #ff87bd, #eda6d6); */
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+	background-size: 400% 400%;
+	animation: gradient 5s ease infinite;
+    border-radius: 5px;
+    position: fixed;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: normal;
+}
+.dictionary-tooltip:hover + .custom-tooltip {
+    display: block;
+    opacity: 1;
+    z-index: 2000;
+}
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
 }

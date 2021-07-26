@@ -9,6 +9,7 @@ import { htmlEntityDecode } from '../../../helpers/htmlentities'
 import PageNotFoundComponent from 'src/components/404'
 import Loader from 'src/components/Loader'
 import { sleep } from 'src/helpers/common'
+import { v4 as uuidv4 } from 'uuid'
 const removeRedundantTags = (e, fontOption = false) => {
   let result = e.replaceAll('<b>', '')
   result = result.replaceAll('</b>', '')
@@ -40,7 +41,7 @@ const ReadingBoardWebView = (props) => {
   const [pageNotFound, setPageNotFound] = useState(false)
   const [answeredQuiz, setAnsweredQuiz] = useState({})
   const [showFurigana, setShowFurigana] = useState(true)
-  const [showTranslator, setShowTranslator] = useState(true)
+  const [showTranslator, setShowTranslator] = useState(false)
   const [loading, setLoading] = useState(true)
   const onQuizAnswered = (e, index) => {
     const { value } = e.target
@@ -81,15 +82,15 @@ const ReadingBoardWebView = (props) => {
             let resultQuizes = clonedQuizes.map(function (item) {
               let newItem = { ...item }
               newItem.question = htmlEntityDecode(newItem.question)
-              newItem.question_vn = htmlEntityDecode(newItem.question_vn)
+              // newItem.question_vn = htmlEntityDecode(newItem.question_vn)
               newItem.A = htmlEntityDecode(newItem.A)
               newItem.B = htmlEntityDecode(newItem.B)
               newItem.C = htmlEntityDecode(newItem.C)
               newItem.D = htmlEntityDecode(newItem.D)
-              newItem.A_vn = htmlEntityDecode(newItem.A_vn)
-              newItem.B_vn = htmlEntityDecode(newItem.B_vn)
-              newItem.C_vn = htmlEntityDecode(newItem.C_vn)
-              newItem.D_vn = htmlEntityDecode(newItem.D_vn)
+              // newItem.A_vn = htmlEntityDecode(newItem.A_vn)
+              // newItem.B_vn = htmlEntityDecode(newItem.B_vn)
+              // newItem.C_vn = htmlEntityDecode(newItem.C_vn)
+              // newItem.D_vn = htmlEntityDecode(newItem.D_vn)
               return newItem
             })
             setQuiz(resultQuizes)
@@ -120,13 +121,53 @@ const ReadingBoardWebView = (props) => {
       link.classList.add('css-on-the-fly')
       // Get HTML head element to append
       // link element to it
-      console.log(link)
       document.getElementsByTagName('HEAD')[0].appendChild(link)
     })
     return () => {
       removeAllElementsWithClass('css-on-the-fly')
     }
   }, [])
+  useEffect(() => {
+    if (showTranslator) {
+      const list = document.getElementsByClassName('dictionary-tooltip')
+      if (list.length > 0) {
+        for (let item of list) {
+          const nextSibling = item.nextSibling
+          const parent = item.parentElement
+          let id = item.getAttribute('id')
+          if (_.isEmpty(id)) {
+            id = uuidv4()
+            item.setAttribute('id', id)
+          }
+          item.addEventListener('click', function () {
+            const retargetedItem = document.getElementById(id)
+            console.log(id)
+            const tooltipTextElement = document.querySelector(`[data-tooltip-text-id="${id}"]`)
+            tooltipTextElement.style.left = `${
+              (window.innerWidth - tooltipTextElement.offsetWidth) / 2
+            }px`
+            const boundingClientRect = retargetedItem.getBoundingClientRect()
+            const { y, width, height, top } = boundingClientRect
+            console.log(boundingClientRect)
+            console.log('tooltipTextElement.offsetTop: ', tooltipTextElement.offsetTop)
+            console.log('window.innerHeight: ', window.innerHeight)
+            tooltipTextElement.style.bottom = `${window.innerHeight - top}px`
+          })
+          if (!nextSibling || (nextSibling && !nextSibling.getAttribute('data-type'))) {
+            const text = item.getAttribute('data-tooltip')
+            if (text && text.length) {
+              const span = document.createElement('span')
+              span.classList.add('custom-tooltip')
+              span.setAttribute('data-type', 'custom-tooltip')
+              span.setAttribute('data-tooltip-text-id', id)
+              span.innerHTML = text
+              parent.insertBefore(span, nextSibling)
+            }
+          }
+        }
+      }
+    }
+  }, [showTranslator])
   if (pageNotFound) {
     return <PageNotFoundComponent />
   } else
@@ -214,31 +255,22 @@ const ReadingBoardWebView = (props) => {
                       let question_vn = item.question_vn
                       question = question.replaceAll('<b>', '')
                       question = question.replaceAll('</b>', '')
-                      question_vn = question_vn.replaceAll('<b>', '')
-                      question_vn = question_vn.replaceAll('</b>', '')
-                      question_vn = question_vn.replaceAll('Arial', 'Source Sans Pro')
                       return (
                         <div className="quiz-item-container" key={`quiz-${index}`}>
                           <span
                             className="quiz-question dictionary-tooltip"
                             style={{ marginBottom: '5px' }}
+                            data-tooltip={question_vn}
                           >
-                            {renderHTML(question.replace('<b>', ''))}
-                            <span className="dictionary-tooltiptext quiz-tooltip">
-                              {renderHTML(question_vn)}
-                            </span>
+                            {renderHTML(question)}
                           </span>
                           <CFormCheck
                             type="radio"
-                            label={renderHTML(`<span
-                      className="dictionary-tooltip option-tooltip"
-                      style={{ marginBottom: '5px' }}
-                    >
-                      ${removeRedundantTags(item.A)}
-                      <span className="dictionary-tooltiptext option-tooltip-text">
-                        ${removeRedundantTags(item.A_vn, true)}
-                      </span>
-                    </span>`)}
+                            label={renderHTML(
+                              `<span class="dictionary-tooltip option-tooltip" style="margin-bottom: 5px;" data-tooltip="${
+                                item.A_vn
+                              }">${removeRedundantTags(item.A)}</span>`,
+                            )}
                             name={'quiz-' + index}
                             onClick={(e) => onQuizAnswered(e, index)}
                             value="A"
@@ -247,15 +279,11 @@ const ReadingBoardWebView = (props) => {
                           />
                           <CFormCheck
                             type="radio"
-                            label={renderHTML(`<span
-                      className="dictionary-tooltip option-tooltip"
-                      style={{ marginBottom: '5px' }}
-                    >
-                      ${removeRedundantTags(item.B)}
-                      <span className="dictionary-tooltiptext option-tooltip-text">
-                        ${removeRedundantTags(item.B_vn, true)}
-                      </span>
-                    </span>`)}
+                            label={renderHTML(
+                              `<span class="dictionary-tooltip option-tooltip" style="margin-bottom: 5px;" data-tooltip="${
+                                item.B_vn
+                              }">${removeRedundantTags(item.B)}</span>`,
+                            )}
                             name={'quiz-' + index}
                             onClick={(e) => onQuizAnswered(e, index)}
                             value="B"
@@ -264,15 +292,11 @@ const ReadingBoardWebView = (props) => {
                           />
                           <CFormCheck
                             type="radio"
-                            label={renderHTML(`<span
-                      className="dictionary-tooltip option-tooltip"
-                      style={{ marginBottom: '5px' }}
-                    >
-                      ${removeRedundantTags(item.C)}
-                      <span className="dictionary-tooltiptext option-tooltip-text">
-                        ${removeRedundantTags(item.C_vn, true)}
-                      </span>
-                    </span>`)}
+                            label={renderHTML(
+                              `<span class="dictionary-tooltip option-tooltip" style="margin-bottom: 5px;" data-tooltip="${
+                                item.C_vn
+                              }">${removeRedundantTags(item.C)}</span>`,
+                            )}
                             name={'quiz-' + index}
                             onClick={(e) => onQuizAnswered(e, index)}
                             value="C"
@@ -281,15 +305,11 @@ const ReadingBoardWebView = (props) => {
                           />
                           <CFormCheck
                             type="radio"
-                            label={renderHTML(`<span
-                      className="dictionary-tooltip option-tooltip"
-                      style={{ marginBottom: '5px' }}
-                    >
-                      ${removeRedundantTags(item.D)}
-                      <span className="dictionary-tooltiptext option-tooltip-text">
-                        ${removeRedundantTags(item.D_vn, true)}
-                      </span>
-                    </span>`)}
+                            label={renderHTML(
+                              `<span class="dictionary-tooltip option-tooltip" style="margin-bottom: 5px;" data-tooltip="${
+                                item.D_vn
+                              }">${removeRedundantTags(item.D)}</span>`,
+                            )}
                             name={'quiz-' + index}
                             onClick={(e) => onQuizAnswered(e, index)}
                             value="D"
