@@ -347,3 +347,11 @@ span[data-sentence-index] {
 		background-position: 0% 50%;
 	}
 }
+
+/*Quiz*/
+.form-check-input:disabled[type=radio] + label > span[data-answer="false"] * {
+    color: red !important;
+}
+.form-check-input:disabled[type=radio] + label > span[data-answer="true"] * {
+    color: #65DD57 !important;
+}

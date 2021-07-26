@@ -26,8 +26,10 @@ const removeColor = (elem) => {
 const allDescendants = (node) => {
   for (var i = 0; i < node.childNodes.length; i++) {
     var child = node.childNodes[i]
-    allDescendants(child)
-    removeColor(child)
+    if (child.nodeType === Node.ELEMENT_NODE) {
+      allDescendants(child)
+      removeColor(child)
+    }
   }
 }
 const ReadingBoardWebView = (props) => {
@@ -48,21 +50,21 @@ const ReadingBoardWebView = (props) => {
     let clone = { ...answeredQuiz }
     clone[index] = value
     setAnsweredQuiz(clone)
-    const correctOption = quiz[index].answer
-    const colorForAnsweredOption = value === correctOption ? '#65DD57' : '#ff0000'
-    const colorForCorrectAnswer = '#65DD57'
-    const answeredLabel = document.querySelector(`label[for='quiz-${index}-${value}']`)
-    const correctLabel = document.querySelector(`label[for='quiz-${index}-${correctOption}']`)
-    if (correctLabel) {
-      allDescendants(correctLabel)
-      correctLabel.style.color = colorForCorrectAnswer
-      correctLabel.style.fontWeight = 'bold'
-    }
-    if (answeredLabel) {
-      allDescendants(answeredLabel)
-      answeredLabel.style.color = colorForAnsweredOption
-      answeredLabel.style.fontWeight = 'bold'
-    }
+    // const correctOption = quiz[index].answer
+    // const colorForAnsweredOption = value === correctOption ? '#65DD57' : '#ff0000'
+    // const colorForCorrectAnswer = '#65DD57'
+    // const answeredLabel = document.querySelector(`label[for='quiz-${index}-${value}']`)
+    // const correctLabel = document.querySelector(`label[for='quiz-${index}-${correctOption}']`)
+    // if (correctLabel) {
+    //   allDescendants(correctLabel)
+    //   correctLabel.style.color = colorForCorrectAnswer
+    //   correctLabel.style.fontWeight = 'bold'
+    // }
+    // if (answeredLabel) {
+    //   allDescendants(answeredLabel)
+    //   answeredLabel.style.color = colorForAnsweredOption
+    //   answeredLabel.style.fontWeight = 'bold'
+    // }
   }
   /* Load item */
   useEffect(() => {
@@ -278,6 +280,8 @@ const ReadingBoardWebView = (props) => {
                             label={renderHTML(
                               `<span class="dictionary-tooltip option-tooltip" style="margin-bottom: 5px;" data-tooltip="${
                                 item.A_vn
+                              }" data-answer="${
+                                item.answer === 'A' ? 'true' : 'false'
                               }">${removeRedundantTags(item.A)}</span>`,
                             )}
                             name={'quiz-' + index}
@@ -291,6 +295,8 @@ const ReadingBoardWebView = (props) => {
                             label={renderHTML(
                               `<span class="dictionary-tooltip option-tooltip" style="margin-bottom: 5px;" data-tooltip="${
                                 item.B_vn
+                              }" data-answer="${
+                                item.answer === 'B' ? 'true' : 'false'
                               }">${removeRedundantTags(item.B)}</span>`,
                             )}
                             name={'quiz-' + index}
@@ -304,6 +310,8 @@ const ReadingBoardWebView = (props) => {
                             label={renderHTML(
                               `<span class="dictionary-tooltip option-tooltip" style="margin-bottom: 5px;" data-tooltip="${
                                 item.C_vn
+                              }" data-answer="${
+                                item.answer === 'C' ? 'true' : 'false'
                               }">${removeRedundantTags(item.C)}</span>`,
                             )}
                             name={'quiz-' + index}
@@ -317,6 +325,8 @@ const ReadingBoardWebView = (props) => {
                             label={renderHTML(
                               `<span class="dictionary-tooltip option-tooltip" style="margin-bottom: 5px;" data-tooltip="${
                                 item.D_vn
+                              }" data-answer="${
+                                item.answer === 'D' ? 'true' : 'false'
                               }">${removeRedundantTags(item.D)}</span>`,
                             )}
                             name={'quiz-' + index}
