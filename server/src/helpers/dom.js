@@ -13,7 +13,7 @@ function extractTextFromHTMLString(str) {
   text = text.replace(/\n/g, '');
   text = text.replace(/\。/g, '');
   text = text.replace(/\./g, '');
-  return dom;
+  return text;
 }
 
 function traverse(node) {
