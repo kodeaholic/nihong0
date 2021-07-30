@@ -57,15 +57,6 @@ const VocabSchema = mongoose.Schema(
 VocabSchema.plugin(toJSON);
 VocabSchema.plugin(paginate);
 
-VocabSchema.pre('save', async function (next) {
-  const vocab = this;
-  if (_.isEmpty(vocab.extractedVocab)) {
-    const decoded = htmlEntityDecode(item.vocab);
-    vocab.extracted = extractTextFromHTMLString(decoded);
-  }
-  next();
-});
-
 /**
  * @typedef Vocab
  */

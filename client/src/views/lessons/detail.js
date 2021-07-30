@@ -722,12 +722,9 @@ const LessonDetail = (props) => {
           <CCol xs="12" sm="12" lg="12" md="12">
             <CModal visible={visibleModalDelete} onDismiss={() => setVisibleModalDelete(false)}>
               <CModalHeader onDismiss={() => setVisibleModalDelete(false)}>
-                <CModalTitle>XÁC NHẬN XOÁ TỪ VỰNG NÀY</CModalTitle>
+                <CModalTitle>XÁC NHẬN XOÁ TỪ VỰNG</CModalTitle>
               </CModalHeader>
-              <CModalBody>
-                Bạn chắc chắn muốn xoá từ vựng <CBadge color="success">{itemToDelete.vocab}</CBadge>{' '}
-                ?
-              </CModalBody>
+              <CModalBody>{parse(htmlEntityDecode(itemToDelete.vocab))}</CModalBody>
               <CModalFooter>
                 <CButton color="secondary" onClick={() => setVisibleModalDelete(false)}>
                   HUỶ BỎ
