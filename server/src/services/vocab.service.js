@@ -10,7 +10,7 @@ const ApiError = require('../utils/ApiError');
  * @returns {Promise<Vocab>}
  */
 const createVocab = async (vocabBody) => {
-  const decoded = htmlEntityDecode(item.vocab);
+  const decoded = htmlEntityDecode(vocabBody.vocab ? vocabBody.vocab : '');
   const extractedVocab = extractTextFromHTMLString(decoded);
   const extractedFurigana = extractFuriganaFromHTMLString(decoded);
   const vocab = await Vocab.create({ ...vocabBody, extractedVocab, extractedFurigana });
@@ -38,7 +38,10 @@ const queryVocabs = async (filter, options) => {
  * @returns {Promise<Vocab>}
  */
 const getVocabById = async (id) => {
-  const vocab = await Vocab.findById(id).populate({path: 'lesson', populate: {path: 'chapter', populate: { path: 'topic'}}});
+  const vocab = await Vocab.findById(id).populate({
+    path: 'lesson',
+    populate: { path: 'chapter', populate: { path: 'topic' } },
+  });
   if (!vocab) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Từ vựng không tồn tại hoặc đã bị xoá');
   }
@@ -56,12 +59,10 @@ const updateVocabById = async (vocabId, updateBody) => {
   if (!vocab) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Từ vựng không tồn tại hoặc đã bị xoá');
   }
-  if (!_.isEmpty(updateBody.vocab)) {
-    const decoded = htmlEntityDecode(item.vocab);
-    const extractedVocab = extractTextFromHTMLString(decoded);
-    const extractedFurigana = extractFuriganaFromHTMLString(decoded);
-    Object.assign(updateBody, {extractedVocab, extractedFurigana});
-  }
+  const decoded = htmlEntityDecode(updateBody.vocab ? updateBody.vocab : '');
+  const extractedVocab = extractTextFromHTMLString(decoded);
+  const extractedFurigana = extractFuriganaFromHTMLString(decoded);
+  Object.assign(updateBody, { extractedVocab, extractedFurigana });
   Object.assign(vocab, updateBody);
   await vocab.save();
   return vocab;
