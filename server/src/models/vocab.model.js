@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const _ = require('lodash');
 const { toJSON, paginate } = require('./plugins');
+const { htmlEntityDecode } = require('../helpers/htmlentities');
+const { extractTextFromHTMLString } = require('../helpers/dom');
 const Schema = mongoose.Schema;
 const VocabSchema = mongoose.Schema(
   {
