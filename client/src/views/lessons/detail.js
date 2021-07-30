@@ -980,6 +980,9 @@ const LessonDetail = (props) => {
                       style={{ borderBottom: '1px solid #dee2e6', fontSize: '30px' }}
                     >
                       {parse(htmlEntityDecode(item.vocab))}
+                      {item.extractedVocab && (
+                        <span style={{ fontSize: '12px' }}>({item.extractedVocab})</span>
+                      )}
                       <div style={{ fontSize: 15 }}>{item.vocabMeaning}</div>
                     </CCol>
                     <CCol
