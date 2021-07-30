@@ -50,6 +50,10 @@ const VocabSchema = mongoose.Schema(
       type: String,
       required: false,
     },
+    extractedFurigana: {
+      type: String,
+      required: false,
+    },
   },
   { timestamps: true }
 );

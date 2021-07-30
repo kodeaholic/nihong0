@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { extractTextFromHTMLString } = require('../helpers/dom');
+const { extractTextFromHTMLString, extractFuriganaFromHTMLString } = require('../helpers/dom');
 const { htmlEntityDecode } = require('../helpers/htmlentities');
 const { Vocab } = require('../models');
 const ApiError = require('../utils/ApiError');
@@ -11,8 +11,9 @@ const ApiError = require('../utils/ApiError');
  */
 const createVocab = async (vocabBody) => {
   const decoded = htmlEntityDecode(item.vocab);
-  const extracted = extractTextFromHTMLString(decoded);
-  const vocab = await Vocab.create({ ...vocabBody, extractedVocab: extracted });
+  const extractedVocab = extractTextFromHTMLString(decoded);
+  const extractedFurigana = extractFuriganaFromHTMLString(decoded);
+  const vocab = await Vocab.create({ ...vocabBody, extractedVocab, extractedFurigana });
   return vocab;
 };
 
@@ -54,6 +55,12 @@ const updateVocabById = async (vocabId, updateBody) => {
   const vocab = await Vocab.findById(vocabId);
   if (!vocab) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Từ vựng không tồn tại hoặc đã bị xoá');
+  }
+  if (!_.isEmpty(updateBody.vocab)) {
+    const decoded = htmlEntityDecode(item.vocab);
+    const extractedVocab = extractTextFromHTMLString(decoded);
+    const extractedFurigana = extractFuriganaFromHTMLString(decoded);
+    Object.assign(updateBody, {extractedVocab, extractedFurigana});
   }
   Object.assign(vocab, updateBody);
   await vocab.save();

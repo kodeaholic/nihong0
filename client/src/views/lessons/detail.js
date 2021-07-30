@@ -978,7 +978,10 @@ const LessonDetail = (props) => {
                     >
                       {parse(htmlEntityDecode(item.vocab))}
                       {item.extractedVocab && (
-                        <span style={{ fontSize: '12px' }}>({item.extractedVocab})</span>
+                        <span style={{ fontSize: '12px' }}>Từ điển: {item.extractedVocab}</span>
+                      )}
+                      {item.extractedFurigana && (
+                        <span style={{ fontSize: '12px' }}>[{item.extractedFurigana}]</span>
                       )}
                       <div style={{ fontSize: 15 }}>{item.vocabMeaning}</div>
                     </CCol>
