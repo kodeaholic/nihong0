@@ -1173,9 +1173,18 @@ const ReadingBoard = (props) => {
                                   // xử lý tách câu
                                   let paragraphInnerText = child.innerHTML
                                   let arrayOfSentences = paragraphInnerText.split('。')
-                                  arrayOfSentences = arrayOfSentences.filter(
-                                    (item) => !_.isEmpty(item),
-                                  )
+                                  arrayOfSentences = arrayOfSentences.filter((item) => {
+                                    let contentNotEmpty = true
+                                    let clone = item
+                                    // clone = item.replace('&nbsp;', '')
+                                    clone = item.replace(/\。/g, '')
+                                    clone = clone.replace(/\n/g, '')
+                                    clone = clone.replace(/\s/g, '')
+                                    clone = clone.replace(/\　/g, '')
+                                    console.log(`"${clone}"`)
+                                    contentNotEmpty = !_.isEmpty(clone)
+                                    return contentNotEmpty
+                                  })
                                   for (let i = 0; i < arrayOfSentences.length; i++) {
                                     let sentence = arrayOfSentences[i]
                                     if (!_.isEmpty(sentence)) {
