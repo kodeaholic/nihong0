@@ -9,3 +9,4 @@ module.exports.Topic = require('./topic.model');
 module.exports.Chapter = require('./chapter.model');
 module.exports.Lesson = require('./lesson.model');
 module.exports.Vocab = require('./vocab.model');
+module.exports.Dictionary = require('./dictionary.model');

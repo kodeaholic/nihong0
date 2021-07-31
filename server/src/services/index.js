@@ -12,3 +12,4 @@ module.exports.chapterService = require('./chapter.service');
 module.exports.lessonService = require('./lesson.service');
 module.exports.vocabService = require('./vocab.service');
 module.exports.searchService = require('./search.service');
+module.exports.dictionaryService = require('./dictionary.service');
