@@ -12,6 +12,7 @@ const topicRoute = require('./topic.route');
 const chapterRoute = require('./chapter.route');
 const lessonRoute = require('./lesson.route');
 const vocabRoute = require('./vocab.route');
+const searchRoute = require('./search.route');
 const config = require('../../config/config');
 
 const router = express.Router();
@@ -65,6 +66,10 @@ const defaultRoutes = [
   {
     path: '/reading-boards',
     route: readingBoardRoute
+  },
+  {
+    path: '/search',
+    route: searchRoute
   }
 ];
 

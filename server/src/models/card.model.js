@@ -80,7 +80,7 @@ cardSchema.plugin(paginate);
   const card = excludeCardId ? await this.findOne({ letter, _id: { $ne: excludeCardId } }) : await this.findOne({ letter });
   return !!card;
 };
-
+// cardSchema.index({ meaning: 'text' }, {name: 'card_text_index'});
 /**
  * @typedef Card
  */
