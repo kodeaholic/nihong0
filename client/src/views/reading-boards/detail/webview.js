@@ -36,9 +36,7 @@ const ReadingBoardWebView = (props) => {
   const { boardId } = useParams()
   const [title, setTitle] = useState('')
   const [level, setLevel] = useState('')
-  const [free, setFree] = useState(1)
-  const [content, setContent] = useState('')
-  const [contentVn, setContentVn] = useState('')
+  const [tooltipContent, setTooltipContent] = useState('')
   const [quiz, setQuiz] = useState([])
   const [pageNotFound, setPageNotFound] = useState(false)
   const [answeredQuiz, setAnsweredQuiz] = useState({})
@@ -74,11 +72,10 @@ const ReadingBoardWebView = (props) => {
           if (res.status === 401 || res.status === 404 || res.status === 400) {
             setPageNotFound(true)
           } else {
-            setFree(res.free)
             setTitle(res.title)
             setLevel(res.level)
-            setContent(res.content ? htmlEntityDecode(res.content) : '')
-            setContentVn(res.content_vn ? htmlEntityDecode(res.content_vn) : '')
+            // setContent(res.content ? htmlEntityDecode(res.content) : '')
+            setTooltipContent(res.tooltipContent ? htmlEntityDecode(res.tooltipContent) : '')
             let initialQuizes = res.quiz
             let clonedQuizes = [...initialQuizes]
             let resultQuizes = clonedQuizes.map(function (item) {
@@ -258,7 +255,7 @@ const ReadingBoardWebView = (props) => {
                   </div>
                 </div>
                 <main>
-                  <div className="content">{renderHTML(contentVn)}</div>
+                  <div className="content">{renderHTML(tooltipContent)}</div>
                   <hr />
                   <div className="quiz-container">
                     {quiz.map((item, index) => {

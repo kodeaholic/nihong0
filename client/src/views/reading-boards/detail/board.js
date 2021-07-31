@@ -28,6 +28,7 @@ import { readingBoardService } from 'src/services/api/readingBoardService'
 import _ from 'lodash'
 import renderHTML from 'react-render-html'
 import { htmlEntityEncode, htmlEntityDecode } from '../../../helpers/htmlentities'
+import { extractTextWithFurigana } from 'src/helpers/dom'
 const DictionaryForm = (props) => {
   const { dictionary, onChange } = props
   return (
@@ -54,6 +55,8 @@ const DictionaryForm = (props) => {
                   newSentences[index]['trans'] = value
                   onChange(newSentences)
                 }}
+                defaultValue={dictionary[index]['trans']}
+                disabled={true}
               />
               <fieldset className="row mb-3">
                 <CCol sm="10">
@@ -873,11 +876,12 @@ const ReadingBoard = (props) => {
   const [free, setFree] = useState(1)
   const [content, setContent] = useState('')
   const [contentVn, setContentVn] = useState('')
+  const [tooltipContent, setTooltipContent] = useState('')
   const [saving, setSaving] = useState(false)
   const [visible, setVisible] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [quiz, setQuiz] = useState([])
-  const [sentences, setSentences] = useState([])
+  const [dictionary, setDictionary] = useState([])
   const addQuiz = () => {
     const data = {
       question: '',
@@ -974,15 +978,15 @@ const ReadingBoard = (props) => {
     return clone
   }
 
-  const transofmContentVnToSave = () => {
-    let length = sentences.length
+  const transformTooltipContentToSave = () => {
+    let length = dictionary.length
     if (length > 0) {
       let content = {}
       for (let i = 0; i < length; i++) {
         const wrapper = document.createElement('div')
-        let innerHTML = sentences[i]['sentence']
-        let trans = sentences[i]['trans']
-        let highlight = sentences[i]['highlight']
+        let innerHTML = dictionary[i]['sentence']
+        let trans = dictionary[i]['trans']
+        let highlight = dictionary[i]['highlight']
         innerHTML = innerHTML.replace(
           "class=''",
           `class='dictionary-tooltip ${highlight ? 'highlight-tooltip' : ''}' data-tooltip='${
@@ -1005,7 +1009,6 @@ const ReadingBoard = (props) => {
       valuesArray.forEach((item) => {
         result += `<p class="paragraph-dictionary-tooltip">${item}</p>`
       })
-      // console.log(result)
       return result
     }
   }
@@ -1013,15 +1016,16 @@ const ReadingBoard = (props) => {
     if (isQuizValidated()) {
       setSaving(true)
       const quizToSave = transformQuizToSave()
-      let vnContent = transofmContentVnToSave()
+      let tooltipContent = transformTooltipContentToSave()
       let boardBody = {
         title,
         level,
         free,
         quiz: quizToSave,
         content: htmlEntityEncode(content),
+        content_vn: contentVn,
       }
-      if (!_.isEmpty(sentences)) boardBody.content_vn = htmlEntityEncode(vnContent)
+      if (!_.isEmpty(dictionary)) boardBody.tooltipContent = htmlEntityEncode(tooltipContent)
       viewAction === 'add'
         ? readingBoardService.createBoard(boardBody).then(savingCallback)
         : readingBoardService.updateBoard(boardBody, boardId).then(savingCallback)
@@ -1058,7 +1062,8 @@ const ReadingBoard = (props) => {
             setTitle(res.title)
             setLevel(res.level)
             setContent(res.content ? htmlEntityDecode(res.content) : '')
-            setContentVn(res.content_vn ? htmlEntityDecode(res.content_vn) : '')
+            setContentVn(res.content_vn)
+            setTooltipContent(res.tooltipContent ? htmlEntityDecode(res.tooltipContent) : '')
             let initialQuizes = res.quiz
             let clonedQuizes = [...initialQuizes]
             let resultQuizes = clonedQuizes.map(function (item) {
@@ -1081,6 +1086,66 @@ const ReadingBoard = (props) => {
       })
     }
   }, [boardId])
+
+  useEffect(() => {
+    if (!_.isEmpty(content) && !_.isEmpty(contentVn)) {
+      const buildDictionary = async () => {
+        let sentences = []
+        let trans = []
+
+        // handle sentences
+        let paragraphs = content.split('\n')
+        paragraphs = paragraphs.filter((item) => !_.isEmpty(item))
+        if (paragraphs.length) {
+          const transformedParagraphs = await Promise.all(
+            paragraphs.map(async (p, index) => {
+              const paragraph = extractTextWithFurigana(p)
+              return paragraph
+            }),
+          ).then((result) => result)
+          let sentenceIndex = 0
+          for (let i = 0; i < transformedParagraphs.length; i++) {
+            let paragraphIndex = i
+            let paragraph = transformedParagraphs[paragraphIndex]
+            // xử lý tách câu
+            let arrayOfSentences = paragraph.split('。')
+            arrayOfSentences = arrayOfSentences.filter((item) => !_.isEmpty(item))
+            for (let i = 0; i < arrayOfSentences.length; i++) {
+              let sentence = arrayOfSentences[i]
+              if (!_.isEmpty(sentence)) {
+                let newSentence = `<span data-sentence-index='${sentenceIndex}' data-paragraph-index='${paragraphIndex}' class=''>${sentence}。</span>`
+                sentences.push(newSentence)
+                sentenceIndex++
+              }
+            }
+          }
+        }
+        // handle sentences
+        trans = contentVn.replace(/\n/g, '')
+        trans = trans.split('.')
+        trans = trans.filter((item) => !_.isEmpty(item))
+        if (trans.length && paragraphs.length && trans.length === sentences.length) {
+          // build dictionary
+          let dict = sentences.map((sentence, index) => {
+            return { sentence: sentence, trans: trans[index] }
+          })
+          setDictionary(dict)
+        } else {
+          toast.error(`Số câu tiếng Nhật và số câu bản dịch không trùng nhau. Vui lòng xem lại`, {
+            position: 'top-right',
+            autoClose: 2500,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          })
+          setDictionary([])
+        }
+      }
+      buildDictionary()
+    } else setDictionary([])
+  }, [content, contentVn])
 
   if (redirectTo.isRedirected) {
     return <Redirect to={redirectTo.redirectedPath} />
@@ -1155,6 +1220,7 @@ const ReadingBoard = (props) => {
                       paddingTop: '5px',
                       marginTop: '7px',
                       cursor: 'text',
+                      minHeight: 200,
                     }}
                     onClick={(e) => {
                       const editor = window.CKEDITOR.replace('content', {
@@ -1163,43 +1229,9 @@ const ReadingBoard = (props) => {
                           //   document.getElementById(evt.editor.id + '_top').style.display = 'none'
                           // },
                           change: function (e) {
-                            const traverseTopLevel = (node) => {
-                              let newSentences = [...sentences]
-                              let sentenceIndex = 0
-                              for (let i = 0; i < node.childNodes.length; i++) {
-                                let paragraphIndex = i
-                                let child = node.childNodes[paragraphIndex]
-                                if (child.innerHTML) {
-                                  // xử lý tách câu
-                                  let paragraphInnerText = child.innerHTML
-                                  let arrayOfSentences = paragraphInnerText.split('。')
-                                  arrayOfSentences = arrayOfSentences.filter(
-                                    (item) => !_.isEmpty(item),
-                                  )
-                                  for (let i = 0; i < arrayOfSentences.length; i++) {
-                                    let sentence = arrayOfSentences[i]
-                                    if (!_.isEmpty(sentence)) {
-                                      let newSentence = `<span data-sentence-index='${sentenceIndex}' data-paragraph-index='${paragraphIndex}' class=''>${sentence}。</span>`
-                                      let toPush = sentences[sentenceIndex]
-                                        ? sentences[sentenceIndex]
-                                        : {}
-                                      toPush['sentence'] = newSentence
-                                      newSentences[sentenceIndex] = toPush
-                                      sentenceIndex++
-                                    }
-                                  }
-                                }
-                              }
-                              setSentences(newSentences)
-                            }
                             // xử lý data
-                            let originalContent = editor.getData()
-                            setContent(originalContent)
-                            originalContent = originalContent.replaceAll('<b>', '')
-                            originalContent = originalContent.replaceAll('</b>', '')
-                            let wrapper = document.createElement('div')
-                            wrapper.innerHTML = originalContent
-                            traverseTopLevel(wrapper)
+                            let content = editor.getData()
+                            setContent(content)
                           },
                         },
                       })
@@ -1225,11 +1257,49 @@ const ReadingBoard = (props) => {
                 )}
               </CCol>
             </CRow>
-            {!_.isEmpty(sentences) && (
+            <CRow className="mb-3">
+              <CFormLabel htmlFor="contentVn" className="col-sm-2 col-form-label">
+                Bài dịch
+              </CFormLabel>
+              <CCol sm="10">
+                {viewAction !== 'get' && (
+                  <CFormControl
+                    type="text"
+                    name="contentVn"
+                    id="contentVn"
+                    placeholder="Dịch"
+                    component="textarea"
+                    rows="8"
+                    onChange={(e) => {
+                      const { value } = e.target
+                      setContentVn(value)
+                    }}
+                  />
+                )}
+              </CCol>
+              {viewAction === 'get' && (
+                <div
+                  style={{
+                    border: '1px solid #b1b7c1',
+                    backgroundColor: '#fff',
+                    paddingRight: '5px',
+                    paddingLeft: '5px',
+                    paddingTop: '5px',
+                    cursor: 'text',
+                    borderTopRightRadius: '5px',
+                    borderBottomRightRadius: '5px',
+                    width: 'auto',
+                  }}
+                >
+                  {contentVn}
+                </div>
+              )}
+            </CRow>
+            {!_.isEmpty(dictionary) && (
               <CRow className="mb-3">
                 <CFormLabel className="col-sm-2 col-form-label">Dịch nghĩa</CFormLabel>
                 <CCol sm="12">
-                  <DictionaryForm dictionary={sentences} onChange={setSentences} />
+                  <DictionaryForm dictionary={dictionary} onChange={setDictionary} />
                 </CCol>
               </CRow>
             )}

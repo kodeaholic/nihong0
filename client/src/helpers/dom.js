@@ -153,7 +153,29 @@ function extractTextWithFurigana(str) {
     text += traverseToGetBothTextAndFurigana(dom[i])
   }
   text = text.replace(/\n/g, '')
-  return text
+
+  // trim left & right
+  // let result = text
+  // let n = result.length
+  // while (
+  //   result.charAt(n - 1) === '&nbsp;' ||
+  //   result.charAt(n - 1) === ' ' ||
+  //   result.charAt(n - 1) === '　'
+  // ) {
+  //   console.log('Trimmed left')
+  //   result = result.substring(1)
+  // }
+  // n = result.length
+  // while (
+  //   result.charAt(n - 1) === '&nbsp;' ||
+  //   result.charAt(n - 1) === ' ' ||
+  //   result.charAt(n - 1) === '　'
+  // ) {
+  //   console.log('Trimmed left')
+  //   result = result.substring(0, n - 2)
+  //   n = n - 1
+  // }
+  return result
 }
 module.exports = {
   extractTextFromHTMLString,
