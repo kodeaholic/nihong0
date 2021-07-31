@@ -46,7 +46,7 @@ const getChapterById = async (id) => {
   let lessons = []
   if (chapter) {
       // get lessons
-      lessons = await Lesson.find({"chapter": id})
+      lessons = await Lesson.find({"chapter": id}, null, {sort: { createdAt : 'asc' }}, function(err, docs) {})
       const { name, description, meaning, topic } = chapter
       return { id, name, description, meaning, lessons, topic }
   }

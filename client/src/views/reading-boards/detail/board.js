@@ -28,6 +28,7 @@ import { readingBoardService } from 'src/services/api/readingBoardService'
 import _ from 'lodash'
 import renderHTML from 'react-render-html'
 import { htmlEntityEncode, htmlEntityDecode } from '../../../helpers/htmlentities'
+import { extractTextWithFurigana } from 'src/helpers/dom'
 const DictionaryForm = (props) => {
   const { dictionary, onChange } = props
   return (
@@ -48,13 +49,30 @@ const DictionaryForm = (props) => {
                 rows="2"
                 onChange={(e) => {
                   const { name, value } = e.target
-                  console.log(value)
+                  // console.log(value)
                   const index = parseInt(name.replace('sentence-', ''))
                   const newSentences = [...dictionary]
                   newSentences[index]['trans'] = value
                   onChange(newSentences)
                 }}
+                defaultValue={dictionary[index]['trans']}
+                disabled={true}
               />
+              <fieldset className="row mb-3">
+                <CCol sm="10">
+                  <CFormCheck
+                    id="highlight"
+                    label="Quan trọng"
+                    defaultChecked={dictionary[index]['highlight']}
+                    onChange={(e) => {
+                      const current = dictionary[index]['highlight'] ? true : false
+                      const newSentences = [...dictionary]
+                      newSentences[index]['highlight'] = !current
+                      onChange(newSentences)
+                    }}
+                  />
+                </CCol>
+              </fieldset>
             </div>
           )
         })}
@@ -203,39 +221,54 @@ const QuizItem = (props) => {
           <CInputGroup>
             <CInputGroupText id={`question_vn-label-${id}`}>Câu {id + 1} (Dịch)</CInputGroupText>
             {!disabled && (
-              <div
-                style={{
-                  border: '1px solid #b1b7c1',
-                  backgroundColor: '#fff',
-                  paddingRight: '5px',
-                  paddingLeft: '5px',
-                  paddingTop: '5px',
-                  cursor: 'text',
-                  width: 'auto',
-                }}
-                onClick={(e) => {
-                  const editor = window.CKEDITOR.replace(`question_vn-${id}`, {
-                    on: {
-                      instanceReady: function (evt) {
-                        document.getElementById(evt.editor.id + '_top').style.display = 'none'
-                      },
-                      change: function (e) {
-                        let index = parseInt(id)
-                        let quizes = [...parentQuiz]
-                        quizes[index]['question_vn'] = editor.getData()
-                        onChange(quizes)
-                      },
-                    },
-                  })
-                }}
+              <CFormControl
+                type="text"
                 name="question_vn"
                 id={`question_vn-${id}`}
                 aria-describedby="question_vn-label"
-              >
-                {parentQuiz[parseInt(id)]['question_vn']
-                  ? renderHTML(parentQuiz[parseInt(id)]['question_vn'])
-                  : renderHTML('&nbsp;&nbsp;')}
-              </div>
+                component="textarea"
+                rows="2"
+                onChange={(e) => {
+                  let index = parseInt(id)
+                  let quizes = [...parentQuiz]
+                  quizes[index]['question_vn'] = e.target.value
+                  onChange(quizes)
+                }}
+                defaultValue={parentQuiz[parseInt(id)]['question_vn']}
+              />
+              // <div
+              //   style={{
+              //     border: '1px solid #b1b7c1',
+              //     backgroundColor: '#fff',
+              //     paddingRight: '5px',
+              //     paddingLeft: '5px',
+              //     paddingTop: '5px',
+              //     cursor: 'text',
+              //     width: 'auto',
+              //   }}
+              //   onClick={(e) => {
+              //     const editor = window.CKEDITOR.replace(`question_vn-${id}`, {
+              //       on: {
+              //         instanceReady: function (evt) {
+              //           document.getElementById(evt.editor.id + '_top').style.display = 'none'
+              //         },
+              //         change: function (e) {
+              //           let index = parseInt(id)
+              //           let quizes = [...parentQuiz]
+              //           quizes[index]['question_vn'] = editor.getData()
+              //           onChange(quizes)
+              //         },
+              //       },
+              //     })
+              //   }}
+              //   name="question_vn"
+              //   id={`question_vn-${id}`}
+              //   aria-describedby="question_vn-label"
+              // >
+              //   {parentQuiz[parseInt(id)]['question_vn']
+              //     ? renderHTML(parentQuiz[parseInt(id)]['question_vn'])
+              //     : renderHTML('&nbsp;&nbsp;')}
+              // </div>
             )}
             {disabled && (
               <div
@@ -312,8 +345,6 @@ const QuizItem = (props) => {
                   borderTopRightRadius: '5px',
                   borderBottomRightRadius: '5px',
                   height: 'auto',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
                 }}
               >
                 {parentQuiz[parseInt(id)]['A']
@@ -375,8 +406,6 @@ const QuizItem = (props) => {
                   borderTopRightRadius: '5px',
                   borderBottomRightRadius: '5px',
                   height: 'auto',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
                 }}
               >
                 {parentQuiz[parseInt(id)]['B']
@@ -438,8 +467,6 @@ const QuizItem = (props) => {
                   borderTopRightRadius: '5px',
                   borderBottomRightRadius: '5px',
                   height: 'auto',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
                 }}
               >
                 {parentQuiz[parseInt(id)]['C']
@@ -501,8 +528,6 @@ const QuizItem = (props) => {
                   borderTopRightRadius: '5px',
                   borderBottomRightRadius: '5px',
                   height: 'auto',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
                 }}
               >
                 {parentQuiz[parseInt(id)]['D']
@@ -516,41 +541,54 @@ const QuizItem = (props) => {
           <CInputGroup>
             <CInputGroupText id={`optionA-label-${id}`}>A (dịch)</CInputGroupText>
             {!disabled && (
-              <div
-                style={{
-                  border: '1px solid #b1b7c1',
-                  backgroundColor: '#fff',
-                  paddingRight: '5px',
-                  paddingLeft: '5px',
-                  paddingTop: '5px',
-                  cursor: 'text',
-                  height: 'auto',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
-                }}
-                onClick={(e) => {
-                  const editor = window.CKEDITOR.replace(`A_vn-${id}`, {
-                    on: {
-                      instanceReady: function (evt) {
-                        document.getElementById(evt.editor.id + '_top').style.display = 'none'
-                      },
-                      change: function (e) {
-                        let index = parseInt(id)
-                        let quizes = [...parentQuiz]
-                        quizes[index]['A_vn'] = editor.getData()
-                        onChange(quizes)
-                      },
-                    },
-                  })
-                }}
+              <CFormControl
+                type="text"
                 name="A_vn"
                 id={`A_vn-${id}`}
                 aria-describedby="A_vn-label"
-              >
-                {parentQuiz[parseInt(id)]['A_vn']
-                  ? renderHTML(parentQuiz[parseInt(id)]['A_vn'])
-                  : renderHTML('&nbsp;&nbsp;')}
-              </div>
+                onChange={(e) => {
+                  let index = parseInt(id)
+                  let quizes = [...parentQuiz]
+                  quizes[index]['A_vn'] = e.target.value
+                  onChange(quizes)
+                }}
+                defaultValue={parentQuiz[parseInt(id)]['A_vn']}
+              />
+              // <div
+              //   style={{
+              //     border: '1px solid #b1b7c1',
+              //     backgroundColor: '#fff',
+              //     paddingRight: '5px',
+              //     paddingLeft: '5px',
+              //     paddingTop: '5px',
+              //     cursor: 'text',
+              //     height: 'auto',
+              //     borderTopRightRadius: '5px',
+              //     borderBottomRightRadius: '5px',
+              //   }}
+              //   onClick={(e) => {
+              //     const editor = window.CKEDITOR.replace(`A_vn-${id}`, {
+              //       on: {
+              //         instanceReady: function (evt) {
+              //           document.getElementById(evt.editor.id + '_top').style.display = 'none'
+              //         },
+              //         change: function (e) {
+              //           let index = parseInt(id)
+              //           let quizes = [...parentQuiz]
+              //           quizes[index]['A_vn'] = editor.getData()
+              //           onChange(quizes)
+              //         },
+              //       },
+              //     })
+              //   }}
+              //   name="A_vn"
+              //   id={`A_vn-${id}`}
+              //   aria-describedby="A_vn-label"
+              // >
+              //   {parentQuiz[parseInt(id)]['A_vn']
+              //     ? renderHTML(parentQuiz[parseInt(id)]['A_vn'])
+              //     : renderHTML('&nbsp;&nbsp;')}
+              // </div>
             )}
             {disabled && (
               <div
@@ -564,8 +602,6 @@ const QuizItem = (props) => {
                   borderTopRightRadius: '5px',
                   borderBottomRightRadius: '5px',
                   height: 'auto',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
                 }}
               >
                 {parentQuiz[parseInt(id)]['A_vn']
@@ -579,41 +615,54 @@ const QuizItem = (props) => {
           <CInputGroup>
             <CInputGroupText id={`optionB-label-${id}`}>B (dịch)</CInputGroupText>
             {!disabled && (
-              <div
-                style={{
-                  border: '1px solid #b1b7c1',
-                  backgroundColor: '#fff',
-                  paddingRight: '5px',
-                  paddingLeft: '5px',
-                  paddingTop: '5px',
-                  cursor: 'text',
-                  height: 'auto',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
-                }}
-                onClick={(e) => {
-                  const editor = window.CKEDITOR.replace(`B_vn-${id}`, {
-                    on: {
-                      instanceReady: function (evt) {
-                        document.getElementById(evt.editor.id + '_top').style.display = 'none'
-                      },
-                      change: function (e) {
-                        let index = parseInt(id)
-                        let quizes = [...parentQuiz]
-                        quizes[index]['B_vn'] = editor.getData()
-                        onChange(quizes)
-                      },
-                    },
-                  })
-                }}
+              <CFormControl
+                type="text"
                 name="B_vn"
                 id={`B_vn-${id}`}
                 aria-describedby="B_vn-label"
-              >
-                {parentQuiz[parseInt(id)]['B_vn']
-                  ? renderHTML(parentQuiz[parseInt(id)]['B_vn'])
-                  : renderHTML('&nbsp;&nbsp;')}
-              </div>
+                onChange={(e) => {
+                  let index = parseInt(id)
+                  let quizes = [...parentQuiz]
+                  quizes[index]['B_vn'] = e.target.value
+                  onChange(quizes)
+                }}
+                defaultValue={parentQuiz[parseInt(id)]['B_vn']}
+              />
+              // <div
+              //   style={{
+              //     border: '1px solid #b1b7c1',
+              //     backgroundColor: '#fff',
+              //     paddingRight: '5px',
+              //     paddingLeft: '5px',
+              //     paddingTop: '5px',
+              //     cursor: 'text',
+              //     height: 'auto',
+              //     borderTopRightRadius: '5px',
+              //     borderBottomRightRadius: '5px',
+              //   }}
+              //   onClick={(e) => {
+              //     const editor = window.CKEDITOR.replace(`B_vn-${id}`, {
+              //       on: {
+              //         instanceReady: function (evt) {
+              //           document.getElementById(evt.editor.id + '_top').style.display = 'none'
+              //         },
+              //         change: function (e) {
+              //           let index = parseInt(id)
+              //           let quizes = [...parentQuiz]
+              //           quizes[index]['B_vn'] = editor.getData()
+              //           onChange(quizes)
+              //         },
+              //       },
+              //     })
+              //   }}
+              //   name="B_vn"
+              //   id={`B_vn-${id}`}
+              //   aria-describedby="B_vn-label"
+              // >
+              //   {parentQuiz[parseInt(id)]['B_vn']
+              //     ? renderHTML(parentQuiz[parseInt(id)]['B_vn'])
+              //     : renderHTML('&nbsp;&nbsp;')}
+              // </div>
             )}
             {disabled && (
               <div
@@ -627,8 +676,6 @@ const QuizItem = (props) => {
                   borderTopRightRadius: '5px',
                   borderBottomRightRadius: '5px',
                   height: 'auto',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
                 }}
               >
                 {parentQuiz[parseInt(id)]['B_vn']
@@ -642,41 +689,54 @@ const QuizItem = (props) => {
           <CInputGroup>
             <CInputGroupText id={`optionC-label-${id}`}>C (dịch)</CInputGroupText>
             {!disabled && (
-              <div
-                style={{
-                  border: '1px solid #b1b7c1',
-                  backgroundColor: '#fff',
-                  paddingRight: '5px',
-                  paddingLeft: '5px',
-                  paddingTop: '5px',
-                  cursor: 'text',
-                  height: 'auto',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
-                }}
-                onClick={(e) => {
-                  const editor = window.CKEDITOR.replace(`C_vn-${id}`, {
-                    on: {
-                      instanceReady: function (evt) {
-                        document.getElementById(evt.editor.id + '_top').style.display = 'none'
-                      },
-                      change: function (e) {
-                        let index = parseInt(id)
-                        let quizes = [...parentQuiz]
-                        quizes[index]['C_vn'] = editor.getData()
-                        onChange(quizes)
-                      },
-                    },
-                  })
-                }}
+              <CFormControl
+                type="text"
                 name="C_vn"
                 id={`C_vn-${id}`}
                 aria-describedby="C_vn-label"
-              >
-                {parentQuiz[parseInt(id)]['C_vn']
-                  ? renderHTML(parentQuiz[parseInt(id)]['C_vn'])
-                  : renderHTML('&nbsp;&nbsp;')}
-              </div>
+                onChange={(e) => {
+                  let index = parseInt(id)
+                  let quizes = [...parentQuiz]
+                  quizes[index]['C_vn'] = e.target.value
+                  onChange(quizes)
+                }}
+                defaultValue={parentQuiz[parseInt(id)]['C_vn']}
+              />
+              // <div
+              //   style={{
+              //     border: '1px solid #b1b7c1',
+              //     backgroundColor: '#fff',
+              //     paddingRight: '5px',
+              //     paddingLeft: '5px',
+              //     paddingTop: '5px',
+              //     cursor: 'text',
+              //     height: 'auto',
+              //     borderTopRightRadius: '5px',
+              //     borderBottomRightRadius: '5px',
+              //   }}
+              //   onClick={(e) => {
+              //     const editor = window.CKEDITOR.replace(`C_vn-${id}`, {
+              //       on: {
+              //         instanceReady: function (evt) {
+              //           document.getElementById(evt.editor.id + '_top').style.display = 'none'
+              //         },
+              //         change: function (e) {
+              //           let index = parseInt(id)
+              //           let quizes = [...parentQuiz]
+              //           quizes[index]['C_vn'] = editor.getData()
+              //           onChange(quizes)
+              //         },
+              //       },
+              //     })
+              //   }}
+              //   name="C_vn"
+              //   id={`C_vn-${id}`}
+              //   aria-describedby="C_vn-label"
+              // >
+              //   {parentQuiz[parseInt(id)]['C_vn']
+              //     ? renderHTML(parentQuiz[parseInt(id)]['C_vn'])
+              //     : renderHTML('&nbsp;&nbsp;')}
+              // </div>
             )}
             {disabled && (
               <div
@@ -690,8 +750,6 @@ const QuizItem = (props) => {
                   borderTopRightRadius: '5px',
                   borderBottomRightRadius: '5px',
                   height: 'auto',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
                 }}
               >
                 {parentQuiz[parseInt(id)]['C_vn']
@@ -705,41 +763,54 @@ const QuizItem = (props) => {
           <CInputGroup>
             <CInputGroupText id={`optionD-label-${id}`}>D (dịch)</CInputGroupText>
             {!disabled && (
-              <div
-                style={{
-                  border: '1px solid #b1b7c1',
-                  backgroundColor: '#fff',
-                  paddingRight: '5px',
-                  paddingLeft: '5px',
-                  paddingTop: '5px',
-                  cursor: 'text',
-                  height: 'auto',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
-                }}
-                onClick={(e) => {
-                  const editor = window.CKEDITOR.replace(`D_vn-${id}`, {
-                    on: {
-                      instanceReady: function (evt) {
-                        document.getElementById(evt.editor.id + '_top').style.display = 'none'
-                      },
-                      change: function (e) {
-                        let index = parseInt(id)
-                        let quizes = [...parentQuiz]
-                        quizes[index]['D_vn'] = editor.getData()
-                        onChange(quizes)
-                      },
-                    },
-                  })
-                }}
+              <CFormControl
+                type="text"
                 name="D_vn"
                 id={`D_vn-${id}`}
                 aria-describedby="D_vn-label"
-              >
-                {parentQuiz[parseInt(id)]['D_vn']
-                  ? renderHTML(parentQuiz[parseInt(id)]['D_vn'])
-                  : renderHTML('&nbsp;&nbsp;')}
-              </div>
+                onChange={(e) => {
+                  let index = parseInt(id)
+                  let quizes = [...parentQuiz]
+                  quizes[index]['D_vn'] = e.target.value
+                  onChange(quizes)
+                }}
+                defaultValue={parentQuiz[parseInt(id)]['D_vn']}
+              />
+              // <div
+              //   style={{
+              //     border: '1px solid #b1b7c1',
+              //     backgroundColor: '#fff',
+              //     paddingRight: '5px',
+              //     paddingLeft: '5px',
+              //     paddingTop: '5px',
+              //     cursor: 'text',
+              //     height: 'auto',
+              //     borderTopRightRadius: '5px',
+              //     borderBottomRightRadius: '5px',
+              //   }}
+              //   onClick={(e) => {
+              //     const editor = window.CKEDITOR.replace(`D_vn-${id}`, {
+              //       on: {
+              //         instanceReady: function (evt) {
+              //           document.getElementById(evt.editor.id + '_top').style.display = 'none'
+              //         },
+              //         change: function (e) {
+              //           let index = parseInt(id)
+              //           let quizes = [...parentQuiz]
+              //           quizes[index]['D_vn'] = editor.getData()
+              //           onChange(quizes)
+              //         },
+              //       },
+              //     })
+              //   }}
+              //   name="D_vn"
+              //   id={`D_vn-${id}`}
+              //   aria-describedby="D_vn-label"
+              // >
+              //   {parentQuiz[parseInt(id)]['D_vn']
+              //     ? renderHTML(parentQuiz[parseInt(id)]['D_vn'])
+              //     : renderHTML('&nbsp;&nbsp;')}
+              // </div>
             )}
             {disabled && (
               <div
@@ -753,8 +824,6 @@ const QuizItem = (props) => {
                   borderTopRightRadius: '5px',
                   borderBottomRightRadius: '5px',
                   height: 'auto',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
                 }}
               >
                 {parentQuiz[parseInt(id)]['D_vn']
@@ -807,11 +876,12 @@ const ReadingBoard = (props) => {
   const [free, setFree] = useState(1)
   const [content, setContent] = useState('')
   const [contentVn, setContentVn] = useState('')
+  const [tooltipContent, setTooltipContent] = useState('')
   const [saving, setSaving] = useState(false)
   const [visible, setVisible] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [quiz, setQuiz] = useState([])
-  const [sentences, setSentences] = useState([])
+  const [dictionary, setDictionary] = useState([])
   const addQuiz = () => {
     const data = {
       question: '',
@@ -894,36 +964,35 @@ const ReadingBoard = (props) => {
     const clone = quiz.map((item) => {
       let newItem = item
       newItem.question = htmlEntityEncode(newItem.question)
-      newItem.question_vn = htmlEntityEncode(newItem.question_vn)
+      // newItem.question_vn = htmlEntityEncode(newItem.question_vn)
       newItem.A = htmlEntityEncode(newItem.A)
       newItem.B = htmlEntityEncode(newItem.B)
       newItem.C = htmlEntityEncode(newItem.C)
       newItem.D = htmlEntityEncode(newItem.D)
-      newItem.A_vn = htmlEntityEncode(newItem.A_vn)
-      newItem.B_vn = htmlEntityEncode(newItem.B_vn)
-      newItem.C_vn = htmlEntityEncode(newItem.C_vn)
-      newItem.D_vn = htmlEntityEncode(newItem.D_vn)
+      // newItem.A_vn = htmlEntityEncode(newItem.A_vn)
+      // newItem.B_vn = htmlEntityEncode(newItem.B_vn)
+      // newItem.C_vn = htmlEntityEncode(newItem.C_vn)
+      // newItem.D_vn = htmlEntityEncode(newItem.D_vn)
       return newItem
     })
     return clone
   }
 
-  const transofmContentVnToSave = () => {
-    let length = sentences.length
+  const transformTooltipContentToSave = () => {
+    let length = dictionary.length
     if (length > 0) {
       let content = {}
       for (let i = 0; i < length; i++) {
         const wrapper = document.createElement('div')
-        let innerHTML = sentences[i]['sentence']
-        let trans = sentences[i]['trans']
-        innerHTML = innerHTML.replace("class=''", "class='dictionary-tooltip'")
-        innerHTML =
-          _.isEmpty(trans) || trans === undefined
-            ? innerHTML
-            : innerHTML.replace(
-                '</span>',
-                `<span class='dictionary-tooltiptext'>${trans}</span></span>`,
-              )
+        let innerHTML = dictionary[i]['sentence']
+        let trans = dictionary[i]['trans']
+        let highlight = dictionary[i]['highlight']
+        innerHTML = innerHTML.replace(
+          "class=''",
+          `class='dictionary-tooltip ${highlight ? 'highlight-tooltip' : ''}' data-tooltip='${
+            _.isEmpty(trans) || trans === undefined ? '' : trans
+          }'`,
+        )
         wrapper.innerHTML = innerHTML
         const span = wrapper.childNodes[0]
         const paragraphIndex = span.getAttribute('data-paragraph-index')
@@ -940,7 +1009,6 @@ const ReadingBoard = (props) => {
       valuesArray.forEach((item) => {
         result += `<p class="paragraph-dictionary-tooltip">${item}</p>`
       })
-      console.log(result)
       return result
     }
   }
@@ -948,15 +1016,16 @@ const ReadingBoard = (props) => {
     if (isQuizValidated()) {
       setSaving(true)
       const quizToSave = transformQuizToSave()
-      let vnContent = transofmContentVnToSave()
+      let tooltipContent = transformTooltipContentToSave()
       let boardBody = {
         title,
         level,
         free,
         quiz: quizToSave,
         content: htmlEntityEncode(content),
+        content_vn: contentVn,
       }
-      if (!_.isEmpty(sentences)) boardBody.content_vn = htmlEntityEncode(vnContent)
+      if (!_.isEmpty(dictionary)) boardBody.tooltipContent = htmlEntityEncode(tooltipContent)
       viewAction === 'add'
         ? readingBoardService.createBoard(boardBody).then(savingCallback)
         : readingBoardService.updateBoard(boardBody, boardId).then(savingCallback)
@@ -993,21 +1062,22 @@ const ReadingBoard = (props) => {
             setTitle(res.title)
             setLevel(res.level)
             setContent(res.content ? htmlEntityDecode(res.content) : '')
-            setContentVn(res.content_vn ? htmlEntityDecode(res.content_vn) : '')
+            setContentVn(res.content_vn)
+            setTooltipContent(res.tooltipContent ? htmlEntityDecode(res.tooltipContent) : '')
             let initialQuizes = res.quiz
             let clonedQuizes = [...initialQuizes]
             let resultQuizes = clonedQuizes.map(function (item) {
               let newItem = { ...item }
               newItem.question = htmlEntityDecode(newItem.question)
-              newItem.question_vn = htmlEntityDecode(newItem.question_vn)
+              // newItem.question_vn = htmlEntityDecode(newItem.question_vn)
               newItem.A = htmlEntityDecode(newItem.A)
               newItem.B = htmlEntityDecode(newItem.B)
               newItem.C = htmlEntityDecode(newItem.C)
               newItem.D = htmlEntityDecode(newItem.D)
-              newItem.A_vn = htmlEntityDecode(newItem.A_vn)
-              newItem.B_vn = htmlEntityDecode(newItem.B_vn)
-              newItem.C_vn = htmlEntityDecode(newItem.C_vn)
-              newItem.D_vn = htmlEntityDecode(newItem.D_vn)
+              // newItem.A_vn = htmlEntityDecode(newItem.A_vn)
+              // newItem.B_vn = htmlEntityDecode(newItem.B_vn)
+              // newItem.C_vn = htmlEntityDecode(newItem.C_vn)
+              // newItem.D_vn = htmlEntityDecode(newItem.D_vn)
               return newItem
             })
             setQuiz(resultQuizes)
@@ -1016,6 +1086,66 @@ const ReadingBoard = (props) => {
       })
     }
   }, [boardId])
+
+  useEffect(() => {
+    if (!_.isEmpty(content) && !_.isEmpty(contentVn)) {
+      const buildDictionary = async () => {
+        let sentences = []
+        let trans = []
+
+        // handle sentences
+        let paragraphs = content.split('\n')
+        paragraphs = paragraphs.filter((item) => !_.isEmpty(item))
+        if (paragraphs.length) {
+          const transformedParagraphs = await Promise.all(
+            paragraphs.map(async (p, index) => {
+              const paragraph = extractTextWithFurigana(p)
+              return paragraph
+            }),
+          ).then((result) => result)
+          let sentenceIndex = 0
+          for (let i = 0; i < transformedParagraphs.length; i++) {
+            let paragraphIndex = i
+            let paragraph = transformedParagraphs[paragraphIndex]
+            // xử lý tách câu
+            let arrayOfSentences = paragraph.split('。')
+            arrayOfSentences = arrayOfSentences.filter((item) => !_.isEmpty(item))
+            for (let i = 0; i < arrayOfSentences.length; i++) {
+              let sentence = arrayOfSentences[i]
+              if (!_.isEmpty(sentence)) {
+                let newSentence = `<span data-sentence-index='${sentenceIndex}' data-paragraph-index='${paragraphIndex}' class=''>${sentence}。</span>`
+                sentences.push(newSentence)
+                sentenceIndex++
+              }
+            }
+          }
+        }
+        // handle sentences
+        trans = contentVn.replace(/\n/g, '')
+        trans = trans.split('.')
+        trans = trans.filter((item) => !_.isEmpty(item))
+        if (trans.length && paragraphs.length && trans.length === sentences.length) {
+          // build dictionary
+          let dict = sentences.map((sentence, index) => {
+            return { sentence: sentence, trans: trans[index] }
+          })
+          setDictionary(dict)
+        } else {
+          toast.error(`Số câu tiếng Nhật và số câu bản dịch không trùng nhau. Vui lòng xem lại`, {
+            position: 'top-right',
+            autoClose: 2500,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          })
+          setDictionary([])
+        }
+      }
+      buildDictionary()
+    } else setDictionary([])
+  }, [content, contentVn])
 
   if (redirectTo.isRedirected) {
     return <Redirect to={redirectTo.redirectedPath} />
@@ -1090,51 +1220,18 @@ const ReadingBoard = (props) => {
                       paddingTop: '5px',
                       marginTop: '7px',
                       cursor: 'text',
+                      minHeight: 200,
                     }}
                     onClick={(e) => {
                       const editor = window.CKEDITOR.replace('content', {
                         on: {
-                          instanceReady: function (evt) {
-                            document.getElementById(evt.editor.id + '_top').style.display = 'none'
-                          },
+                          // instanceReady: function (evt) {
+                          //   document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                          // },
                           change: function (e) {
-                            const traverseTopLevel = (node) => {
-                              let newSentences = [...sentences]
-                              let sentenceIndex = 0
-                              for (let i = 0; i < node.childNodes.length; i++) {
-                                let paragraphIndex = i
-                                let child = node.childNodes[paragraphIndex]
-                                if (child.innerHTML) {
-                                  // xử lý tách câu
-                                  let paragraphInnerText = child.innerHTML
-                                  let arrayOfSentences = paragraphInnerText.split('。')
-                                  arrayOfSentences = arrayOfSentences.filter(
-                                    (item) => !_.isEmpty(item),
-                                  )
-                                  for (let i = 0; i < arrayOfSentences.length; i++) {
-                                    let sentence = arrayOfSentences[i]
-                                    if (!_.isEmpty(sentence)) {
-                                      let newSentence = `<span data-sentence-index='${sentenceIndex}' data-paragraph-index='${paragraphIndex}' class=''>${sentence}。</span>`
-                                      let toPush = sentences[sentenceIndex]
-                                        ? sentences[sentenceIndex]
-                                        : {}
-                                      toPush['sentence'] = newSentence
-                                      newSentences[sentenceIndex] = toPush
-                                      sentenceIndex++
-                                    }
-                                  }
-                                }
-                              }
-                              setSentences(newSentences)
-                            }
                             // xử lý data
-                            let originalContent = editor.getData()
-                            setContent(originalContent)
-                            originalContent = originalContent.replaceAll('<b>', '')
-                            originalContent = originalContent.replaceAll('</b>', '')
-                            let wrapper = document.createElement('div')
-                            wrapper.innerHTML = originalContent
-                            traverseTopLevel(wrapper)
+                            let content = editor.getData()
+                            setContent(content)
                           },
                         },
                       })
@@ -1160,11 +1257,49 @@ const ReadingBoard = (props) => {
                 )}
               </CCol>
             </CRow>
-            {!_.isEmpty(sentences) && (
+            <CRow className="mb-3">
+              <CFormLabel htmlFor="contentVn" className="col-sm-2 col-form-label">
+                Bài dịch
+              </CFormLabel>
+              <CCol sm="10">
+                {viewAction !== 'get' && (
+                  <CFormControl
+                    type="text"
+                    name="contentVn"
+                    id="contentVn"
+                    placeholder="Dịch"
+                    component="textarea"
+                    rows="8"
+                    onChange={(e) => {
+                      const { value } = e.target
+                      setContentVn(value)
+                    }}
+                  />
+                )}
+              </CCol>
+              {viewAction === 'get' && (
+                <div
+                  style={{
+                    border: '1px solid #b1b7c1',
+                    backgroundColor: '#fff',
+                    paddingRight: '5px',
+                    paddingLeft: '5px',
+                    paddingTop: '5px',
+                    cursor: 'text',
+                    borderTopRightRadius: '5px',
+                    borderBottomRightRadius: '5px',
+                    width: 'auto',
+                  }}
+                >
+                  {contentVn}
+                </div>
+              )}
+            </CRow>
+            {!_.isEmpty(dictionary) && (
               <CRow className="mb-3">
                 <CFormLabel className="col-sm-2 col-form-label">Dịch nghĩa</CFormLabel>
                 <CCol sm="12">
-                  <DictionaryForm dictionary={sentences} onChange={setSentences} />
+                  <DictionaryForm dictionary={dictionary} onChange={setDictionary} />
                 </CCol>
               </CRow>
             )}

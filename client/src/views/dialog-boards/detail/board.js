@@ -212,7 +212,7 @@ const Track = (props) => {
             )}
           </CInputGroup>
         </CCol>
-        <CCol sm="12" style={{ marginTop: '10px' }}>
+        {/* <CCol sm="12" style={{ marginTop: '10px' }}>
           <CInputGroup>
             <CInputGroupText id={`contentMeaning-label-${id}`}>
               Lời {id + 1} dịch nghĩa
@@ -248,7 +248,7 @@ const Track = (props) => {
               </div>
             )}
           </CInputGroup>
-        </CCol>
+        </CCol> */}
       </CRow>
       <CRow>
         <CCol sm="4" style={{ marginTop: '5px', marginBottom: '5px' }}>
@@ -428,7 +428,7 @@ const DialogBoard = (props) => {
       if (
         !(
           item.contentFurigana &&
-          item.contentMeaning &&
+          // item.contentMeaning &&
           // item.start &&
           // item.stop &&
           // item.content &&

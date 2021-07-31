@@ -20,6 +20,7 @@ const createBoard = {
     title: Joi.string().required(),
     content: Joi.string().allow(null, ''),
     content_vn: Joi.string().allow(null, ''),
+    tooltipContent: Joi.string().allow(null, ''),
     level: Joi.string().allow(null, ''),
     free: Joi.number().required(),
     quiz: Joi.array().items(QuizValidation)
@@ -52,6 +53,7 @@ const updateBoard = {
       title: Joi.string().required(),
       content: Joi.string().allow(null, ''),
       content_vn: Joi.string().allow(null, ''),
+      tooltipContent: Joi.string().allow(null, ''),
       level: Joi.string().allow(null, ''),
       free: Joi.number().required(),
       quiz: Joi.array().items(QuizValidation)

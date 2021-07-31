@@ -88,6 +88,10 @@ const ReadingBoardSchema = mongoose.Schema(
         quiz: {
             type: [Quiz],
             require: false
+        },
+        tooltipContent: {
+            type: String,
+            required: false,
         }
     },
     {

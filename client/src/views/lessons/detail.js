@@ -63,9 +63,17 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
                   width: '100%',
                 }}
                 onClick={(e) => {
-                  const vocabEditor = window.CKEDITOR.replace('vocab')
-                  vocabEditor.on('change', function (e) {
-                    setVocab(vocabEditor.getData())
+                  const editor = window.CKEDITOR.replace('vocab', {
+                    on: {
+                      instanceReady: function (evt) {
+                        document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                      },
+                      change: function (e) {
+                        // xử lý data
+                        let content = editor.getData()
+                        setVocab(content)
+                      },
+                    },
                   })
                 }}
               >
@@ -121,9 +129,17 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
                   width: '100%',
                 }}
                 onClick={(e) => {
-                  const exampleEditor = window.CKEDITOR.replace('example')
-                  exampleEditor.on('change', function (e) {
-                    setExample(exampleEditor.getData())
+                  const editor = window.CKEDITOR.replace('example', {
+                    on: {
+                      instanceReady: function (evt) {
+                        document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                      },
+                      change: function (e) {
+                        // xử lý data
+                        let content = editor.getData()
+                        setExample(content)
+                      },
+                    },
                   })
                 }}
               >
@@ -212,6 +228,11 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
                       draggable: true,
                       progress: undefined,
                     })
+                    setVocab('')
+                    setVocabMeaning('')
+                    setExample('')
+                    setExampleMeaning('')
+                    setAudioSrc('')
                     setVisible(false)
                     setRefresh(refresh + 1)
                   } else {
@@ -309,10 +330,17 @@ const EditModal = ({
                       width: '100%',
                     }}
                     onClick={(e) => {
-                      const vocabEditor = window.CKEDITOR.replace('vocab')
-                      vocabEditor.setData(vocab)
-                      vocabEditor.on('change', function (e) {
-                        setVocab(vocabEditor.getData())
+                      const editor = window.CKEDITOR.replace('vocab', {
+                        on: {
+                          instanceReady: function (evt) {
+                            document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                          },
+                          change: function (e) {
+                            // xử lý data
+                            let content = editor.getData()
+                            setVocab(content)
+                          },
+                        },
                       })
                     }}
                   >
@@ -370,10 +398,17 @@ const EditModal = ({
                       width: '100%',
                     }}
                     onClick={(e) => {
-                      const exampleEditor = window.CKEDITOR.replace('example')
-                      exampleEditor.setData(example)
-                      exampleEditor.on('change', function (e) {
-                        setExample(exampleEditor.getData())
+                      const editor = window.CKEDITOR.replace('example', {
+                        on: {
+                          instanceReady: function (evt) {
+                            document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                          },
+                          change: function (e) {
+                            // xử lý data
+                            let content = editor.getData()
+                            setExample(content)
+                          },
+                        },
                       })
                     }}
                   >
@@ -722,12 +757,9 @@ const LessonDetail = (props) => {
           <CCol xs="12" sm="12" lg="12" md="12">
             <CModal visible={visibleModalDelete} onDismiss={() => setVisibleModalDelete(false)}>
               <CModalHeader onDismiss={() => setVisibleModalDelete(false)}>
-                <CModalTitle>XÁC NHẬN XOÁ TỪ VỰNG NÀY</CModalTitle>
+                <CModalTitle>XÁC NHẬN XOÁ TỪ VỰNG</CModalTitle>
               </CModalHeader>
-              <CModalBody>
-                Bạn chắc chắn muốn xoá từ vựng <CBadge color="success">{itemToDelete.vocab}</CBadge>{' '}
-                ?
-              </CModalBody>
+              <CModalBody>{parse(htmlEntityDecode(itemToDelete.vocab))}</CModalBody>
               <CModalFooter>
                 <CButton color="secondary" onClick={() => setVisibleModalDelete(false)}>
                   HUỶ BỎ
@@ -980,6 +1012,12 @@ const LessonDetail = (props) => {
                       style={{ borderBottom: '1px solid #dee2e6', fontSize: '30px' }}
                     >
                       {parse(htmlEntityDecode(item.vocab))}
+                      {item.extractedVocab && (
+                        <span style={{ fontSize: '12px' }}>Từ điển: {item.extractedVocab}</span>
+                      )}
+                      {item.extractedFurigana && (
+                        <span style={{ fontSize: '12px' }}>[{item.extractedFurigana}]</span>
+                      )}
                       <div style={{ fontSize: 15 }}>{item.vocabMeaning}</div>
                     </CCol>
                     <CCol

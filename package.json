@@ -1,16 +1,19 @@
 {
-    "name": "nihongo-admin",
-    "version": "1.0.0",
-    "scripts": {
-      "heroku-postbuild": "concurrently --kill-others-on-fail \"yarn server-build\" \"yarn client-build\"",
-      "client-build": "cd client && yarn cache clean --all && yarn install --network-concurrency 1 && yarn build",
-      "server-build": "cd server && yarn cache clean --all && yarn install --network-concurrency 1",
-      "server-dev": "cd server && yarn dev",
-      "server-prod": "cd server && yarn start",
-      "dev": "yarn server-dev",
-      "prod": "yarn server-prod"
-    },
-    "dependencies": {
-      "concurrently": "^6.2.0"
-    }
+  "name": "nihongo-admin",
+  "version": "1.0.0",
+  "scripts": {
+    "heroku-postbuild": "concurrently --kill-others-on-fail \"yarn server-build\" \"yarn client-build\"",
+    "client-build": "cd client && yarn cache clean --all && yarn install --network-concurrency 1 && yarn build",
+    "server-build": "cd server && yarn cache clean --all && yarn install --network-concurrency 1",
+    "server-dev": "cd server && yarn dev",
+    "server-prod": "cd server && yarn start",
+    "dev": "yarn server-dev",
+    "prod": "yarn server-prod"
+  },
+  "dependencies": {
+    "concurrently": "^6.2.0"
+  },
+  "devDependencies": {
+    "lint-staged": "^11.1.1"
   }
+}
