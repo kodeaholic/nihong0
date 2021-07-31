@@ -63,9 +63,17 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
                   width: '100%',
                 }}
                 onClick={(e) => {
-                  const vocabEditor = window.CKEDITOR.replace('vocab')
-                  vocabEditor.on('change', function (e) {
-                    setVocab(vocabEditor.getData())
+                  const editor = window.CKEDITOR.replace('vocab', {
+                    on: {
+                      instanceReady: function (evt) {
+                        document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                      },
+                      change: function (e) {
+                        // xử lý data
+                        let content = editor.getData()
+                        setVocab(content)
+                      },
+                    },
                   })
                 }}
               >
@@ -121,9 +129,17 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
                   width: '100%',
                 }}
                 onClick={(e) => {
-                  const exampleEditor = window.CKEDITOR.replace('example')
-                  exampleEditor.on('change', function (e) {
-                    setExample(exampleEditor.getData())
+                  const editor = window.CKEDITOR.replace('example', {
+                    on: {
+                      instanceReady: function (evt) {
+                        document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                      },
+                      change: function (e) {
+                        // xử lý data
+                        let content = editor.getData()
+                        setExample(content)
+                      },
+                    },
                   })
                 }}
               >
@@ -212,6 +228,11 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh, lessonId }) => {
                       draggable: true,
                       progress: undefined,
                     })
+                    setVocab('')
+                    setVocabMeaning('')
+                    setExample('')
+                    setExampleMeaning('')
+                    setAudioSrc('')
                     setVisible(false)
                     setRefresh(refresh + 1)
                   } else {
@@ -309,10 +330,17 @@ const EditModal = ({
                       width: '100%',
                     }}
                     onClick={(e) => {
-                      const vocabEditor = window.CKEDITOR.replace('vocab')
-                      vocabEditor.setData(vocab)
-                      vocabEditor.on('change', function (e) {
-                        setVocab(vocabEditor.getData())
+                      const editor = window.CKEDITOR.replace('vocab', {
+                        on: {
+                          instanceReady: function (evt) {
+                            document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                          },
+                          change: function (e) {
+                            // xử lý data
+                            let content = editor.getData()
+                            setVocab(content)
+                          },
+                        },
                       })
                     }}
                   >
@@ -370,10 +398,17 @@ const EditModal = ({
                       width: '100%',
                     }}
                     onClick={(e) => {
-                      const exampleEditor = window.CKEDITOR.replace('example')
-                      exampleEditor.setData(example)
-                      exampleEditor.on('change', function (e) {
-                        setExample(exampleEditor.getData())
+                      const editor = window.CKEDITOR.replace('example', {
+                        on: {
+                          instanceReady: function (evt) {
+                            document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                          },
+                          change: function (e) {
+                            // xử lý data
+                            let content = editor.getData()
+                            setExample(content)
+                          },
+                        },
                       })
                     }}
                   >
