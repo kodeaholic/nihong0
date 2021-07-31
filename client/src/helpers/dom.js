@@ -175,7 +175,7 @@ function extractTextWithFurigana(str) {
   //   result = result.substring(0, n - 2)
   //   n = n - 1
   // }
-  return result
+  return text
 }
 module.exports = {
   extractTextFromHTMLString,
