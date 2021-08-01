@@ -24,31 +24,41 @@ import { dictionaryService } from 'src/services/api/dictionaryService'
 import parse from 'html-react-parser'
 import { htmlEntityEncode, htmlEntityDecode } from '../../helpers/htmlentities'
 import renderHTML from 'react-render-html'
+import { extractFuriganaFromHTMLString } from 'src/helpers/dom'
 const AddModal = ({ visible, setVisible, refresh, setRefresh }) => {
   const [saving, setSaving] = useState(false)
-  const [vocab, setVocab] = useState('')
-  const [vocabMeaning, setVocabMeaning] = useState('')
-  const [chinese] = useState('')
+  const [phrase, setPhrase] = useState('')
+  const [meaning, setMeaning] = useState('')
+  const [furigana, setFurigana] = useState('')
   const [example, setExample] = useState('')
   const [exampleMeaning, setExampleMeaning] = useState('')
   const [audioSrc, setAudioSrc] = useState('')
-  const isDisabled = vocab.length > 0 ? false : true
+  const isDisabled = phrase.length > 0 ? false : true
   return (
     <CModal visible={visible} onDismiss={() => setVisible(false)}>
       <CModalHeader onDismiss={() => setVisible(false)}>
-        <CModalTitle>THÊM MỚI TỪ VỰNG</CModalTitle>
+        <CModalTitle>THÊM MỚI</CModalTitle>
       </CModalHeader>
       <CModalBody>
         <CRow>
           <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
-            <CFormLabel htmlFor="vocab">
-              Từ vựng <span style={{ color: 'red' }}>*</span>
-            </CFormLabel>
+            <CFormLabel htmlFor="phrase">Từ/Cụm từ</CFormLabel>
+          </CCol>
+          <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
+            <CFormControl
+              type="text"
+              id="phrase"
+              placeholder="Từ cần thêm"
+              onChange={(e) => setPhrase(e.target.value)}
+            />
+          </CCol>
+          <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
+            <CFormLabel htmlFor="example">Cách đọc Hiragana (nếu có)</CFormLabel>
           </CCol>
           <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
             {true && (
               <div
-                id="vocab"
+                id="furigana"
                 style={{
                   border: '1px solid grey',
                   borderRadius: '5px 5px 5px 5px',
@@ -60,7 +70,7 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh }) => {
                   width: '100%',
                 }}
                 onClick={(e) => {
-                  const editor = window.CKEDITOR.replace('vocab', {
+                  const editor = window.CKEDITOR.replace('furigana', {
                     on: {
                       instanceReady: function (evt) {
                         document.getElementById(evt.editor.id + '_top').style.display = 'none'
@@ -68,28 +78,28 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh }) => {
                       change: function (e) {
                         // xử lý data
                         let content = editor.getData()
-                        setVocab(content)
+                        setFurigana(content)
                       },
                     },
                   })
                 }}
               >
-                {vocab ? renderHTML(vocab) : renderHTML('&nbsp;')}
+                {furigana ? renderHTML(furigana) : renderHTML('&nbsp;')}
               </div>
             )}
           </CCol>
         </CRow>
         <CRow>
           <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
-            <CFormLabel htmlFor="vocabMeaning">Giải nghĩa</CFormLabel>
+            <CFormLabel htmlFor="meaning">Giải nghĩa</CFormLabel>
           </CCol>
           <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
             <CFormControl
               type="text"
               component="textarea"
-              id="vocabMeaning"
+              id="meaning"
               placeholder="họ hàng, bà con thân thuộc"
-              onChange={(e) => setVocabMeaning(e.target.value)}
+              onChange={(e) => setMeaning(e.target.value)}
               rows={3}
             />
           </CCol>
@@ -186,12 +196,13 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh }) => {
               setSaving(true)
               dictionaryService
                 .createItem({
-                  vocab: htmlEntityEncode(vocab),
-                  vocabMeaning,
-                  chinese,
+                  phrase,
+                  meaning,
+                  furigana: htmlEntityEncode(furigana),
                   example: htmlEntityEncode(example),
                   exampleMeaning,
                   audioSrc,
+                  extractedFurigana: extractFuriganaFromHTMLString(furigana),
                 })
                 .then((res) => {
                   setSaving(false)
@@ -202,7 +213,7 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh }) => {
                       res.code !== 500 &&
                       res.code !== 400)
                   ) {
-                    toast.success(`Tạo mới từ vựng thành công`, {
+                    toast.success(`Tạo mới từ thành công`, {
                       position: 'top-right',
                       autoClose: 2500,
                       hideProgressBar: true,
@@ -211,10 +222,11 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh }) => {
                       draggable: true,
                       progress: undefined,
                     })
-                    setVocab('')
-                    setVocabMeaning('')
+                    setPhrase('')
+                    setMeaning('')
                     setExample('')
                     setExampleMeaning('')
+                    setFurigana('')
                     setAudioSrc('')
                     setVisible(false)
                     setRefresh(refresh + 1)
@@ -254,25 +266,17 @@ const AddModal = ({ visible, setVisible, refresh, setRefresh }) => {
   )
 }
 
-const EditModal = ({
-  visible,
-  setVisible,
-  refresh,
-  setRefresh,
-  item,
-  setItem,
-  loading,
-  lessonId,
-  vocabId,
-}) => {
+const EditModal = ({ visible, setVisible, refresh, setRefresh, item, setItem, loading }) => {
   const [saving, setSaving] = useState(false)
-  const [vocab, setVocab] = useState(htmlEntityDecode(item.vocab))
-  const [vocabMeaning, setVocabMeaning] = useState(item.vocabMeaning)
-  const [chinese] = useState(item.chinese)
+  const [furigana, setFurigana] = useState(htmlEntityDecode(item.furigana))
+  const [meaning, setMeaning] = useState(item.meaning)
+  const [phrase, setPhrase] = useState(item.phrase)
   const [example, setExample] = useState(htmlEntityDecode(item.example))
   const [exampleMeaning, setExampleMeaning] = useState(item.exampleMeaning)
   const [audioSrc, setAudioSrc] = useState(item.audioSrc)
-  const isDisabled = vocab.length > 0 ? false : true
+  const isDisabled = phrase.length > 0 ? false : true
+  const [edited, setEdited] = useState(false)
+  const [toCheck, setToCheck] = useState(item) // check if some field edited
   return (
     <CModal
       visible={visible}
@@ -287,21 +291,36 @@ const EditModal = ({
           setItem({})
         }}
       >
-        <CModalTitle>SỬA TỪ VỰNG</CModalTitle>
+        <CModalTitle>SỬA</CModalTitle>
       </CModalHeader>
       <CModalBody className="text-center">
         {!loading && (
           <>
             <CRow>
               <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
+                <CFormLabel htmlFor="phrase">Từ/Cụm từ</CFormLabel>
+              </CCol>
+              <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
+                <CFormControl
+                  type="text"
+                  id="phrase"
+                  placeholder="Từ cần sửa"
+                  onChange={(e) => {
+                    setPhrase(e.target.value)
+                    setToCheck({ ...toCheck, phrase: e.target.value })
+                  }}
+                  defaultValue={item.phrase}
+                />
+              </CCol>
+              <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
                 <CFormLabel htmlFor="vocab">
-                  Từ vựng <span style={{ color: 'red' }}>*</span>
+                  Cách đọc Hiragana (nếu có)<span style={{ color: 'red' }}></span>
                 </CFormLabel>
               </CCol>
               <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
                 {true && (
                   <div
-                    id="vocab"
+                    id="furigana"
                     style={{
                       border: '1px solid grey',
                       borderRadius: '5px 5px 5px 5px',
@@ -313,7 +332,7 @@ const EditModal = ({
                       width: '100%',
                     }}
                     onClick={(e) => {
-                      const editor = window.CKEDITOR.replace('vocab', {
+                      const editor = window.CKEDITOR.replace('furigana', {
                         on: {
                           instanceReady: function (evt) {
                             document.getElementById(evt.editor.id + '_top').style.display = 'none'
@@ -321,30 +340,34 @@ const EditModal = ({
                           change: function (e) {
                             // xử lý data
                             let content = editor.getData()
-                            setVocab(content)
+                            setToCheck({ ...toCheck, furigana: content })
+                            setFurigana(content)
                           },
                         },
                       })
                     }}
                   >
-                    {vocab ? renderHTML(vocab) : renderHTML('&nbsp;')}
+                    {furigana ? renderHTML(furigana) : renderHTML('&nbsp;')}
                   </div>
                 )}
               </CCol>
             </CRow>
             <CRow>
               <CCol xs="12" sm="3" lg="3" style={{ marginBottom: '5px' }}>
-                <CFormLabel htmlFor="vocabMeaning">Giải nghĩa</CFormLabel>
+                <CFormLabel htmlFor="meaning">Giải nghĩa</CFormLabel>
               </CCol>
               <CCol xs="12" sm="9" lg="9" style={{ marginBottom: '5px' }}>
                 <CFormControl
                   type="text"
                   component="textarea"
-                  id="vocabMeaning"
+                  id="meaning"
                   placeholder="họ hàng, bà con thân thuộc"
-                  onChange={(e) => setVocabMeaning(e.target.value)}
+                  onChange={(e) => {
+                    setMeaning(e.target.value)
+                    setToCheck({ ...toCheck, meaning: e.target.value })
+                  }}
                   rows={3}
-                  defaultValue={item.vocabMeaning}
+                  defaultValue={item.meaning}
                 />
               </CCol>
             </CRow>
@@ -375,6 +398,7 @@ const EditModal = ({
                           change: function (e) {
                             // xử lý data
                             let content = editor.getData()
+                            setToCheck({ ...toCheck, example: content })
                             setExample(content)
                           },
                         },
@@ -396,7 +420,10 @@ const EditModal = ({
                   component="textarea"
                   id="exampleMeaning"
                   placeholder="Nếu trong họ hàng có một bác sĩ, gì thì gì cũng sẽ yên tâm hơn."
-                  onChange={(e) => setExampleMeaning(e.target.value)}
+                  onChange={(e) => {
+                    setToCheck({ ...toCheck, exampleMeaning: e.target.value })
+                    setExampleMeaning(e.target.value)
+                  }}
                   rows={3}
                   defaultValue={item.exampleMeaning}
                 />
@@ -412,7 +439,10 @@ const EditModal = ({
                   component="textarea"
                   id="audioSrc"
                   placeholder="https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3"
-                  onChange={(e) => setAudioSrc(e.target.value)}
+                  onChange={(e) => {
+                    setAudioSrc(e.target.value)
+                    setToCheck({ ...toCheck, audioSrc: e.target.value })
+                  }}
                   rows={3}
                   defaultValue={item.audioSrc}
                 />
@@ -446,19 +476,19 @@ const EditModal = ({
           {saving && <CSpinner />}
           {!saving && (
             <CButton
-              disabled={isDisabled}
+              disabled={isDisabled || JSON.stringify(toCheck) === JSON.stringify(item)}
               color="success"
               onClick={() => {
                 setSaving(true)
                 dictionaryService
-                  .updateVocab(item.id, {
-                    vocab: htmlEntityEncode(vocab),
-                    vocabMeaning,
-                    chinese,
+                  .updateItem(item.id, {
+                    phrase,
+                    meaning,
                     example: htmlEntityEncode(example),
                     exampleMeaning,
                     audioSrc,
-                    lesson: lessonId,
+                    furigana: htmlEntityEncode(furigana),
+                    extractedFurigana: extractFuriganaFromHTMLString(furigana),
                   })
                   .then((res) => {
                     setSaving(false)
@@ -469,7 +499,7 @@ const EditModal = ({
                         res.code !== 500 &&
                         res.code !== 400)
                     ) {
-                      toast.success(`Lưu từ vựng thành công`, {
+                      toast.success(`Lưu thành công`, {
                         position: 'top-right',
                         autoClose: 2500,
                         hideProgressBar: true,
@@ -494,7 +524,7 @@ const EditModal = ({
                         })
                       } else
                         toast.error(
-                          `Không thể lưu được từ vựng này. Liên hệ web developer để biết thêm chi tiết`,
+                          `Không thể lưu được. Liên hệ web developer để biết thêm chi tiết`,
                           {
                             position: 'top-right',
                             autoClose: 2500,
@@ -568,7 +598,6 @@ const Dictionary = (props) => {
         })
         setRedirectTo({ redirect: true, path: '/' })
       }
-      console.log(res)
       setDictionary(res['results'])
       if (!res['results'].length)
         toast.success(`Hiện tại chưa có từ nào được thêm`, {
@@ -662,7 +691,6 @@ const Dictionary = (props) => {
                 loading={loadingEditModal}
                 refresh={refresh}
                 setRefresh={setRefresh}
-                vocabId={itemToEdit.id}
               />
             )}
           </CCol>
@@ -814,9 +842,7 @@ const Dictionary = (props) => {
                       style={{ borderBottom: '1px solid #dee2e6', fontSize: '30px' }}
                     >
                       {item.furigana && (
-                        <div style={{ fontSize: 15 }}>
-                          {parse(htmlEntityDecode(item.furigana))} (cách đọc)
-                        </div>
+                        <div style={{ fontSize: 15 }}>{parse(htmlEntityDecode(item.furigana))}</div>
                       )}
                       <div style={{ fontSize: 15 }}>{item.phrase}</div>
                       <div style={{ fontSize: 15 }}>{item.meaning}</div>

@@ -41,7 +41,7 @@ async function createItem(data) {
   return item
 }
 
-async function updateItem(data, id) {
+async function updateItem(id, data) {
   const requestOptions = {
     method: 'PATCH',
     headers: authHeader(),
