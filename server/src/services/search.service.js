@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const { removeAccents, hasAccents } = require('../helpers/accents');
 const { containsJapaneseCharacter } = require('../helpers/japanese');
-const { Vocab, Card } = require('../models');
+const { Vocab, Card, Dictionary } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 /**
@@ -14,6 +14,7 @@ const search = async (body) => {
     let results = {
         vocabs: [],
         cards: [],
+        dictionary: []
     };
     if (!searchKey) return [];
     let search = searchKey;
@@ -31,15 +32,20 @@ const search = async (body) => {
         const cardSelectedFields = ['-onTextExample', '-kunTextExample'];
         return Card.find(cardTextSearchCondition).select(cardSelectedFields).limit(10).sort({ "letter": -1 })
     }
-
+    const dictionaryPromise = async () => {
+      const condition = isJapanese ? { $or: [ { "phrase": { $regex: regex }} , {"extractedFurigana": { $regex: regex }} ] } : { "meaning": { $regex: regex } }
+      const selectedFields = ['-furigana', '-example'];
+      return Dictionary.find(condition).select(selectedFields).limit(10).sort({ "phrase": -1 })
+    }
     results = await Promise.all([
         vocabPromise(),
-        cardPromise()
-      ]).then(([vocabs, cards]) => {
-        return { vocabs, cards };
+        cardPromise(),
+        dictionaryPromise()
+      ]).then(([vocabs, cards, dictionary]) => {
+        return { vocabs, cards, dictionary };
       }).catch((err) => {
         console.log('Error: ', err);
-        return { vocabs: [], cards: []}
+        return { vocabs: [], cards: [], dictionary: []}
       });
     return { results };
 };
