@@ -443,6 +443,16 @@ const _nav = [
     anchor: 'Thêm bài học luyện đọc',
     to: '/reading-boards/addBoard',
   },
+  {
+    _component: 'CNavTitle',
+    anchor: 'Từ điển',
+  },
+  {
+    _component: 'CNavItem',
+    as: NavLink,
+    anchor: 'Quản lý từ điển',
+    to: '/dictionary',
+  },
 ]
 
 export default _nav

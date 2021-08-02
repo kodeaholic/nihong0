@@ -60,7 +60,7 @@ const VocabSchema = mongoose.Schema(
 // add plugin that converts mongoose to json
 VocabSchema.plugin(toJSON);
 VocabSchema.plugin(paginate);
-
+// VocabSchema.index({ extractedVocab: 'text', extractedFurigana: 'text', vocabMeaning: 'text'}, {name: 'vocab_text_index', weights: {extractedVocab: 10, extractedFurigana: 10, vocabMeaning: 10}});
 /**
  * @typedef Vocab
  */
