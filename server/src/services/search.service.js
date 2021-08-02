@@ -20,7 +20,7 @@ const search = async (body) => {
     let search = searchKey;
 
     const isJapanese = containsJapaneseCharacter(search);
-    const regex = new RegExp(".*" + search + ".*", "g");
+    const regex = new RegExp(".*" + search + ".*", "ig");
 
     const vocabPromise = async () => {
         const vocabTextSearchCondition = isJapanese ? { $or: [ { "extractedVocab": { $regex: regex }}, { "extractedFurigana": { $regex: regex } } ] } : { "vocabMeaning": { $regex: regex } }
