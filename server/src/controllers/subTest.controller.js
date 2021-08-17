@@ -35,10 +35,20 @@ const deleteItem = catchAsync(async (req, res) => {
     res.status(httpStatus.NO_CONTENT).send();
 });
 
+const findTestByQuestion = catchAsync(async (req, res) => {
+    const item = req.body.excludedId ? await subTestService.findTestByQuestion(req.body.question, req.body.excludedId) : await subTestService.findTestByQuestion(req.body.question);
+    if (item) {
+        res.send(item);
+    } else {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Mục không tồn tại hoặc đã bị xoá');
+    }
+});
+
 module.exports = {
     createItem,
     getItems,
     getItem,
     updateItem,
     deleteItem,
+    findTestByQuestion
 };

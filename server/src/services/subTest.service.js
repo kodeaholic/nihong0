@@ -65,14 +65,17 @@ const deleteItemById = async (itemId) => {
     return item;
 };
 
-const findTestByQuestion = async (question) => {
-    const item = await SubTest.findOne({
+const findTestByQuestion = async (question, excludedId) => {
+    const searchCondition = {
         quiz: {
             $elemMatch: {
-                question: { $e: question }
+                question: question
             }
         }
-    })
+    }
+    if (excludedId) searchCondition._id = { $nin: [excludedId] };
+    console.log(searchCondition);
+    const item = await SubTest.findOne(searchCondition);
     return item;
 }
 
