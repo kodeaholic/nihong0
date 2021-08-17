@@ -57,7 +57,7 @@ const ReadingBoardWebView = (props) => {
           if (res.status === 401 || res.status === 404 || res.status === 400) {
             setPageNotFound(true)
           } else {
-            setTitle(res.title)
+            setTitle(res?.title.includes(':') ? _.trim(res.title.split(':')[1]) : res.title)
             setLevel(res.level)
             // setContent(res.content ? htmlEntityDecode(res.content) : '')
             setTooltipContent(res.tooltipContent ? htmlEntityDecode(res.tooltipContent) : '')
@@ -190,7 +190,11 @@ const ReadingBoardWebView = (props) => {
               <>
                 <main>
                   <p
-                    style={{ fontFamily: "'Shippori Mincho', serif", textAlign: 'center' }}
+                    style={{
+                      fontFamily: "'Shippori Mincho', serif",
+                      textAlign: 'center',
+                      fontSize: '20px',
+                    }}
                   >{`${title}`}</p>
                   <div className="content">{renderHTML(tooltipContent)}</div>
                   <hr />
