@@ -453,6 +453,16 @@ const _nav = [
     anchor: 'Quản lý từ điển',
     to: '/dictionary',
   },
+  {
+    _component: 'CNavTitle',
+    anchor: 'Luyện thi từng phần',
+  },
+  {
+    _component: 'CNavItem',
+    as: NavLink,
+    anchor: 'Danh sách bài thi theo phần',
+    to: '/sub-tests',
+  },
 ]
 
 export default _nav

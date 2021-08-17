@@ -11,7 +11,7 @@ const createItem = catchAsync(async (req, res) => {
 
 const getItems = catchAsync(async (req, res) => {
     const filter = pick(req.query, ['title', 'level', 'type']);
-    if (filter.title) filter.title = new RegExp(filter.title) // this will add {title: /title/i} to filter to search by regex, not search by identical string comparison
+    if (filter.title) filter.title = new RegExp(filter.title, 'i') // this will add {title: /title/i} to filter to search by regex, not search by identical string comparison
     const options = pick(req.query, ['sortBy', 'limit', 'page']);
     const result = await subTestService.queryItems(filter, options);
     res.send(result);

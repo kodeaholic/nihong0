@@ -75,6 +75,7 @@ const ChapterDetails = React.lazy(() => import('./views/lessons/index'))
 const LessonDetails = React.lazy(() => import('./views/lessons/detail'))
 const Furigana = React.lazy(() => import('./views/furigana/index'))
 const Dictionary = React.lazy(() => import('./views/dictionary/index'))
+const SubTests = React.lazy(() => import('./views/sub-tests/master/index'))
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Tổng quan', component: Dashboard },
@@ -238,6 +239,7 @@ const routes = [
     component: Dictionary,
     specificName: 'dictionary',
   },
+  { path: '/sub-tests', name: 'Luyện thi theo phần', component: SubTests, exact: true },
 ]
 
 export default routes
