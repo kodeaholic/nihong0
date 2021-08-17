@@ -24,66 +24,13 @@ import {
   CButtonGroup,
 } from '@coreui/react'
 import { Redirect } from 'react-router-dom'
-import { readingBoardService } from 'src/services/api/readingBoardService'
+import { subTestService } from 'src/services/api/subTestService'
 import _ from 'lodash'
 import renderHTML from 'react-render-html'
 import { htmlEntityEncode, htmlEntityDecode } from '../../../helpers/htmlentities'
-import { extractTextWithFurigana } from 'src/helpers/dom'
-const DictionaryForm = (props) => {
-  const { dictionary, onChange } = props
-  return (
-    <>
-      <CForm>
-        {dictionary.map((sentence, index) => {
-          return (
-            <div className="mb-3" key={`sentence-${index}`}>
-              <CFormLabel htmlFor={`sentence-${index}`}>
-                Câu {`${index + 1}`} - {renderHTML(sentence['sentence'])}
-              </CFormLabel>
-              <CFormControl
-                type="text"
-                name={`sentence-${index}`}
-                id={`sentence-${index}`}
-                placeholder="Dịch"
-                component="textarea"
-                rows="2"
-                onChange={(e) => {
-                  const { name, value } = e.target
-                  // console.log(value)
-                  const index = parseInt(name.replace('sentence-', ''))
-                  const newSentences = [...dictionary]
-                  newSentences[index]['trans'] = value
-                  onChange(newSentences)
-                }}
-                defaultValue={dictionary[index]['trans']}
-                disabled={true}
-              />
-              <fieldset className="row mb-3">
-                <CCol sm="10">
-                  <CFormCheck
-                    id="highlight"
-                    label="Quan trọng"
-                    defaultChecked={dictionary[index]['highlight']}
-                    onChange={(e) => {
-                      const current = dictionary[index]['highlight'] ? true : false
-                      const newSentences = [...dictionary]
-                      newSentences[index]['highlight'] = !current
-                      onChange(newSentences)
-                    }}
-                  />
-                </CCol>
-              </fieldset>
-            </div>
-          )
-        })}
-      </CForm>
-    </>
-  )
-}
-DictionaryForm.propTypes = {
-  dictionary: PropTypes.array,
-  onChange: PropTypes.func,
-}
+import { testTypes } from 'src/constants/test.constants'
+import { LEVEL } from 'src/constants/level.constants'
+
 const Exercise = (props) => {
   const { quiz, onQuizItemChange, disabled } = props
   return (
@@ -118,11 +65,6 @@ const QuizItem = (props) => {
       C: '',
       D: '',
       answer: 'A',
-      question_vn: '',
-      A_vn: '',
-      B_vn: '',
-      C_vn: '',
-      D_vn: '',
     }
 
   const handleInputChange = (e) => {
@@ -217,121 +159,23 @@ const QuizItem = (props) => {
         </CCol>
       </CRow>
       <CRow>
-        <CCol sm="12" style={{ marginTop: '10px', marginBottom: '10px' }}>
-          <CInputGroup>
-            <CInputGroupText id={`question_vn-label-${id}`}>Câu {id + 1} (Dịch)</CInputGroupText>
-            {!disabled && (
-              <CFormControl
-                type="text"
-                name="question_vn"
-                id={`question_vn-${id}`}
-                aria-describedby="question_vn-label"
-                component="textarea"
-                rows="2"
-                onChange={(e) => {
-                  let index = parseInt(id)
-                  let quizes = [...parentQuiz]
-                  quizes[index]['question_vn'] = e.target.value
-                  onChange(quizes)
-                }}
-                defaultValue={parentQuiz[parseInt(id)]['question_vn']}
-              />
-              // <div
-              //   style={{
-              //     border: '1px solid #b1b7c1',
-              //     backgroundColor: '#fff',
-              //     paddingRight: '5px',
-              //     paddingLeft: '5px',
-              //     paddingTop: '5px',
-              //     cursor: 'text',
-              //     width: 'auto',
-              //   }}
-              //   onClick={(e) => {
-              //     const editor = window.CKEDITOR.replace(`question_vn-${id}`, {
-              //       on: {
-              //         instanceReady: function (evt) {
-              //           document.getElementById(evt.editor.id + '_top').style.display = 'none'
-              //         },
-              //         change: function (e) {
-              //           let index = parseInt(id)
-              //           let quizes = [...parentQuiz]
-              //           quizes[index]['question_vn'] = editor.getData()
-              //           onChange(quizes)
-              //         },
-              //       },
-              //     })
-              //   }}
-              //   name="question_vn"
-              //   id={`question_vn-${id}`}
-              //   aria-describedby="question_vn-label"
-              // >
-              //   {parentQuiz[parseInt(id)]['question_vn']
-              //     ? renderHTML(parentQuiz[parseInt(id)]['question_vn'])
-              //     : renderHTML('&nbsp;&nbsp;')}
-              // </div>
-            )}
-            {disabled && (
-              <div
-                style={{
-                  border: '1px solid #b1b7c1',
-                  backgroundColor: '#fff',
-                  paddingRight: '5px',
-                  paddingLeft: '5px',
-                  paddingTop: '5px',
-                  cursor: 'text',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
-                  width: 'auto',
-                }}
-              >
-                {parentQuiz[parseInt(id)]['question_vn']
-                  ? renderHTML(parentQuiz[parseInt(id)]['question_vn'])
-                  : renderHTML('&nbsp;&nbsp;')}
-              </div>
-            )}
-          </CInputGroup>
-        </CCol>
-      </CRow>
-      <CRow>
         <CCol sm="3" style={{ marginTop: '5px' }}>
           <CInputGroup>
             <CInputGroupText id={`optionA-label-${id}`}>A</CInputGroupText>
             {!disabled && (
-              <div
-                style={{
-                  border: '1px solid #b1b7c1',
-                  backgroundColor: '#fff',
-                  paddingRight: '5px',
-                  paddingLeft: '5px',
-                  paddingTop: '5px',
-                  cursor: 'text',
-                  height: 'auto',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
-                }}
-                onClick={(e) => {
-                  const editor = window.CKEDITOR.replace(`A-${id}`, {
-                    on: {
-                      instanceReady: function (evt) {
-                        document.getElementById(evt.editor.id + '_top').style.display = 'none'
-                      },
-                      change: function (e) {
-                        let index = parseInt(id)
-                        let quizes = [...parentQuiz]
-                        quizes[index]['A'] = editor.getData()
-                        onChange(quizes)
-                      },
-                    },
-                  })
-                }}
+              <CFormControl
+                type="text"
                 name="A"
                 id={`A-${id}`}
                 aria-describedby="A-label"
-              >
-                {parentQuiz[parseInt(id)]['A']
-                  ? renderHTML(parentQuiz[parseInt(id)]['A'])
-                  : renderHTML('&nbsp;&nbsp;')}
-              </div>
+                onChange={(e) => {
+                  let index = parseInt(id)
+                  let quizes = [...parentQuiz]
+                  quizes[index]['A'] = e.target.value
+                  onChange(quizes)
+                }}
+                defaultValue={parentQuiz[parseInt(id)]['A']}
+              />
             )}
             {disabled && (
               <div
@@ -356,43 +200,21 @@ const QuizItem = (props) => {
         </CCol>
         <CCol sm="3" style={{ marginTop: '5px' }}>
           <CInputGroup>
-            <CInputGroupText id={`optionB-label-${id}`}>B</CInputGroupText>
+            <CInputGroupText id={`optionB-label-${id}`}>B </CInputGroupText>
             {!disabled && (
-              <div
-                style={{
-                  border: '1px solid #b1b7c1',
-                  backgroundColor: '#fff',
-                  paddingRight: '5px',
-                  paddingLeft: '5px',
-                  paddingTop: '5px',
-                  cursor: 'text',
-                  height: 'auto',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
-                }}
-                onClick={(e) => {
-                  const editor = window.CKEDITOR.replace(`B-${id}`, {
-                    on: {
-                      instanceReady: function (evt) {
-                        document.getElementById(evt.editor.id + '_top').style.display = 'none'
-                      },
-                      change: function (e) {
-                        let index = parseInt(id)
-                        let quizes = [...parentQuiz]
-                        quizes[index]['B'] = editor.getData()
-                        onChange(quizes)
-                      },
-                    },
-                  })
-                }}
+              <CFormControl
+                type="text"
                 name="B"
                 id={`B-${id}`}
                 aria-describedby="B-label"
-              >
-                {parentQuiz[parseInt(id)]['B']
-                  ? renderHTML(parentQuiz[parseInt(id)]['B'])
-                  : renderHTML('&nbsp;&nbsp;')}
-              </div>
+                onChange={(e) => {
+                  let index = parseInt(id)
+                  let quizes = [...parentQuiz]
+                  quizes[index]['B'] = e.target.value
+                  onChange(quizes)
+                }}
+                defaultValue={parentQuiz[parseInt(id)]['B']}
+              />
             )}
             {disabled && (
               <div
@@ -417,43 +239,21 @@ const QuizItem = (props) => {
         </CCol>
         <CCol sm="3" style={{ marginTop: '5px' }}>
           <CInputGroup>
-            <CInputGroupText id={`optionC-label-${id}`}>C</CInputGroupText>
+            <CInputGroupText id={`optionC-label-${id}`}>C </CInputGroupText>
             {!disabled && (
-              <div
-                style={{
-                  border: '1px solid #b1b7c1',
-                  backgroundColor: '#fff',
-                  paddingRight: '5px',
-                  paddingLeft: '5px',
-                  paddingTop: '5px',
-                  cursor: 'text',
-                  height: 'auto',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
-                }}
-                onClick={(e) => {
-                  const editor = window.CKEDITOR.replace(`C-${id}`, {
-                    on: {
-                      instanceReady: function (evt) {
-                        document.getElementById(evt.editor.id + '_top').style.display = 'none'
-                      },
-                      change: function (e) {
-                        let index = parseInt(id)
-                        let quizes = [...parentQuiz]
-                        quizes[index]['C'] = editor.getData()
-                        onChange(quizes)
-                      },
-                    },
-                  })
-                }}
+              <CFormControl
+                type="text"
                 name="C"
                 id={`C-${id}`}
                 aria-describedby="C-label"
-              >
-                {parentQuiz[parseInt(id)]['C']
-                  ? renderHTML(parentQuiz[parseInt(id)]['C'])
-                  : renderHTML('&nbsp;&nbsp;')}
-              </div>
+                onChange={(e) => {
+                  let index = parseInt(id)
+                  let quizes = [...parentQuiz]
+                  quizes[index]['C'] = e.target.value
+                  onChange(quizes)
+                }}
+                defaultValue={parentQuiz[parseInt(id)]['C']}
+              />
             )}
             {disabled && (
               <div
@@ -478,356 +278,38 @@ const QuizItem = (props) => {
         </CCol>
         <CCol sm="3" style={{ marginTop: '5px' }}>
           <CInputGroup>
-            <CInputGroupText id={`optionD-label-${id}`}>D</CInputGroupText>
+            <CInputGroupText id={`optionD-label-${id}`}>D </CInputGroupText>
             {!disabled && (
-              <div
-                style={{
-                  border: '1px solid #b1b7c1',
-                  backgroundColor: '#fff',
-                  paddingRight: '5px',
-                  paddingLeft: '5px',
-                  paddingTop: '5px',
-                  cursor: 'text',
-                  height: 'auto',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
-                }}
-                onClick={(e) => {
-                  const editor = window.CKEDITOR.replace(`D-${id}`, {
-                    on: {
-                      instanceReady: function (evt) {
-                        document.getElementById(evt.editor.id + '_top').style.display = 'none'
-                      },
-                      change: function (e) {
-                        let index = parseInt(id)
-                        let quizes = [...parentQuiz]
-                        quizes[index]['D'] = editor.getData()
-                        onChange(quizes)
-                      },
-                    },
-                  })
-                }}
+              <CFormControl
+                type="text"
                 name="D"
                 id={`D-${id}`}
                 aria-describedby="D-label"
+                onChange={(e) => {
+                  let index = parseInt(id)
+                  let quizes = [...parentQuiz]
+                  quizes[index]['D'] = e.target.value
+                  onChange(quizes)
+                }}
+                defaultValue={parentQuiz[parseInt(id)]['D']}
+              />
+            )}
+            {disabled && (
+              <div
+                style={{
+                  border: '1px solid #b1b7c1',
+                  backgroundColor: '#fff',
+                  paddingRight: '5px',
+                  paddingLeft: '5px',
+                  paddingTop: '5px',
+                  cursor: 'text',
+                  borderTopRightRadius: '5px',
+                  borderBottomRightRadius: '5px',
+                  height: 'auto',
+                }}
               >
                 {parentQuiz[parseInt(id)]['D']
                   ? renderHTML(parentQuiz[parseInt(id)]['D'])
-                  : renderHTML('&nbsp;&nbsp;')}
-              </div>
-            )}
-            {disabled && (
-              <div
-                style={{
-                  border: '1px solid #b1b7c1',
-                  backgroundColor: '#fff',
-                  paddingRight: '5px',
-                  paddingLeft: '5px',
-                  paddingTop: '5px',
-                  cursor: 'text',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
-                  height: 'auto',
-                }}
-              >
-                {parentQuiz[parseInt(id)]['D']
-                  ? renderHTML(parentQuiz[parseInt(id)]['D'])
-                  : renderHTML('&nbsp;&nbsp;')}
-              </div>
-            )}
-          </CInputGroup>
-        </CCol>
-        <CCol sm="3" style={{ marginTop: '5px' }}>
-          <CInputGroup>
-            <CInputGroupText id={`optionA-label-${id}`}>A (dịch)</CInputGroupText>
-            {!disabled && (
-              <CFormControl
-                type="text"
-                name="A_vn"
-                id={`A_vn-${id}`}
-                aria-describedby="A_vn-label"
-                onChange={(e) => {
-                  let index = parseInt(id)
-                  let quizes = [...parentQuiz]
-                  quizes[index]['A_vn'] = e.target.value
-                  onChange(quizes)
-                }}
-                defaultValue={parentQuiz[parseInt(id)]['A_vn']}
-              />
-              // <div
-              //   style={{
-              //     border: '1px solid #b1b7c1',
-              //     backgroundColor: '#fff',
-              //     paddingRight: '5px',
-              //     paddingLeft: '5px',
-              //     paddingTop: '5px',
-              //     cursor: 'text',
-              //     height: 'auto',
-              //     borderTopRightRadius: '5px',
-              //     borderBottomRightRadius: '5px',
-              //   }}
-              //   onClick={(e) => {
-              //     const editor = window.CKEDITOR.replace(`A_vn-${id}`, {
-              //       on: {
-              //         instanceReady: function (evt) {
-              //           document.getElementById(evt.editor.id + '_top').style.display = 'none'
-              //         },
-              //         change: function (e) {
-              //           let index = parseInt(id)
-              //           let quizes = [...parentQuiz]
-              //           quizes[index]['A_vn'] = editor.getData()
-              //           onChange(quizes)
-              //         },
-              //       },
-              //     })
-              //   }}
-              //   name="A_vn"
-              //   id={`A_vn-${id}`}
-              //   aria-describedby="A_vn-label"
-              // >
-              //   {parentQuiz[parseInt(id)]['A_vn']
-              //     ? renderHTML(parentQuiz[parseInt(id)]['A_vn'])
-              //     : renderHTML('&nbsp;&nbsp;')}
-              // </div>
-            )}
-            {disabled && (
-              <div
-                style={{
-                  border: '1px solid #b1b7c1',
-                  backgroundColor: '#fff',
-                  paddingRight: '5px',
-                  paddingLeft: '5px',
-                  paddingTop: '5px',
-                  cursor: 'text',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
-                  height: 'auto',
-                }}
-              >
-                {parentQuiz[parseInt(id)]['A_vn']
-                  ? renderHTML(parentQuiz[parseInt(id)]['A_vn'])
-                  : renderHTML('&nbsp;&nbsp;')}
-              </div>
-            )}
-          </CInputGroup>
-        </CCol>
-        <CCol sm="3" style={{ marginTop: '5px' }}>
-          <CInputGroup>
-            <CInputGroupText id={`optionB-label-${id}`}>B (dịch)</CInputGroupText>
-            {!disabled && (
-              <CFormControl
-                type="text"
-                name="B_vn"
-                id={`B_vn-${id}`}
-                aria-describedby="B_vn-label"
-                onChange={(e) => {
-                  let index = parseInt(id)
-                  let quizes = [...parentQuiz]
-                  quizes[index]['B_vn'] = e.target.value
-                  onChange(quizes)
-                }}
-                defaultValue={parentQuiz[parseInt(id)]['B_vn']}
-              />
-              // <div
-              //   style={{
-              //     border: '1px solid #b1b7c1',
-              //     backgroundColor: '#fff',
-              //     paddingRight: '5px',
-              //     paddingLeft: '5px',
-              //     paddingTop: '5px',
-              //     cursor: 'text',
-              //     height: 'auto',
-              //     borderTopRightRadius: '5px',
-              //     borderBottomRightRadius: '5px',
-              //   }}
-              //   onClick={(e) => {
-              //     const editor = window.CKEDITOR.replace(`B_vn-${id}`, {
-              //       on: {
-              //         instanceReady: function (evt) {
-              //           document.getElementById(evt.editor.id + '_top').style.display = 'none'
-              //         },
-              //         change: function (e) {
-              //           let index = parseInt(id)
-              //           let quizes = [...parentQuiz]
-              //           quizes[index]['B_vn'] = editor.getData()
-              //           onChange(quizes)
-              //         },
-              //       },
-              //     })
-              //   }}
-              //   name="B_vn"
-              //   id={`B_vn-${id}`}
-              //   aria-describedby="B_vn-label"
-              // >
-              //   {parentQuiz[parseInt(id)]['B_vn']
-              //     ? renderHTML(parentQuiz[parseInt(id)]['B_vn'])
-              //     : renderHTML('&nbsp;&nbsp;')}
-              // </div>
-            )}
-            {disabled && (
-              <div
-                style={{
-                  border: '1px solid #b1b7c1',
-                  backgroundColor: '#fff',
-                  paddingRight: '5px',
-                  paddingLeft: '5px',
-                  paddingTop: '5px',
-                  cursor: 'text',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
-                  height: 'auto',
-                }}
-              >
-                {parentQuiz[parseInt(id)]['B_vn']
-                  ? renderHTML(parentQuiz[parseInt(id)]['B_vn'])
-                  : renderHTML('&nbsp;&nbsp;')}
-              </div>
-            )}
-          </CInputGroup>
-        </CCol>
-        <CCol sm="3" style={{ marginTop: '5px' }}>
-          <CInputGroup>
-            <CInputGroupText id={`optionC-label-${id}`}>C (dịch)</CInputGroupText>
-            {!disabled && (
-              <CFormControl
-                type="text"
-                name="C_vn"
-                id={`C_vn-${id}`}
-                aria-describedby="C_vn-label"
-                onChange={(e) => {
-                  let index = parseInt(id)
-                  let quizes = [...parentQuiz]
-                  quizes[index]['C_vn'] = e.target.value
-                  onChange(quizes)
-                }}
-                defaultValue={parentQuiz[parseInt(id)]['C_vn']}
-              />
-              // <div
-              //   style={{
-              //     border: '1px solid #b1b7c1',
-              //     backgroundColor: '#fff',
-              //     paddingRight: '5px',
-              //     paddingLeft: '5px',
-              //     paddingTop: '5px',
-              //     cursor: 'text',
-              //     height: 'auto',
-              //     borderTopRightRadius: '5px',
-              //     borderBottomRightRadius: '5px',
-              //   }}
-              //   onClick={(e) => {
-              //     const editor = window.CKEDITOR.replace(`C_vn-${id}`, {
-              //       on: {
-              //         instanceReady: function (evt) {
-              //           document.getElementById(evt.editor.id + '_top').style.display = 'none'
-              //         },
-              //         change: function (e) {
-              //           let index = parseInt(id)
-              //           let quizes = [...parentQuiz]
-              //           quizes[index]['C_vn'] = editor.getData()
-              //           onChange(quizes)
-              //         },
-              //       },
-              //     })
-              //   }}
-              //   name="C_vn"
-              //   id={`C_vn-${id}`}
-              //   aria-describedby="C_vn-label"
-              // >
-              //   {parentQuiz[parseInt(id)]['C_vn']
-              //     ? renderHTML(parentQuiz[parseInt(id)]['C_vn'])
-              //     : renderHTML('&nbsp;&nbsp;')}
-              // </div>
-            )}
-            {disabled && (
-              <div
-                style={{
-                  border: '1px solid #b1b7c1',
-                  backgroundColor: '#fff',
-                  paddingRight: '5px',
-                  paddingLeft: '5px',
-                  paddingTop: '5px',
-                  cursor: 'text',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
-                  height: 'auto',
-                }}
-              >
-                {parentQuiz[parseInt(id)]['C_vn']
-                  ? renderHTML(parentQuiz[parseInt(id)]['C_vn'])
-                  : renderHTML('&nbsp;&nbsp;')}
-              </div>
-            )}
-          </CInputGroup>
-        </CCol>
-        <CCol sm="3" style={{ marginTop: '5px' }}>
-          <CInputGroup>
-            <CInputGroupText id={`optionD-label-${id}`}>D (dịch)</CInputGroupText>
-            {!disabled && (
-              <CFormControl
-                type="text"
-                name="D_vn"
-                id={`D_vn-${id}`}
-                aria-describedby="D_vn-label"
-                onChange={(e) => {
-                  let index = parseInt(id)
-                  let quizes = [...parentQuiz]
-                  quizes[index]['D_vn'] = e.target.value
-                  onChange(quizes)
-                }}
-                defaultValue={parentQuiz[parseInt(id)]['D_vn']}
-              />
-              // <div
-              //   style={{
-              //     border: '1px solid #b1b7c1',
-              //     backgroundColor: '#fff',
-              //     paddingRight: '5px',
-              //     paddingLeft: '5px',
-              //     paddingTop: '5px',
-              //     cursor: 'text',
-              //     height: 'auto',
-              //     borderTopRightRadius: '5px',
-              //     borderBottomRightRadius: '5px',
-              //   }}
-              //   onClick={(e) => {
-              //     const editor = window.CKEDITOR.replace(`D_vn-${id}`, {
-              //       on: {
-              //         instanceReady: function (evt) {
-              //           document.getElementById(evt.editor.id + '_top').style.display = 'none'
-              //         },
-              //         change: function (e) {
-              //           let index = parseInt(id)
-              //           let quizes = [...parentQuiz]
-              //           quizes[index]['D_vn'] = editor.getData()
-              //           onChange(quizes)
-              //         },
-              //       },
-              //     })
-              //   }}
-              //   name="D_vn"
-              //   id={`D_vn-${id}`}
-              //   aria-describedby="D_vn-label"
-              // >
-              //   {parentQuiz[parseInt(id)]['D_vn']
-              //     ? renderHTML(parentQuiz[parseInt(id)]['D_vn'])
-              //     : renderHTML('&nbsp;&nbsp;')}
-              // </div>
-            )}
-            {disabled && (
-              <div
-                style={{
-                  border: '1px solid #b1b7c1',
-                  backgroundColor: '#fff',
-                  paddingRight: '5px',
-                  paddingLeft: '5px',
-                  paddingTop: '5px',
-                  cursor: 'text',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
-                  height: 'auto',
-                }}
-              >
-                {parentQuiz[parseInt(id)]['D_vn']
-                  ? renderHTML(parentQuiz[parseInt(id)]['D_vn'])
                   : renderHTML('&nbsp;&nbsp;')}
               </div>
             )}
@@ -869,19 +351,16 @@ QuizItem.propTypes = {
 const ReadingBoard = (props) => {
   const pathName = props.location.pathname
   const viewAction = getViewAction(pathName)
-  const boardId = viewAction === 'add' ? undefined : getLastPartFromPathName(pathName)
+  const itemId = viewAction === 'add' ? undefined : getLastPartFromPathName(pathName)
   const [redirectTo, setRedirecTo] = useState({ isRedirected: false, redirectedPath: '' })
   const [title, setTitle] = useState('')
-  const [level, setLevel] = useState('')
+  const [level, setLevel] = useState(LEVEL.N5)
   const [free, setFree] = useState(1)
-  const [content, setContent] = useState('')
-  const [contentVn, setContentVn] = useState('')
-  const [tooltipContent, setTooltipContent] = useState('')
+  const [type, setType] = useState(testTypes.TUVUNG)
   const [saving, setSaving] = useState(false)
   const [visible, setVisible] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [quiz, setQuiz] = useState([])
-  const [dictionary, setDictionary] = useState([])
   const addQuiz = () => {
     const data = {
       question: '',
@@ -890,18 +369,13 @@ const ReadingBoard = (props) => {
       C: '',
       D: '',
       answer: 'A',
-      question_vn: '',
-      A_vn: '',
-      B_vn: '',
-      C_vn: '',
-      D_vn: '',
     }
     setQuiz([...quiz, data])
   }
   const savingCallback = (res) => {
     setSaving(false)
     if (res && res.code !== 400 && res.code !== 403 && res.code !== 401 && res.code !== 500) {
-      toast.success(`Lưu thành công bài học`, {
+      toast.success(`Lưu thành công bài thi`, {
         position: 'top-right',
         autoClose: 2500,
         hideProgressBar: true,
@@ -912,7 +386,7 @@ const ReadingBoard = (props) => {
       })
       setRedirecTo({
         isRedirected: true,
-        redirectedPath: `/reading-boards/getBoard/${res.id}`,
+        redirectedPath: `/sub-tests/getSubTest/${res.id}`,
       })
     } else {
       if (res.code === 400) {
@@ -926,7 +400,7 @@ const ReadingBoard = (props) => {
           progress: undefined,
         })
       } else
-        toast.error(`Có lỗi xảy ra khi tạo bài học”`, {
+        toast.error(`Có lỗi xảy ra khi tạo bài thi”`, {
           position: 'top-right',
           autoClose: 2500,
           hideProgressBar: true,
@@ -940,22 +414,7 @@ const ReadingBoard = (props) => {
   const isQuizValidated = () => {
     let valid = true
     quiz.forEach((item) => {
-      if (
-        !(
-          item.question &&
-          item.A &&
-          item.B &&
-          item.C &&
-          item.D &&
-          item.answer &&
-          item.question_vn &&
-          item.A_vn &&
-          item.B_vn &&
-          item.C_vn &&
-          item.D_vn
-        )
-      )
-        valid = false
+      if (!(item.question && item.A && item.B && item.C && item.D && item.answer)) valid = false
     })
     return valid
   }
@@ -964,73 +423,27 @@ const ReadingBoard = (props) => {
     const clone = quiz.map((item) => {
       let newItem = item
       newItem.question = htmlEntityEncode(newItem.question)
-      // newItem.question_vn = htmlEntityEncode(newItem.question_vn)
-      newItem.A = htmlEntityEncode(newItem.A)
-      newItem.B = htmlEntityEncode(newItem.B)
-      newItem.C = htmlEntityEncode(newItem.C)
-      newItem.D = htmlEntityEncode(newItem.D)
-      // newItem.A_vn = htmlEntityEncode(newItem.A_vn)
-      // newItem.B_vn = htmlEntityEncode(newItem.B_vn)
-      // newItem.C_vn = htmlEntityEncode(newItem.C_vn)
-      // newItem.D_vn = htmlEntityEncode(newItem.D_vn)
       return newItem
     })
     return clone
   }
 
-  const transformTooltipContentToSave = () => {
-    let length = dictionary.length
-    if (length > 0) {
-      let content = {}
-      for (let i = 0; i < length; i++) {
-        const wrapper = document.createElement('div')
-        let innerHTML = dictionary[i]['sentence']
-        let trans = dictionary[i]['trans']
-        let highlight = dictionary[i]['highlight']
-        innerHTML = innerHTML.replace(
-          "class=''",
-          `class='dictionary-tooltip ${highlight ? 'highlight-tooltip' : ''}' data-tooltip='${
-            _.isEmpty(trans) || trans === undefined ? '' : trans
-          }'`,
-        )
-        wrapper.innerHTML = innerHTML
-        const span = wrapper.childNodes[0]
-        const paragraphIndex = span.getAttribute('data-paragraph-index')
-        let sentence =
-          _.isEmpty(content[paragraphIndex]) || content[paragraphIndex] === undefined
-            ? ''
-            : content[paragraphIndex]
-        sentence += innerHTML
-        content[paragraphIndex] = sentence
-      }
-      let valuesArray = []
-      valuesArray = Object.values(content)
-      let result = ''
-      valuesArray.forEach((item) => {
-        result += `<p class="paragraph-dictionary-tooltip">${item}</p>`
-      })
-      return result
-    }
-  }
   const handleSubmit = () => {
-    if (isQuizValidated()) {
+    if (isQuizValidated() && title.length > 0) {
       setSaving(true)
       const quizToSave = transformQuizToSave()
-      let tooltipContent = transformTooltipContentToSave()
-      let boardBody = {
+      let data = {
         title,
         level,
         free,
         quiz: quizToSave,
-        content: htmlEntityEncode(content),
-        content_vn: contentVn,
+        type,
       }
-      if (!_.isEmpty(dictionary)) boardBody.tooltipContent = htmlEntityEncode(tooltipContent)
       viewAction === 'add'
-        ? readingBoardService.createBoard(boardBody).then(savingCallback)
-        : readingBoardService.updateBoard(boardBody, boardId).then(savingCallback)
+        ? subTestService.createItem(data).then(savingCallback)
+        : subTestService.updateItem(data, itemId).then(savingCallback)
     } else {
-      toast.error(`Vui lòng không để trống ô nào trong câu hỏi trắc nghiệm`, {
+      toast.error(`Hoàn thành các trường để trống`, {
         position: 'top-right',
         autoClose: 5000,
         hideProgressBar: true,
@@ -1043,11 +456,11 @@ const ReadingBoard = (props) => {
   }
   /* Load item */
   useEffect(() => {
-    if (boardId) {
-      readingBoardService.getBoard(boardId).then((res) => {
+    if (itemId) {
+      subTestService.getItem(itemId).then((res) => {
         if (res) {
           if (res.status === 401 || res.status === 404 || res.status === 400) {
-            toast.error(`Bài học không tồn tại`, {
+            toast.error(`Bài thi không tồn tại`, {
               position: 'top-right',
               autoClose: 3000,
               hideProgressBar: true,
@@ -1056,28 +469,17 @@ const ReadingBoard = (props) => {
               draggable: true,
               progress: undefined,
             })
-            setRedirecTo({ isRedirected: true, redirectedPath: '/reading-boards' })
+            setRedirecTo({ isRedirected: true, redirectedPath: '/sub-tests' })
           } else {
             setFree(res.free)
             setTitle(res.title)
             setLevel(res.level)
-            setContent(res.content ? htmlEntityDecode(res.content) : '')
-            setContentVn(res.content_vn)
-            setTooltipContent(res.tooltipContent ? htmlEntityDecode(res.tooltipContent) : '')
+            setType(res.type)
             let initialQuizes = res.quiz
             let clonedQuizes = [...initialQuizes]
             let resultQuizes = clonedQuizes.map(function (item) {
               let newItem = { ...item }
               newItem.question = htmlEntityDecode(newItem.question)
-              // newItem.question_vn = htmlEntityDecode(newItem.question_vn)
-              newItem.A = htmlEntityDecode(newItem.A)
-              newItem.B = htmlEntityDecode(newItem.B)
-              newItem.C = htmlEntityDecode(newItem.C)
-              newItem.D = htmlEntityDecode(newItem.D)
-              // newItem.A_vn = htmlEntityDecode(newItem.A_vn)
-              // newItem.B_vn = htmlEntityDecode(newItem.B_vn)
-              // newItem.C_vn = htmlEntityDecode(newItem.C_vn)
-              // newItem.D_vn = htmlEntityDecode(newItem.D_vn)
               return newItem
             })
             setQuiz(resultQuizes)
@@ -1085,67 +487,7 @@ const ReadingBoard = (props) => {
         }
       })
     }
-  }, [boardId])
-
-  useEffect(() => {
-    if (!_.isEmpty(content) && !_.isEmpty(contentVn)) {
-      const buildDictionary = async () => {
-        let sentences = []
-        let trans = []
-
-        // handle sentences
-        let paragraphs = content.split('\n')
-        paragraphs = paragraphs.filter((item) => !_.isEmpty(item))
-        if (paragraphs.length) {
-          const transformedParagraphs = await Promise.all(
-            paragraphs.map(async (p, index) => {
-              const paragraph = extractTextWithFurigana(p)
-              return paragraph
-            }),
-          ).then((result) => result)
-          let sentenceIndex = 0
-          for (let i = 0; i < transformedParagraphs.length; i++) {
-            let paragraphIndex = i
-            let paragraph = transformedParagraphs[paragraphIndex]
-            // xử lý tách câu
-            let arrayOfSentences = paragraph.split('。')
-            arrayOfSentences = arrayOfSentences.filter((item) => !_.isEmpty(item))
-            for (let i = 0; i < arrayOfSentences.length; i++) {
-              let sentence = arrayOfSentences[i]
-              if (!_.isEmpty(sentence)) {
-                let newSentence = `<span data-sentence-index='${sentenceIndex}' data-paragraph-index='${paragraphIndex}' class=''>${sentence}。</span>`
-                sentences.push(newSentence)
-                sentenceIndex++
-              }
-            }
-          }
-        }
-        // handle sentences
-        trans = contentVn.replace(/\n/g, '')
-        trans = trans.split('.')
-        trans = trans.filter((item) => !_.isEmpty(item))
-        if (trans.length && paragraphs.length && trans.length === sentences.length) {
-          // build dictionary
-          let dict = sentences.map((sentence, index) => {
-            return { sentence: sentence, trans: trans[index] }
-          })
-          setDictionary(dict)
-        } else {
-          toast.error(`Số câu tiếng Nhật và số câu bản dịch không trùng nhau. Vui lòng xem lại`, {
-            position: 'top-right',
-            autoClose: 2500,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          })
-          setDictionary([])
-        }
-      }
-      buildDictionary()
-    } else setDictionary([])
-  }, [content, contentVn])
+  }, [itemId])
 
   if (redirectTo.isRedirected) {
     return <Redirect to={redirectTo.redirectedPath} />
@@ -1180,7 +522,7 @@ const ReadingBoard = (props) => {
                   onChange={(e) => {
                     setLevel(e.target.value)
                   }}
-                  id="searchByLevel"
+                  id="level"
                   disabled={viewAction === 'get'}
                   value={level}
                 >
@@ -1192,8 +534,30 @@ const ReadingBoard = (props) => {
                 </CFormSelect>
               </CCol>
             </CRow>
+            <CRow className="mb-3">
+              <CFormLabel htmlFor="level" className="col-sm-2 col-form-label">
+                Phần thi
+              </CFormLabel>
+              <CCol sm="10">
+                <CFormSelect
+                  aria-label="Type"
+                  onChange={(e) => {
+                    setType(e.target.value)
+                  }}
+                  id="type"
+                  disabled={viewAction === 'get'}
+                  value={type}
+                >
+                  <option value={testTypes.TUVUNG}>Từ vựng</option>
+                  <option value={testTypes.CHUHAN}>Chữ Hán</option>
+                  <option value={testTypes.NGUPHAP}>Ngữ pháp</option>
+                  <option value={testTypes.TIMNGHIA}>Tìm nghĩa</option>
+                  <option value={testTypes.GHEPCAU}>Ghép câu</option>
+                </CFormSelect>
+              </CCol>
+            </CRow>
             <fieldset className="row mb-3">
-              <legend className="col-form-label col-sm-2 pt-0">Loại bài</legend>
+              <legend className="col-form-label col-sm-2 pt-0">Phí</legend>
               <CCol sm="10">
                 <CFormCheck
                   id="free"
@@ -1203,108 +567,8 @@ const ReadingBoard = (props) => {
                 />
               </CCol>
             </fieldset>
-            <CRow className="mb-3">
-              <CFormLabel htmlFor="content" className="col-sm-2 col-form-label">
-                Bài đọc
-              </CFormLabel>
-              <CCol sm="10">
-                {viewAction !== 'get' && (
-                  <div
-                    id="content"
-                    style={{
-                      border: '1px solid grey',
-                      borderRadius: '5px 5px 5px 5px',
-                      backgroundColor: '#fff',
-                      paddingRight: '5px',
-                      paddingLeft: '5px',
-                      paddingTop: '5px',
-                      marginTop: '7px',
-                      cursor: 'text',
-                      minHeight: 200,
-                    }}
-                    onClick={(e) => {
-                      const editor = window.CKEDITOR.replace('content', {
-                        on: {
-                          // instanceReady: function (evt) {
-                          //   document.getElementById(evt.editor.id + '_top').style.display = 'none'
-                          // },
-                          change: function (e) {
-                            // xử lý data
-                            let content = editor.getData()
-                            setContent(content)
-                          },
-                        },
-                      })
-                    }}
-                  >
-                    {content ? renderHTML(content) : renderHTML('&nbsp;&nbsp;')}
-                  </div>
-                )}
-                {viewAction === 'get' && (
-                  <div
-                    style={{
-                      border: '1px solid grey',
-                      borderRadius: '5px 5px 5px 5px',
-                      backgroundColor: '#D8DBE0',
-                      paddingRight: '5px',
-                      paddingLeft: '5px',
-                      paddingTop: '5px',
-                      marginTop: '7px',
-                    }}
-                  >
-                    {content ? renderHTML(content) : renderHTML('&nbsp;&nbsp;')}
-                  </div>
-                )}
-              </CCol>
-            </CRow>
-            <CRow className="mb-3">
-              <CFormLabel htmlFor="contentVn" className="col-sm-2 col-form-label">
-                Bài dịch
-              </CFormLabel>
-              <CCol sm="10">
-                {viewAction !== 'get' && (
-                  <CFormControl
-                    type="text"
-                    name="contentVn"
-                    id="contentVn"
-                    placeholder="Dịch"
-                    component="textarea"
-                    rows="8"
-                    onChange={(e) => {
-                      const { value } = e.target
-                      setContentVn(value)
-                    }}
-                  />
-                )}
-              </CCol>
-              {viewAction === 'get' && (
-                <div
-                  style={{
-                    border: '1px solid #b1b7c1',
-                    backgroundColor: '#fff',
-                    paddingRight: '5px',
-                    paddingLeft: '5px',
-                    paddingTop: '5px',
-                    cursor: 'text',
-                    borderTopRightRadius: '5px',
-                    borderBottomRightRadius: '5px',
-                    width: 'auto',
-                  }}
-                >
-                  {contentVn}
-                </div>
-              )}
-            </CRow>
-            {!_.isEmpty(dictionary) && (
-              <CRow className="mb-3">
-                <CFormLabel className="col-sm-2 col-form-label">Dịch nghĩa</CFormLabel>
-                <CCol sm="12">
-                  <DictionaryForm dictionary={dictionary} onChange={setDictionary} />
-                </CCol>
-              </CRow>
-            )}
             <CRow>
-              <CFormLabel className="col-sm-2 col-form-label">Bài tập củng cố</CFormLabel>
+              <CFormLabel className="col-sm-2 col-form-label">Câu hỏi</CFormLabel>
               <CCol sm="12">
                 <Exercise quiz={quiz} onQuizItemChange={setQuiz} disabled={viewAction === 'get'} />
               </CCol>
@@ -1316,7 +580,6 @@ const ReadingBoard = (props) => {
                     <CButtonGroup>
                       <CButton
                         onClick={handleSubmit}
-                        disabled={!title.length}
                         style={{ color: 'white', marginRight: '5px' }}
                       >
                         LƯU BÀI HỌC
@@ -1340,7 +603,7 @@ const ReadingBoard = (props) => {
                       onClick={() => {
                         setRedirecTo({
                           isRedirected: true,
-                          redirectedPath: `/reading-boards/editBoard/${boardId}`,
+                          redirectedPath: `/sub-tests/editSubTest/${itemId}`,
                         })
                       }}
                     >
@@ -1378,7 +641,7 @@ const ReadingBoard = (props) => {
                           color="danger"
                           onClick={() => {
                             setDeleting(true)
-                            readingBoardService.deleteBoard(boardId).then((res) => {
+                            subTestService.deleteItem(itemId).then((res) => {
                               setDeleting(false)
                             })
                             toast.success(`Xoá thành công`, {
@@ -1390,7 +653,7 @@ const ReadingBoard = (props) => {
                               draggable: true,
                               progress: undefined,
                             })
-                            setRedirecTo({ isRedirected: true, redirectedPath: '/reading-boards' })
+                            setRedirecTo({ isRedirected: true, redirectedPath: '/sub-tests' })
                           }}
                         >
                           XOÁ
@@ -1410,7 +673,7 @@ const ReadingBoard = (props) => {
                     onClick={() => {
                       setRedirecTo({
                         isRedirected: true,
-                        redirectedPath: `/reading-boards/getBoard/webview/${boardId}`,
+                        redirectedPath: `/sub-tests/getSubTest/webview/${itemId}`,
                       })
                     }}
                   >

@@ -127,7 +127,7 @@ const ReadingBoards = () => {
                   lg="3"
                   style={{ cursor: 'pointer' }}
                   onClick={() => {
-                    setRedirect({ redirect: true, path: `/sub-tests/getItem/${item.id}` })
+                    setRedirect({ redirect: true, path: `/sub-tests/getSubTest/${item.id}` })
                   }}
                 >
                   <CCard style={{ width: '18rem', marginBottom: '5px' }}>

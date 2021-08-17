@@ -463,6 +463,12 @@ const _nav = [
     anchor: 'Danh sách bài thi theo phần',
     to: '/sub-tests',
   },
+  {
+    _component: 'CNavItem',
+    as: NavLink,
+    anchor: 'Thêm bài',
+    to: '/sub-tests/addSubTest',
+  },
 ]
 
 export default _nav
