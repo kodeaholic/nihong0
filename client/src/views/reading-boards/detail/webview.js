@@ -48,21 +48,6 @@ const ReadingBoardWebView = (props) => {
     let clone = { ...answeredQuiz }
     clone[index] = value
     setAnsweredQuiz(clone)
-    // const correctOption = quiz[index].answer
-    // const colorForAnsweredOption = value === correctOption ? '#65DD57' : '#ff0000'
-    // const colorForCorrectAnswer = '#65DD57'
-    // const answeredLabel = document.querySelector(`label[for='quiz-${index}-${value}']`)
-    // const correctLabel = document.querySelector(`label[for='quiz-${index}-${correctOption}']`)
-    // if (correctLabel) {
-    //   allDescendants(correctLabel)
-    //   correctLabel.style.color = colorForCorrectAnswer
-    //   correctLabel.style.fontWeight = 'bold'
-    // }
-    // if (answeredLabel) {
-    //   allDescendants(answeredLabel)
-    //   answeredLabel.style.color = colorForAnsweredOption
-    //   answeredLabel.style.fontWeight = 'bold'
-    // }
   }
   /* Load item */
   useEffect(() => {
@@ -200,61 +185,13 @@ const ReadingBoardWebView = (props) => {
         <Loader loading={loading} />
         {!loading && (
           <div className="page">
-            <header tabIndex="0"> {`Luyện đọc ${level} - ${title}`} </header>
-            {/* {loading && (
-            <main>
-              <CSpinner />
-            </main>
-          )} */}
+            {/* <header tabIndex="0"> {`Luyện đọc ${level} - ${title}`} </header> */}
             {true && (
               <>
-                <div id="nav-container">
-                  <div className="bg"> </div>
-                  <div className="button" tabIndex="0" id="menuButton">
-                    <span className="icon-bar"> </span> <span className="icon-bar"> </span>
-                    <span className="icon-bar"> </span>
-                  </div>
-                  <div id="nav-content" tabIndex="0">
-                    <div id="toggles">
-                      <div className="switch-wrapper">
-                        <div className="switch">
-                          <input
-                            type="checkbox"
-                            name="checkbox2"
-                            id="checkbox2"
-                            className="ios-toggle"
-                            defaultChecked={showFurigana}
-                            onChange={() => {
-                              setShowFurigana(!showFurigana)
-                            }}
-                          />
-                          <label htmlFor="checkbox2" className="checkbox-label" />
-                        </div>
-                        <div className="switch-label">Hiển thị cách đọc</div>
-                      </div>
-                      <div className="switch-wrapper">
-                        <div className="switch">
-                          <input
-                            type="checkbox"
-                            name="checkbox1"
-                            id="checkbox1"
-                            className="ios-toggle"
-                            defaultChecked={showTranslator}
-                            onChange={(e) => {
-                              // if (showTranslator) {
-                              //   window.Alert7.alert('Đã tắt dịch')
-                              // } else window.Alert7.alert('Chạm để dịch')
-                              setShowTranslator(!showTranslator)
-                            }}
-                          />
-                          <label htmlFor="checkbox1" className="checkbox-label" />
-                        </div>
-                        <div className="switch-label">Chạm vào để dịch</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
                 <main>
+                  <p
+                    style={{ fontFamily: "'Shippori Mincho', serif", textAlign: 'center' }}
+                  >{`${title}`}</p>
                   <div className="content">{renderHTML(tooltipContent)}</div>
                   <hr />
                   <div className="quiz-container">
@@ -337,6 +274,43 @@ const ReadingBoardWebView = (props) => {
                     })}
                   </div>
                 </main>
+                <div id="toggles">
+                  <div className="switch-wrapper">
+                    <div className="switch">
+                      <input
+                        type="checkbox"
+                        name="checkbox2"
+                        id="checkbox2"
+                        className="ios-toggle"
+                        defaultChecked={showFurigana}
+                        onChange={() => {
+                          setShowFurigana(!showFurigana)
+                        }}
+                      />
+                      <label htmlFor="checkbox2" className="checkbox-label" />
+                    </div>
+                    <div className="switch-label">Hiện cách đọc</div>
+                  </div>
+                  <div className="switch-wrapper">
+                    <div className="switch">
+                      <input
+                        type="checkbox"
+                        name="checkbox1"
+                        id="checkbox1"
+                        className="ios-toggle"
+                        defaultChecked={showTranslator}
+                        onChange={(e) => {
+                          // if (showTranslator) {
+                          //   window.Alert7.alert('Đã tắt dịch')
+                          // } else window.Alert7.alert('Chạm để dịch')
+                          setShowTranslator(!showTranslator)
+                        }}
+                      />
+                      <label htmlFor="checkbox1" className="checkbox-label" />
+                    </div>
+                    <div className="switch-label">Chạm để dịch</div>
+                  </div>
+                </div>
               </>
             )}
           </div>
