@@ -101,10 +101,11 @@ const SubTestWebView = (props) => {
                     }}
                   >{`${title}`}</p>
                   <div className="content">{renderHTML(content)}</div>
-                  <hr />
+                  <hr style={{ height: '1px' }} />
                   <div className="quiz-container">
                     {quiz.map((item, index) => {
                       let question = item.question
+                      question = question.replace('<p>', `<p>${index + 1} 、`)
                       return (
                         <div className="quiz-item-container" key={`quiz-${index}`}>
                           <span
@@ -115,23 +116,7 @@ const SubTestWebView = (props) => {
                               fontWeight: 'bold !important',
                             }}
                           >
-                            <span
-                              style={{
-                                fontWeight: 'heavy !important',
-                                display: '-moz-inline-block',
-                                display: '-moz-inline-box',
-                                display: 'inline-block',
-                              }}
-                            >{`${index + 1} 、`}</span>
-                            <span
-                              style={{
-                                display: '-moz-inline-block',
-                                display: '-moz-inline-box',
-                                display: 'inline-block',
-                              }}
-                            >
-                              {renderHTML(question)}
-                            </span>
+                            {renderHTML(question)}
                           </span>
                           <CFormCheck
                             type="radio"
