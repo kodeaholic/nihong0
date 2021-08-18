@@ -7,9 +7,9 @@
     word-break: break-word;
 }
 
-html {
+* {
     scroll-behavior: smooth;
-    font-family: 'Kosugi Maru', sans-serif;
+    font-family: 'Source Sans Pro', serif;
 }
 
 * {
@@ -63,7 +63,7 @@ header {
     opacity: 0;
     transition: 0.3s;
     background: #000;
-    font-family: 'Shippori Mincho', serif;
+    font-family: 'Source Sans Pro', serif;
 }
 
 #nav-container:focus-within .bg {
@@ -140,7 +140,7 @@ header {
     transition: transform 0.3s;
     will-change: transform;
     contain: paint;
-    font-family: 'Shippori Mincho', serif;
+    font-family: 'Source Sans Pro', serif;
 }
 
 #nav-content ul {
@@ -184,7 +184,7 @@ header {
 }
 
 main {
-    font-family: 'Shippori Mincho', serif;
+    font-family: 'Source Sans Pro', serif;
     padding: 45px 10px 80px;
     height: calc(100vh - 60px);
     display: flex;
@@ -193,7 +193,7 @@ main {
     overflow-y: scroll;
 }
 .content {
-    font-family: 'Shippori Mincho', serif;
+    font-family: 'Source Sans Pro', serif;
     font-weight: normal;
     line-height: 220%;
     word-break: break-word;
@@ -352,9 +352,9 @@ span[data-sentence-index] {
 }
 
 /*Quiz*/
-.form-check-input:disabled[type=radio] + label > span[data-answer="false"] * {
+.form-check-input:disabled[type=radio] + label > span[data-answer="false"] {
     color: red !important;
 }
-.form-check-input:disabled[type=radio] + label > span[data-answer="true"] * {
+.form-check-input:disabled[type=radio] + label > span[data-answer="true"] {
     color: #65DD57 !important;
 }

@@ -798,7 +798,7 @@ const ReadingBoard = (props) => {
                 </CCol>
               </CRow>
             )}
-            {/* {viewAction === 'get' && (
+            {viewAction === 'get' && (
               <CRow>
                 <CCol className="col-sm-3">
                   <CButton
@@ -815,7 +815,7 @@ const ReadingBoard = (props) => {
                   </CButton>
                 </CCol>
               </CRow>
-            )} */}
+            )}
           </CForm>
         </CRow>
       </>
