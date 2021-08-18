@@ -4,7 +4,7 @@ export const testTypes = {
   NGUPHAP: 3,
   TIMNGHIA: 4,
   GHEPCAU: 5,
-  ALL: 0,
+  ALL: 1000,
 }
 
 export const getTestTypeName = (type) => {
@@ -16,9 +16,9 @@ export const getTestTypeName = (type) => {
     case 3:
       return 'Ngữ pháp'
     case 4:
-      return 'Tìm nghĩa'
+      return 'Tìm đúng nghĩa'
     case 5:
-      return 'Ghép câu'
+      return 'Ghép thành câu'
     default:
       return 'Không xác định'
   }

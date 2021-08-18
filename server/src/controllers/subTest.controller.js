@@ -40,7 +40,7 @@ const findTestByQuestion = catchAsync(async (req, res) => {
     if (item) {
         res.send(item);
     } else {
-        throw new ApiError(httpStatus.NOT_FOUND, 'Mục không tồn tại hoặc đã bị xoá');
+        res.send({code: 404});
     }
 });
 

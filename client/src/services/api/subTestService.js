@@ -89,10 +89,8 @@ async function findByQuestion(data) {
     body: JSON.stringify(data),
   }
 
-  const response = await fetch(`${config.apiEndpoint}/sub-tests/findByQuestion`, requestOptions)
-  const item = await response.json()
-  if (response.status === 200 && response.ok) return item
-  else {
-    return {}
-  }
+  let response = await fetch(`${config.apiEndpoint}/sub-tests/findByQuestion`, requestOptions)
+  response = await response.json()
+  if (response.code === 404) return false
+  else return response
 }

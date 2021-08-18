@@ -28,11 +28,11 @@ import { subTestService } from 'src/services/api/subTestService'
 import _ from 'lodash'
 import renderHTML from 'react-render-html'
 import { htmlEntityEncode, htmlEntityDecode } from '../../../helpers/htmlentities'
-import { testTypes } from 'src/constants/test.constants'
+import { getTestTypeName, testTypes } from 'src/constants/test.constants'
 import { LEVEL } from 'src/constants/level.constants'
 
 const Exercise = (props) => {
-  const { quiz, onQuizItemChange, disabled } = props
+  const { quiz, onQuizItemChange, disabled, testId } = props
   return (
     <>
       {quiz.map((item, index) => {
@@ -44,6 +44,7 @@ const Exercise = (props) => {
             parentQuiz={quiz}
             onChange={onQuizItemChange}
             disabled={disabled}
+            testId={testId}
           />
         )
       })}
@@ -54,9 +55,11 @@ Exercise.propTypes = {
   quiz: PropTypes.array,
   onQuizItemChange: PropTypes.func,
   disabled: PropTypes.bool,
+  testId: PropTypes.string,
 }
 const QuizItem = (props) => {
-  let { data, id, parentQuiz, onChange, disabled } = props
+  const [duplicated, setDuplicated] = useState('')
+  let { data, id, parentQuiz, onChange, disabled, testId } = props
   if (_.isEmpty(data))
     data = {
       question: '',
@@ -87,7 +90,7 @@ const QuizItem = (props) => {
   }
 
   return (
-    <div className="quiz-item-wrapper">
+    <div className={`quiz-item-wrapper ${duplicated}`}>
       <CRow>
         <CCol sm="12" style={{ marginTop: '0px' }}>
           <CInputGroup>
@@ -101,19 +104,78 @@ const QuizItem = (props) => {
                   paddingLeft: '5px',
                   paddingTop: '5px',
                   cursor: 'text',
-                  width: 'auto',
+                  width: '80%',
                 }}
                 onClick={(e) => {
                   const editor = window.CKEDITOR.replace(`question-${id}`, {
                     on: {
-                      instanceReady: function (evt) {
-                        document.getElementById(evt.editor.id + '_top').style.display = 'none'
-                      },
-                      change: function (e) {
+                      // instanceReady: function (evt) {
+                      //   document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                      // },
+                      change: async function (e) {
                         let index = parseInt(id)
                         let quizes = [...parentQuiz]
-                        quizes[index]['question'] = editor.getData()
-                        onChange(quizes)
+                        const data = editor.getData()
+                        // check if exists in current test
+                        if (data) {
+                          let found = _.findIndex(quizes, function (quiz) {
+                            return quiz.question === data
+                          })
+                          if (found >= 0) {
+                            if (found === index) {
+                              quizes[index]['question'] = data
+                              onChange(quizes)
+                              setDuplicated('')
+                            } else {
+                              toast.error(`Câu ${index + 1} trùng câu ${found + 1}`, {
+                                position: 'top-right',
+                                autoClose: 5000,
+                                hideProgressBar: true,
+                                closeOnClick: true,
+                                pauseOnHover: true,
+                                draggable: true,
+                                progress: undefined,
+                              })
+                              quizes[index]['question'] = ''
+                              onChange(quizes)
+                              setDuplicated('duplicated')
+                            }
+                          } else {
+                            // check in DB
+                            const condition = {
+                              question: htmlEntityEncode(data),
+                            }
+                            if (testId) condition.excludedId = testId
+                            const test = await subTestService.findByQuestion(condition)
+                            if (test) {
+                              toast.error(
+                                `Câu ${index + 1} đã có trong cơ sở dữ liệu. Xem lại ${
+                                  test.title
+                                } - ${test.level} - ${getTestTypeName(test.type)}`,
+                                {
+                                  position: 'top-right',
+                                  autoClose: 8000,
+                                  hideProgressBar: true,
+                                  closeOnClick: true,
+                                  pauseOnHover: true,
+                                  draggable: true,
+                                  progress: undefined,
+                                },
+                              )
+                              quizes[index]['question'] = ''
+                              onChange(quizes)
+                              setDuplicated('duplicated')
+                            } else {
+                              quizes[index]['question'] = data
+                              onChange(quizes)
+                              setDuplicated('')
+                            }
+                          }
+                        } else {
+                          quizes[index]['question'] = data
+                          onChange(quizes)
+                          setDuplicated('')
+                        }
                       },
                     },
                   })
@@ -124,7 +186,7 @@ const QuizItem = (props) => {
               >
                 {parentQuiz[parseInt(id)]['question']
                   ? renderHTML(parentQuiz[parseInt(id)]['question'])
-                  : renderHTML('&nbsp;&nbsp;')}
+                  : ''}
               </div>
             )}
             {disabled && (
@@ -138,7 +200,8 @@ const QuizItem = (props) => {
                   cursor: 'text',
                   borderTopRightRadius: '5px',
                   borderBottomRightRadius: '5px',
-                  width: 'auto',
+                  width: '90%',
+                  height: 'auto',
                 }}
               >
                 {parentQuiz[parseInt(id)]['question']
@@ -161,7 +224,9 @@ const QuizItem = (props) => {
       <CRow>
         <CCol sm="3" style={{ marginTop: '5px' }}>
           <CInputGroup>
-            <CInputGroupText id={`optionA-label-${id}`}>A</CInputGroupText>
+            <CInputGroupText id={`optionA-label-${id}`} style={{ width: '15%' }}>
+              A
+            </CInputGroupText>
             {!disabled && (
               <CFormControl
                 type="text"
@@ -189,18 +254,19 @@ const QuizItem = (props) => {
                   borderTopRightRadius: '5px',
                   borderBottomRightRadius: '5px',
                   height: 'auto',
+                  width: '85%',
                 }}
               >
-                {parentQuiz[parseInt(id)]['A']
-                  ? renderHTML(parentQuiz[parseInt(id)]['A'])
-                  : renderHTML('&nbsp;&nbsp;')}
+                {parentQuiz[parseInt(id)]['A'] ? renderHTML(parentQuiz[parseInt(id)]['A']) : ''}
               </div>
             )}
           </CInputGroup>
         </CCol>
         <CCol sm="3" style={{ marginTop: '5px' }}>
           <CInputGroup>
-            <CInputGroupText id={`optionB-label-${id}`}>B </CInputGroupText>
+            <CInputGroupText id={`optionB-label-${id}`} style={{ width: '15%' }}>
+              B
+            </CInputGroupText>
             {!disabled && (
               <CFormControl
                 type="text"
@@ -228,18 +294,19 @@ const QuizItem = (props) => {
                   borderTopRightRadius: '5px',
                   borderBottomRightRadius: '5px',
                   height: 'auto',
+                  width: '85%',
                 }}
               >
-                {parentQuiz[parseInt(id)]['B']
-                  ? renderHTML(parentQuiz[parseInt(id)]['B'])
-                  : renderHTML('&nbsp;&nbsp;')}
+                {parentQuiz[parseInt(id)]['B'] ? renderHTML(parentQuiz[parseInt(id)]['B']) : ''}
               </div>
             )}
           </CInputGroup>
         </CCol>
         <CCol sm="3" style={{ marginTop: '5px' }}>
           <CInputGroup>
-            <CInputGroupText id={`optionC-label-${id}`}>C </CInputGroupText>
+            <CInputGroupText id={`optionC-label-${id}`} style={{ width: '15%' }}>
+              C
+            </CInputGroupText>
             {!disabled && (
               <CFormControl
                 type="text"
@@ -267,18 +334,19 @@ const QuizItem = (props) => {
                   borderTopRightRadius: '5px',
                   borderBottomRightRadius: '5px',
                   height: 'auto',
+                  width: '85%',
                 }}
               >
-                {parentQuiz[parseInt(id)]['C']
-                  ? renderHTML(parentQuiz[parseInt(id)]['C'])
-                  : renderHTML('&nbsp;&nbsp;')}
+                {parentQuiz[parseInt(id)]['C'] ? renderHTML(parentQuiz[parseInt(id)]['C']) : ''}
               </div>
             )}
           </CInputGroup>
         </CCol>
         <CCol sm="3" style={{ marginTop: '5px' }}>
           <CInputGroup>
-            <CInputGroupText id={`optionD-label-${id}`}>D </CInputGroupText>
+            <CInputGroupText id={`optionD-label-${id}`} style={{ width: '15%' }}>
+              D
+            </CInputGroupText>
             {!disabled && (
               <CFormControl
                 type="text"
@@ -306,20 +374,20 @@ const QuizItem = (props) => {
                   borderTopRightRadius: '5px',
                   borderBottomRightRadius: '5px',
                   height: 'auto',
+                  width: '85%',
                 }}
               >
-                {parentQuiz[parseInt(id)]['D']
-                  ? renderHTML(parentQuiz[parseInt(id)]['D'])
-                  : renderHTML('&nbsp;&nbsp;')}
+                {parentQuiz[parseInt(id)]['D'] ? renderHTML(parentQuiz[parseInt(id)]['D']) : ''}
               </div>
             )}
           </CInputGroup>
         </CCol>
-        <CCol sm="1" style={{ marginTop: '5px', marginBottom: '0px' }}>
+        {/* <CCol sm="3" style={{ marginTop: '5px', marginBottom: '0px' }}>
           <CFormLabel htmlFor="answer">Đáp án</CFormLabel>
-        </CCol>
-        <CCol sm="2" style={{ marginTop: '5px', marginBottom: '0px' }}>
+        </CCol> */}
+        <CCol sm="3" style={{ marginTop: '5px', marginBottom: '0px' }}>
           <CInputGroup>
+            <CInputGroupText>Đáp án</CInputGroupText>
             <CFormSelect
               id={`${id}`}
               aria-label="answer"
@@ -346,6 +414,7 @@ QuizItem.propTypes = {
   parentQuiz: PropTypes.array,
   onChange: PropTypes.func,
   disabled: PropTypes.bool,
+  testId: PropTypes.string,
 }
 
 const ReadingBoard = (props) => {
@@ -361,6 +430,7 @@ const ReadingBoard = (props) => {
   const [visible, setVisible] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [quiz, setQuiz] = useState([])
+  const [content, setContent] = useState('')
   const addQuiz = () => {
     const data = {
       question: '',
@@ -438,12 +508,13 @@ const ReadingBoard = (props) => {
         free,
         quiz: quizToSave,
         type,
+        content: htmlEntityEncode(content),
       }
       viewAction === 'add'
         ? subTestService.createItem(data).then(savingCallback)
         : subTestService.updateItem(data, itemId).then(savingCallback)
     } else {
-      toast.error(`Hoàn thành các trường để trống`, {
+      toast.error(`Hoàn thành các trường để trống hoặc sửa ô báo đỏ`, {
         position: 'top-right',
         autoClose: 5000,
         hideProgressBar: true,
@@ -475,6 +546,7 @@ const ReadingBoard = (props) => {
             setTitle(res.title)
             setLevel(res.level)
             setType(res.type)
+            setContent(htmlEntityDecode(res.content))
             let initialQuizes = res.quiz
             let clonedQuizes = [...initialQuizes]
             let resultQuizes = clonedQuizes.map(function (item) {
@@ -510,6 +582,63 @@ const ReadingBoard = (props) => {
                   defaultValue={title}
                   disabled={viewAction === 'get'}
                 />
+              </CCol>
+            </CRow>
+            <CRow className="mb-3">
+              <CFormLabel htmlFor="content" className="col-sm-2 col-form-label">
+                Nội dung đề bài
+              </CFormLabel>
+              <CCol sm="10">
+                {viewAction !== 'get' && (
+                  <div
+                    id="content"
+                    style={{
+                      border: '1px solid grey',
+                      borderRadius: '5px 5px 5px 5px',
+                      backgroundColor: '#fff',
+                      paddingRight: '5px',
+                      paddingLeft: '5px',
+                      paddingTop: '5px',
+                      marginTop: '7px',
+                      cursor: 'text',
+                      minHeight: 200,
+                      width: '100%',
+                    }}
+                    onClick={(e) => {
+                      const editor = window.CKEDITOR.replace('content', {
+                        on: {
+                          // instanceReady: function (evt) {
+                          //   document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                          // },
+                          change: function (e) {
+                            // xử lý data
+                            let content = editor.getData()
+                            setContent(content)
+                          },
+                        },
+                      })
+                    }}
+                  >
+                    {content ? renderHTML(content) : ''}
+                  </div>
+                )}
+                {viewAction === 'get' && !_.isEmpty(content) && (
+                  <div
+                    style={{
+                      border: '1px solid grey',
+                      borderRadius: '5px 5px 5px 5px',
+                      backgroundColor: '#D8DBE0',
+                      paddingRight: '5px',
+                      paddingLeft: '5px',
+                      paddingTop: '5px',
+                      marginTop: '7px',
+                      width: '100%',
+                      height: 'auto',
+                    }}
+                  >
+                    {content ? renderHTML(content) : ''}
+                  </div>
+                )}
               </CCol>
             </CRow>
             <CRow className="mb-3">
@@ -551,8 +680,8 @@ const ReadingBoard = (props) => {
                   <option value={testTypes.TUVUNG}>Từ vựng</option>
                   <option value={testTypes.CHUHAN}>Chữ Hán</option>
                   <option value={testTypes.NGUPHAP}>Ngữ pháp</option>
-                  <option value={testTypes.TIMNGHIA}>Tìm nghĩa</option>
-                  <option value={testTypes.GHEPCAU}>Ghép câu</option>
+                  <option value={testTypes.TIMNGHIA}>Tìm đúng nghĩa</option>
+                  <option value={testTypes.GHEPCAU}>Ghép thành câu</option>
                 </CFormSelect>
               </CCol>
             </CRow>
@@ -570,7 +699,12 @@ const ReadingBoard = (props) => {
             <CRow>
               <CFormLabel className="col-sm-2 col-form-label">Câu hỏi</CFormLabel>
               <CCol sm="12">
-                <Exercise quiz={quiz} onQuizItemChange={setQuiz} disabled={viewAction === 'get'} />
+                <Exercise
+                  quiz={quiz}
+                  onQuizItemChange={setQuiz}
+                  disabled={viewAction === 'get'}
+                  testId={itemId}
+                />
               </CCol>
             </CRow>
             <CRow>
@@ -664,7 +798,7 @@ const ReadingBoard = (props) => {
                 </CCol>
               </CRow>
             )}
-            {viewAction === 'get' && (
+            {/* {viewAction === 'get' && (
               <CRow>
                 <CCol className="col-sm-3">
                   <CButton
@@ -681,7 +815,7 @@ const ReadingBoard = (props) => {
                   </CButton>
                 </CCol>
               </CRow>
-            )}
+            )} */}
           </CForm>
         </CRow>
       </>

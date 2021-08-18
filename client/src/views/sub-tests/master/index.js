@@ -26,11 +26,7 @@ const ReadingBoards = () => {
   const [level, setLevel] = useState(LEVEL.ALL)
   const [type, setType] = useState(testTypes.ALL)
   const [redirect, setRedirect] = useState({ redirect: false, path: '' })
-  const refresh = (level = LEVEL.ALL, type = testTypes.ALL, title = '') => {
-    const filter = {}
-    if (level && level !== LEVEL.ALL) filter.level = level
-    if (type && type !== testTypes.ALL) filter.type = type
-    if (title) filter.title = title
+  const refresh = (filter) => {
     subTestService.getItems(filter).then((res) => {
       setItems(res.results)
       setSearching(false)
@@ -49,7 +45,11 @@ const ReadingBoards = () => {
   const setTitleDebounce = _.debounce(setTitle, 1000)
   useEffect(() => {
     setSearching(true)
-    refresh(level, type, title)
+    const filter = {}
+    if (level !== LEVEL.ALL) filter.level = level
+    if (type !== testTypes.ALL) filter.type = type
+    if (title) filter.title = title
+    refresh(filter)
   }, [level, type, title])
   if (redirect.redirect) return <Redirect to={redirect.path} />
   else
@@ -88,7 +88,7 @@ const ReadingBoards = () => {
                 }}
                 id="type"
               >
-                <option value="0">Tìm theo loại bài</option>
+                <option value={testTypes.ALL}>Tìm theo phần thi</option>
                 <option value={testTypes.TUVUNG}>Từ vựng</option>
                 <option value={testTypes.CHUHAN}>Chữ Hán</option>
                 <option value={testTypes.NGUPHAP}>Ngữ pháp</option>

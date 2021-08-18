@@ -14,6 +14,7 @@ const createItem = {
   body: Joi.object().keys({
     title: Joi.string().required(),
     level: Joi.string().allow(null, ''),
+    content: Joi.string().allow(null, ''),
     free: Joi.number().required(),
     type: Joi.number().required(),
     quiz: Joi.array().items(QuizValidation)
@@ -45,6 +46,7 @@ const updateItem = {
     .keys({
         title: Joi.string().required(),
         level: Joi.string().allow(null, ''),
+        content: Joi.string().allow(null, ''),
         free: Joi.number().required(),
         type: Joi.number().required(),
         quiz: Joi.array().items(QuizValidation)

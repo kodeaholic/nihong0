@@ -74,7 +74,6 @@ const findTestByQuestion = async (question, excludedId) => {
         }
     }
     if (excludedId) searchCondition._id = { $nin: [excludedId] };
-    console.log(searchCondition);
     const item = await SubTest.findOne(searchCondition);
     return item;
 }

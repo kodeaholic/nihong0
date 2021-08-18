@@ -43,6 +43,11 @@ const SubTestSchema = mongoose.Schema(
             required: true,
             trim: false,
         },
+        content: {
+            type: String,
+            required: false,
+            trim: false,
+        },
         level: {
             type: String,
             required: false,
