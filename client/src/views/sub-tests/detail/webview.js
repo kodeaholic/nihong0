@@ -22,6 +22,7 @@ const SubTestWebView = (props) => {
   const [pageNotFound, setPageNotFound] = useState(false)
   const [answeredQuiz, setAnsweredQuiz] = useState({})
   const [loading, setLoading] = useState(true)
+  const [count, setCount] = useState(0)
   const onQuizAnswered = (e, index) => {
     const { value } = e.target
     let clone = { ...answeredQuiz }
@@ -126,7 +127,10 @@ const SubTestWebView = (props) => {
                               }">${item.A}</span>`,
                             )}
                             name={'quiz-' + index}
-                            onClick={(e) => onQuizAnswered(e, index)}
+                            onClick={(e) => {
+                              if (item.answer === 'A') setCount(count + 1)
+                              onQuizAnswered(e, index)
+                            }}
                             value="A"
                             disabled={!_.isEmpty(answeredQuiz[index])}
                             id={`quiz-${index}-A`}
@@ -139,7 +143,10 @@ const SubTestWebView = (props) => {
                               }">${item.B}</span>`,
                             )}
                             name={'quiz-' + index}
-                            onClick={(e) => onQuizAnswered(e, index)}
+                            onClick={(e) => {
+                              if (item.answer === 'B') setCount(count + 1)
+                              onQuizAnswered(e, index)
+                            }}
                             value="B"
                             disabled={!_.isEmpty(answeredQuiz[index])}
                             id={`quiz-${index}-B`}
@@ -152,7 +159,10 @@ const SubTestWebView = (props) => {
                               }">${item.C}</span>`,
                             )}
                             name={'quiz-' + index}
-                            onClick={(e) => onQuizAnswered(e, index)}
+                            onClick={(e) => {
+                              if (item.answer === 'C') setCount(count + 1)
+                              onQuizAnswered(e, index)
+                            }}
                             value="C"
                             disabled={!_.isEmpty(answeredQuiz[index])}
                             id={`quiz-${index}-C`}
@@ -165,7 +175,10 @@ const SubTestWebView = (props) => {
                               }">${item.D}</span>`,
                             )}
                             name={'quiz-' + index}
-                            onClick={(e) => onQuizAnswered(e, index)}
+                            onClick={(e) => {
+                              if (item.answer === 'D') setCount(count + 1)
+                              onQuizAnswered(e, index)
+                            }}
                             value="D"
                             disabled={!_.isEmpty(answeredQuiz[index])}
                             id={`quiz-${index}-D`}
@@ -175,6 +188,11 @@ const SubTestWebView = (props) => {
                     })}
                   </div>
                 </main>
+                {answeredQuiz && (
+                  <div className={`fab ${count < quiz.length / 2 ? 'red' : 'green'}`}>
+                    {count} | {quiz.length}
+                  </div>
+                )}
               </>
             )}
           </div>

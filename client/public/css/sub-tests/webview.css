@@ -358,3 +358,32 @@ span[data-sentence-index] {
 .form-check-input:disabled[type=radio] + label > span[data-answer="true"] {
     color: #65DD57 !important;
 }
+
+.fab {
+    width: 70px;
+    height: 70px;
+    /* background-color: red; */
+    border-radius: 50%;
+    transition: all 0.1s ease-in-out;
+    /* font-size: 50px; */
+    color: #000000;
+    text-align: center;
+    line-height: 70px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    position: fixed;
+    left: calc(50vw - 35px);
+    bottom: 70px;
+    font-family: 'Source Sans Pro', sans-serif;
+    background-color: #ffffff;
+}
+
+.fab:hover {
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    transform: scale(1.05);
+}
+.fab.green {
+    box-shadow: #65DD57 0px 5px 15px;
+}
+.fab.red {
+    box-shadow: red 0px 5px 15px;
+}
