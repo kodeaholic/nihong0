@@ -106,7 +106,7 @@ const SubTestWebView = (props) => {
                   <div className="quiz-container">
                     {quiz.map((item, index) => {
                       let question = item.question
-                      question = question.replace('<p>', `<p>${index + 1} 、`)
+                      question = question.replace('>', `>${index + 1} 、`)
                       return (
                         <div className="quiz-item-container" key={`quiz-${index}`}>
                           <span
