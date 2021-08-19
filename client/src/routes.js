@@ -1,4 +1,6 @@
 import React from 'react'
+import TrialTest from './views/trial-tests/detail'
+import TrialTests from './views/trial-tests/master'
 
 // examples
 
@@ -258,6 +260,25 @@ const routes = [
     name: 'Thêm mới',
     component: SubTest,
     specificName: 'addSubTest',
+  },
+  { path: '/trial-tests', name: 'Thi thử', component: TrialTests, exact: true },
+  {
+    path: '/trial-tests/getTrialTest/:itemId',
+    name: 'Thông tin bài thi',
+    component: TrialTest,
+    specificName: 'getTrialTest',
+  },
+  {
+    path: '/trial-tests/editTrialTest/:itemId',
+    name: 'Sửa',
+    component: TrialTest,
+    specificName: 'editTrialTest',
+  },
+  {
+    path: '/trial-tests/addTrialTest',
+    name: 'Thêm mới',
+    component: TrialTest,
+    specificName: 'addTrialTest',
   },
 ]
 

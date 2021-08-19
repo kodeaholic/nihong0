@@ -1,3 +1,4 @@
+/* eslint-disable default-case */
 export const testTypes = {
   TUVUNG: 1,
   CHUHAN: 2,
@@ -21,5 +22,25 @@ export const getTestTypeName = (type) => {
       return 'Ghép thành câu'
     default:
       return 'Không xác định'
+  }
+}
+
+export const TEST_PART = {
+  vocabulary: 1,
+  grammar: 2,
+  reading: 3,
+  listening: 4,
+}
+
+export const getTestPartName = (part) => {
+  switch (part) {
+    case 1:
+      return '文字・語彙'
+    case 2:
+      return '文法'
+    case 3:
+      return '読解'
+    case 4:
+      return '聴解'
   }
 }

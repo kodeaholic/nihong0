@@ -1,3 +1,4 @@
+/* eslint-disable default-case */
 import React, { useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
 import PropTypes from 'prop-types'
@@ -23,13 +24,54 @@ import {
   CFormSelect,
   CButtonGroup,
 } from '@coreui/react'
+import { makeStyles } from '@material-ui/core/styles'
+import Stepper from '@material-ui/core/Stepper'
+import Step from '@material-ui/core/Step'
+import StepLabel from '@material-ui/core/StepLabel'
+import Button from '@material-ui/core/Button'
+import Typography from '@material-ui/core/Typography'
 import { Redirect } from 'react-router-dom'
-import { subTestService } from 'src/services/api/subTestService'
+import { trialTestService } from 'src/services/api/trialTestService'
 import _ from 'lodash'
 import renderHTML from 'react-render-html'
 import { htmlEntityEncode, htmlEntityDecode } from '../../../helpers/htmlentities'
-import { getTestTypeName, testTypes } from 'src/constants/test.constants'
+import { getTestTypeName, getTestPartName, testTypes } from 'src/constants/test.constants'
 import { LEVEL } from 'src/constants/level.constants'
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: '100%',
+  },
+  backButton: {
+    marginRight: theme.spacing(1),
+  },
+  instructions: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+  },
+}))
+
+function getSteps() {
+  return [
+    'Từ vựng - Chữ Hán (文字・語彙)',
+    'Ngữ pháp (文法)',
+    'Đọc hiểu (読解)',
+    'Nghe hiểu (聴解)',
+  ]
+}
+
+function getStepContent(stepIndex) {
+  switch (stepIndex) {
+    case 0:
+      return 'Từ vựng - Chữ Hán (文字・語彙)'
+    case 1:
+      return 'Ngữ pháp (文法)'
+    case 2:
+      return 'Đọc hiểu (読解)'
+    case 3:
+      return 'Nghe hiểu (聴解)'
+  }
+}
 
 const Exercise = (props) => {
   const { quiz, onQuizItemChange, disabled, testId } = props
@@ -68,6 +110,7 @@ const QuizItem = (props) => {
       C: '',
       D: '',
       answer: 'A',
+      part: 1,
     }
 
   const handleInputChange = (e) => {
@@ -127,7 +170,7 @@ const QuizItem = (props) => {
                               onChange(quizes)
                               setDuplicated('')
                             } else {
-                              toast.error(`Câu ${index + 1} trùng câu ${found + 1}`, {
+                              toast.error(`Câu bị trùng`, {
                                 position: 'top-right',
                                 autoClose: 5000,
                                 hideProgressBar: true,
@@ -146,12 +189,12 @@ const QuizItem = (props) => {
                               question: htmlEntityEncode(data),
                             }
                             if (testId) condition.excludedId = testId
-                            const test = await subTestService.findByQuestion(condition)
+                            const test = await trialTestService.findByQuestion(condition)
                             if (test) {
                               toast.error(
-                                `Câu ${index + 1} đã có trong cơ sở dữ liệu. Xem lại ${
-                                  test.title
-                                } - ${test.level} - ${getTestTypeName(test.type)}`,
+                                `Câu đã có trong cơ sở dữ liệu. Xem lại ${test.title} - ${
+                                  test.level
+                                } - ${getTestTypeName(test.type)}`,
                                 {
                                   position: 'top-right',
                                   autoClose: 8000,
@@ -417,7 +460,7 @@ QuizItem.propTypes = {
   testId: PropTypes.string,
 }
 
-const SubTest = (props) => {
+const TrialTest = (props) => {
   const pathName = props.location.pathname
   const viewAction = getViewAction(pathName)
   const itemId = viewAction === 'add' ? undefined : getLastPartFromPathName(pathName)
@@ -431,6 +474,21 @@ const SubTest = (props) => {
   const [deleting, setDeleting] = useState(false)
   const [quiz, setQuiz] = useState([])
   const [content, setContent] = useState('')
+  const classes = useStyles()
+  const [activeStep, setActiveStep] = useState(0)
+  const steps = getSteps()
+
+  const handleNext = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1)
+  }
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1)
+  }
+
+  const handleReset = () => {
+    setActiveStep(0)
+  }
   const addQuiz = () => {
     const data = {
       question: '',
@@ -511,8 +569,8 @@ const SubTest = (props) => {
         content: htmlEntityEncode(content),
       }
       viewAction === 'add'
-        ? subTestService.createItem(data).then(savingCallback)
-        : subTestService.updateItem(data, itemId).then(savingCallback)
+        ? trialTestService.createItem(data).then(savingCallback)
+        : trialTestService.updateItem(data, itemId).then(savingCallback)
     } else {
       toast.error(`Hoàn thành các trường để trống hoặc sửa ô báo đỏ`, {
         position: 'top-right',
@@ -528,7 +586,7 @@ const SubTest = (props) => {
   /* Load item */
   useEffect(() => {
     if (itemId) {
-      subTestService.getItem(itemId).then((res) => {
+      trialTestService.getItem(itemId).then((res) => {
         if (res) {
           if (res.status === 401 || res.status === 404 || res.status === 400) {
             toast.error(`Bài thi không tồn tại`, {
@@ -566,25 +624,100 @@ const SubTest = (props) => {
   } else
     return (
       <>
+        <CForm>
+          <CRow className="mb-3">
+            <CFormLabel htmlFor="title" className="col-sm-2 col-form-label">
+              Tiêu đề <span style={{ color: 'red' }}>*</span>
+            </CFormLabel>
+            <CCol sm="10">
+              <CFormControl
+                type="text"
+                id="title"
+                required
+                placeholder="Ví dụ: Bài 01 - N5"
+                onChange={(e) => setTitle(e.target.value)}
+                defaultValue={title}
+                disabled={viewAction === 'get'}
+              />
+            </CCol>
+          </CRow>
+          <CRow className="mb-3">
+            <CFormLabel htmlFor="level" className="col-sm-2 col-form-label">
+              Trình độ
+            </CFormLabel>
+            <CCol sm="10">
+              <CFormSelect
+                aria-label="Level"
+                onChange={(e) => {
+                  setLevel(e.target.value)
+                }}
+                id="level"
+                disabled={viewAction === 'get'}
+                value={level}
+              >
+                <option value="N1">N1</option>
+                <option value="N2">N2</option>
+                <option value="N3">N3</option>
+                <option value="N4">N4</option>
+                <option value="N5">N5</option>
+              </CFormSelect>
+            </CCol>
+          </CRow>
+          <fieldset className="row mb-3">
+            <legend className="col-form-label col-sm-2 pt-0">Phí</legend>
+            <CCol sm="10">
+              <CFormCheck
+                id="free"
+                label="Miễn phí"
+                checked={free === 1}
+                onChange={() => setFree(1 - free)}
+              />
+            </CCol>
+          </fieldset>
+        </CForm>
+        <div className={classes.root} style={{ marginBottom: 10 }}>
+          <Stepper activeStep={activeStep} alternativeLabel>
+            {steps.map((label) => (
+              <Step key={label}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            ))}
+          </Stepper>
+          <div>
+            {false ? (
+              <div>
+                <Typography className={classes.instructions}>All steps completed</Typography>
+                <Button onClick={handleReset}>Reset</Button>
+              </div>
+            ) : (
+              <div>
+                {/* Content */}
+                <div style={{ textAlign: 'center', marginTop: 10 }}>
+                  <Button
+                    disabled={activeStep === 0}
+                    onClick={handleBack}
+                    // className={classes.backButton}
+                    variant="contained"
+                    color="primary"
+                  >
+                    BACK
+                  </Button>{' '}
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleNext}
+                    disabled={activeStep === steps.length - 1}
+                  >
+                    {activeStep === steps.length - 1 ? 'NEXT' : 'NEXT'}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
         <CRow>
           <CForm>
-            <CRow className="mb-3">
-              <CFormLabel htmlFor="title" className="col-sm-2 col-form-label">
-                Tiêu đề <span style={{ color: 'red' }}>*</span>
-              </CFormLabel>
-              <CCol sm="10">
-                <CFormControl
-                  type="text"
-                  id="title"
-                  required
-                  placeholder="Ví dụ: Bài 01 - N5"
-                  onChange={(e) => setTitle(e.target.value)}
-                  defaultValue={title}
-                  disabled={viewAction === 'get'}
-                />
-              </CCol>
-            </CRow>
-            <CRow className="mb-3">
+            {/* <CRow className="mb-3">
               <CFormLabel htmlFor="content" className="col-sm-2 col-form-label">
                 Nội dung đề bài
               </CFormLabel>
@@ -640,62 +773,7 @@ const SubTest = (props) => {
                   </div>
                 )}
               </CCol>
-            </CRow>
-            <CRow className="mb-3">
-              <CFormLabel htmlFor="level" className="col-sm-2 col-form-label">
-                Trình độ
-              </CFormLabel>
-              <CCol sm="10">
-                <CFormSelect
-                  aria-label="Level"
-                  onChange={(e) => {
-                    setLevel(e.target.value)
-                  }}
-                  id="level"
-                  disabled={viewAction === 'get'}
-                  value={level}
-                >
-                  <option value="N1">N1</option>
-                  <option value="N2">N2</option>
-                  <option value="N3">N3</option>
-                  <option value="N4">N4</option>
-                  <option value="N5">N5</option>
-                </CFormSelect>
-              </CCol>
-            </CRow>
-            <CRow className="mb-3">
-              <CFormLabel htmlFor="level" className="col-sm-2 col-form-label">
-                Phần thi
-              </CFormLabel>
-              <CCol sm="10">
-                <CFormSelect
-                  aria-label="Type"
-                  onChange={(e) => {
-                    setType(e.target.value)
-                  }}
-                  id="type"
-                  disabled={viewAction === 'get'}
-                  value={type}
-                >
-                  <option value={testTypes.TUVUNG}>Từ vựng</option>
-                  <option value={testTypes.CHUHAN}>Chữ Hán</option>
-                  <option value={testTypes.NGUPHAP}>Ngữ pháp</option>
-                  <option value={testTypes.TIMNGHIA}>Tìm đúng nghĩa</option>
-                  <option value={testTypes.GHEPCAU}>Ghép thành câu</option>
-                </CFormSelect>
-              </CCol>
-            </CRow>
-            <fieldset className="row mb-3">
-              <legend className="col-form-label col-sm-2 pt-0">Phí</legend>
-              <CCol sm="10">
-                <CFormCheck
-                  id="free"
-                  label="Miễn phí"
-                  checked={free === 1}
-                  onChange={() => setFree(1 - free)}
-                />
-              </CCol>
-            </fieldset>
+            </CRow> */}
             <CRow>
               <CFormLabel className="col-sm-2 col-form-label">Câu hỏi</CFormLabel>
               <CCol sm="12">
@@ -775,7 +853,7 @@ const SubTest = (props) => {
                           color="danger"
                           onClick={() => {
                             setDeleting(true)
-                            subTestService.deleteItem(itemId).then((res) => {
+                            trialTestService.deleteItem(itemId).then((res) => {
                               setDeleting(false)
                             })
                             toast.success(`Xoá thành công`, {
@@ -822,6 +900,6 @@ const SubTest = (props) => {
     )
 }
 
-SubTest.propTypes = {}
+TrialTest.propTypes = {}
 
-export default SubTest
+export default TrialTest
