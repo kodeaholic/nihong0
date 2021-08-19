@@ -14,3 +14,4 @@ module.exports.vocabService = require('./vocab.service');
 module.exports.searchService = require('./search.service');
 module.exports.dictionaryService = require('./dictionary.service');
 module.exports.subTestService = require('./subTest.service');
+module.exports.trialTestService = require('./trial-test.service');
