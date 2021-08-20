@@ -32,7 +32,7 @@ const createItem = {
     grammarContent: Joi.string().allow(null, ''),
     readingContent: Joi.string().allow(null, ''),
     listeningContent: Joi.string().allow(null, ''),
-    listeningAudioSrc: Joi.string().required(),
+    listeningAudioSrc: Joi.string().allow(null, ''),
   }),
 };
 
@@ -69,7 +69,7 @@ const updateItem = {
       grammarContent: Joi.string().allow(null, ''),
       readingContent: Joi.string().allow(null, ''),
       listeningContent: Joi.string().allow(null, ''),
-      listeningAudioSrc: Joi.string().required(),
+      listeningAudioSrc: Joi.string().allow(null, ''),
     })
     .min(1),
 };

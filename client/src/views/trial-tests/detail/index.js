@@ -24,17 +24,17 @@ import {
   CFormSelect,
   CButtonGroup,
 } from '@coreui/react'
+import AddIcon from '@material-ui/icons/Add'
 import { makeStyles } from '@material-ui/core/styles'
 import Stepper from '@material-ui/core/Stepper'
 import Step from '@material-ui/core/Step'
-import StepLabel from '@material-ui/core/StepLabel'
 import Button from '@material-ui/core/Button'
 import { Redirect } from 'react-router-dom'
 import { trialTestService } from 'src/services/api/trialTestService'
 import _ from 'lodash'
 import renderHTML from 'react-render-html'
 import { htmlEntityEncode, htmlEntityDecode } from '../../../helpers/htmlentities'
-import { getTestPartName, TEST_PART } from 'src/constants/test.constants'
+import { TEST_PART } from 'src/constants/test.constants'
 import { LEVEL } from 'src/constants/level.constants'
 import { v4 as uuidv4 } from 'uuid'
 import { StepButton } from '@material-ui/core'
@@ -61,7 +61,7 @@ function getSteps() {
 }
 
 const Exercise = (props) => {
-  const { quiz, onQuizItemChange, disabled, testId, activeStep } = props
+  const { quiz, onQuizItemChange, disabled, testId, group } = props
   return (
     <>
       {quiz.map((item, index) => {
@@ -74,7 +74,7 @@ const Exercise = (props) => {
             onChange={onQuizItemChange}
             disabled={disabled}
             testId={testId}
-            activeStep={activeStep}
+            group={group}
           />
         )
       })}
@@ -87,10 +87,11 @@ Exercise.propTypes = {
   disabled: PropTypes.bool,
   testId: PropTypes.string,
   activeStep: PropTypes.number,
+  group: PropTypes.object,
 }
 const QuizItem = (props) => {
   const [duplicated, setDuplicated] = useState('')
-  let { data, id, parentQuiz, onChange, disabled, testId, activeStep } = props
+  let { data, id, parentQuiz, onChange, disabled, testId, group } = props
   if (_.isEmpty(data))
     data = {
       question: '',
@@ -99,8 +100,9 @@ const QuizItem = (props) => {
       C: '',
       D: '',
       answer: 'A',
-      part: activeStep,
+      part: group.part,
       point: 0,
+      group: group.uuid,
     }
 
   const handleInputChange = (e) => {
@@ -122,19 +124,20 @@ const QuizItem = (props) => {
     }
   }
 
-  const getNo = (data, part, quiz) => {
+  const getNo = (data, group, quiz) => {
     const filtered = quiz.filter((item) => {
-      return item.part === part
+      return item.group === group.uuid
     })
-    if (data._id) {
-      let index = _.findIndex(filtered, (item) => item._id === data._id)
-      return index + 1
+    if (filtered.length) {
+      const index = _.findIndex(filtered, (item) => item._id === data._id)
+      if (index < 0) return filtered.length
+      else return index + 1
     } else {
-      return filtered.length
+      return 1
     }
   }
 
-  if (data.part !== activeStep) return <></>
+  if (data.group !== group.uuid) return <></>
   else
     return (
       <div className={`quiz-item-wrapper ${duplicated}`}>
@@ -142,7 +145,7 @@ const QuizItem = (props) => {
           <CCol sm="12" style={{ marginTop: '0px' }}>
             <CInputGroup>
               <CInputGroupText id={`question-label-${id}`}>
-                Câu {getNo(data, activeStep, parentQuiz)}
+                Câu {getNo(data, group, parentQuiz)}
               </CInputGroupText>
               {!disabled && (
                 <div
@@ -468,6 +471,7 @@ const QuizItem = (props) => {
                 }}
                 disabled={disabled}
                 value={parentQuiz[parseInt(id)]['point']}
+                style={parentQuiz[parseInt(id)]['point'] > 0 ? {} : { border: '2px dotted red' }}
               />
             </CInputGroup>
           </CCol>
@@ -485,6 +489,7 @@ QuizItem.propTypes = {
   disabled: PropTypes.bool,
   testId: PropTypes.string,
   activeStep: PropTypes.number,
+  group: PropTypes.object,
 }
 
 const TrialTest = (props) => {
@@ -506,12 +511,21 @@ const TrialTest = (props) => {
   const [readingContent, setReadingContent] = useState('')
   const [listeningContent, setListeningContent] = useState('')
   const [listeningAudioSrc, setListeningAudioSrc] = useState('')
+  const [groups, setGroups] = useState([])
+  const [selectedGroup, setSelectedGroup] = useState({})
   const classes = useStyles()
   const [activeStep, setActiveStep] = useState(1)
+
+  useEffect(() => {
+    // update selectedGroup
+    const filteredGroups = groups.filter((group) => group.part === activeStep)
+    if (!_.isEmpty(filteredGroups)) {
+      const n = filteredGroups.length
+      setSelectedGroup(filteredGroups[n - 1])
+    } else setSelectedGroup(undefined)
+  }, [activeStep, groups])
+
   const steps = getSteps()
-  const totalSteps = () => {
-    return TEST_PART.length
-  }
   const isLastStep = () => {
     return activeStep === TEST_PART.listening
   }
@@ -536,7 +550,7 @@ const TrialTest = (props) => {
     setActiveStep(step)
   }
 
-  const addQuiz = (part) => {
+  const addQuiz = (group) => {
     const data = {
       question: '',
       A: '',
@@ -544,7 +558,8 @@ const TrialTest = (props) => {
       C: '',
       D: '',
       answer: 'A',
-      part: part,
+      part: group.part,
+      group: group.uuid,
       _id: uuidv4(),
     }
     setQuiz([...quiz, data])
@@ -567,7 +582,7 @@ const TrialTest = (props) => {
       })
     } else {
       if (res.code === 400) {
-        toast.error(`${res.message}`, {
+        toast.error(`Kiểm tra các trường bỏ trống`, {
           position: 'top-right',
           autoClose: 2500,
           hideProgressBar: true,
@@ -607,7 +622,13 @@ const TrialTest = (props) => {
   }
 
   const handleSubmit = () => {
-    if (isQuizValidated() && title.length > 0 && time_part_1 > 0 && time_part_2) {
+    if (
+      isQuizValidated() &&
+      title.length > 0 &&
+      time_part_1 > 0 &&
+      time_part_2 &&
+      quiz.length > 0
+    ) {
       setSaving(true)
       const quizToSave = transformQuizToSave()
       let data = {
@@ -622,6 +643,7 @@ const TrialTest = (props) => {
         readingContent: htmlEntityEncode(readingContent),
         listeningContent: htmlEntityEncode(listeningContent),
         listeningAudioSrc,
+        quizGroups: groups,
       }
       viewAction === 'add'
         ? trialTestService.createItem(data).then(savingCallback)
@@ -673,6 +695,7 @@ const TrialTest = (props) => {
               return newItem
             })
             setQuiz(resultQuizes)
+            setGroups(res.quizGroups)
           }
         }
       })
@@ -698,6 +721,7 @@ const TrialTest = (props) => {
                 onChange={(e) => setTitle(e.target.value)}
                 defaultValue={title}
                 disabled={viewAction === 'get'}
+                style={title.length ? {} : { border: '2px dotted red' }}
               />
             </CCol>
           </CRow>
@@ -727,7 +751,7 @@ const TrialTest = (props) => {
             <CFormLabel htmlFor="time_part_1" className="col-sm-2 col-form-label">
               Thời lượng P1 (phút)
             </CFormLabel>
-            <CCol sm="10">
+            <CCol sm="2">
               <CFormControl
                 type="number"
                 id="time_part_1"
@@ -737,6 +761,7 @@ const TrialTest = (props) => {
                 onChange={(e) => setTime1(e.target.value)}
                 value={parseInt(time_part_1)}
                 disabled={viewAction === 'get'}
+                style={time_part_1 > 0 ? {} : { border: '2px dotted red' }}
               />
             </CCol>
           </CRow>
@@ -744,7 +769,7 @@ const TrialTest = (props) => {
             <CFormLabel htmlFor="time_part_2" className="col-sm-2 col-form-label">
               Thời lượng P2 (phút)
             </CFormLabel>
-            <CCol sm="10">
+            <CCol sm="2">
               <CFormControl
                 type="number"
                 id="time_part_2"
@@ -754,6 +779,7 @@ const TrialTest = (props) => {
                 onChange={(e) => setTime2(e.target.value)}
                 value={parseInt(time_part_2)}
                 disabled={viewAction === 'get'}
+                style={time_part_2 > 0 ? {} : { border: '2px dotted red' }}
               />
             </CCol>
           </CRow>
@@ -785,7 +811,7 @@ const TrialTest = (props) => {
           <div>
             <div>
               {/* Content */}
-              {activeStep === TEST_PART.vocabulary && (
+              {/* {activeStep === TEST_PART.vocabulary && (
                 <CRow className="mb-3">
                   <CFormLabel htmlFor="vocabularyContent" className="col-sm-2 col-form-label">
                     Đề bài ({getTestPartName(activeStep)})
@@ -843,8 +869,8 @@ const TrialTest = (props) => {
                     )}
                   </CCol>
                 </CRow>
-              )}
-              {activeStep === TEST_PART.grammar && (
+              )} */}
+              {/* {activeStep === TEST_PART.grammar && (
                 <CRow className="mb-3">
                   <CFormLabel htmlFor="grammarContent" className="col-sm-2 col-form-label">
                     Đề bài ({getTestPartName(activeStep)})
@@ -902,8 +928,8 @@ const TrialTest = (props) => {
                     )}
                   </CCol>
                 </CRow>
-              )}
-              {activeStep === TEST_PART.reading && (
+              )} */}
+              {/* {activeStep === TEST_PART.reading && (
                 <CRow className="mb-3">
                   <CFormLabel htmlFor="readingContent" className="col-sm-2 col-form-label">
                     Đề bài ({getTestPartName(activeStep)})
@@ -961,10 +987,10 @@ const TrialTest = (props) => {
                     )}
                   </CCol>
                 </CRow>
-              )}
+              )} */}
               {activeStep === TEST_PART.listening && (
                 <>
-                  <CRow className="mb-3">
+                  {/* <CRow className="mb-3">
                     <CFormLabel htmlFor="listeningContent" className="col-sm-2 col-form-label">
                       Đề bài ({getTestPartName(activeStep)})
                     </CFormLabel>
@@ -1020,12 +1046,12 @@ const TrialTest = (props) => {
                         </div>
                       )}
                     </CCol>
-                  </CRow>
+                  </CRow> */}
                   <CRow>
                     <CFormLabel htmlFor="listeningAudioSrc" className="col-sm-2 col-form-label">
                       URL file nghe
                     </CFormLabel>
-                    <CCol sm="10" style={{ marginBottom: '5px' }}>
+                    <CCol sm="10" style={{ marginBottom: '5px', marginTop: '5px' }}>
                       <CFormControl
                         type="text"
                         component="textarea"
@@ -1052,17 +1078,74 @@ const TrialTest = (props) => {
               )}
               <CRow>
                 <CForm>
-                  <CRow>
-                    <CCol sm="12">
-                      <Exercise
-                        quiz={quiz}
-                        onQuizItemChange={setQuiz}
-                        disabled={viewAction === 'get'}
-                        testId={itemId}
-                        activeStep={activeStep}
-                      />
-                    </CCol>
-                  </CRow>
+                  {!_.isEmpty(groups) &&
+                    groups
+                      .filter((group) => {
+                        return group.part === activeStep
+                      })
+                      .map((group, index) => {
+                        return (
+                          <div key={group.uuid}>
+                            <CRow>
+                              <CFormLabel htmlFor="group-title" className="col-sm-2 col-form-label">
+                                問題{index + 1}
+                              </CFormLabel>
+                              <CCol sm="10" style={{ marginBottom: '5px', marginTop: '5px' }}>
+                                <CInputGroup>
+                                  <CFormControl
+                                    type="text"
+                                    component="textarea"
+                                    id={`group-${group.uuid}`}
+                                    placeholder="Ví dụ: 問題1　＿＿＿の言葉の読み方として最もよいものを、１・２・３・４から一つ選びなさい。"
+                                    onChange={(e) => {
+                                      let newGroup = { ...group }
+                                      newGroup.title = e.target.value
+                                      let index = _.findIndex(
+                                        groups,
+                                        (item) => item.uuid === newGroup.uuid,
+                                      )
+                                      let newGroups = [...groups]
+                                      newGroups[index] = newGroup
+                                      setGroups(newGroups)
+                                    }}
+                                    rows={2}
+                                    defaultValue={group.title}
+                                    disabled={viewAction === 'get'}
+                                  />
+                                  {viewAction !== 'get' && (
+                                    <CInputGroupText
+                                      id={`delete-group-${group.uuid}`}
+                                      onClick={() => {
+                                        const newGroups = [...groups]
+                                        let index = _.findIndex(
+                                          groups,
+                                          (item) => item.uuid === group.uuid,
+                                        )
+                                        newGroups.splice(index, 1)
+                                        setGroups(newGroups)
+                                      }}
+                                      className="quiz-delete-button"
+                                    >
+                                      Gỡ bỏ
+                                    </CInputGroupText>
+                                  )}
+                                </CInputGroup>
+                              </CCol>
+                            </CRow>
+                            <CRow>
+                              <CCol sm="12">
+                                <Exercise
+                                  quiz={quiz}
+                                  onQuizItemChange={setQuiz}
+                                  disabled={viewAction === 'get'}
+                                  testId={itemId}
+                                  group={group}
+                                />
+                              </CCol>
+                            </CRow>
+                          </div>
+                        )
+                      })}
                 </CForm>
               </CRow>
               {/* End content */}
@@ -1100,8 +1183,30 @@ const TrialTest = (props) => {
                       >
                         LƯU BÀI HỌC
                       </CButton>
-                      <CButton onClick={() => addQuiz(activeStep)} color="success">
-                        TẠO MỚI CÂU HỎI TRẮC NGHIỆM
+                      <CButton
+                        onClick={() => {
+                          const uuid = uuidv4()
+                          const newGroup = { title: '', part: activeStep, uuid: uuid }
+                          let newGroups = [...groups]
+                          newGroups.push(newGroup)
+                          setGroups(newGroups)
+                        }}
+                        color="success"
+                        style={{ color: 'white', marginRight: '5px' }}
+                        disabled={
+                          !_.isEmpty(selectedGroup) &&
+                          quiz.filter((item) => item.group === selectedGroup.uuid).length === 0
+                        }
+                      >
+                        <AddIcon /> 問題
+                      </CButton>
+                      <CButton
+                        onClick={() => addQuiz(selectedGroup)}
+                        color="success"
+                        style={{ color: 'white', marginRight: '5px' }}
+                        disabled={selectedGroup === undefined}
+                      >
+                        <AddIcon /> CÂU HỎI TRẮC NGHIỆM
                       </CButton>
                     </CButtonGroup>
                   </CCol>
