@@ -29,15 +29,14 @@ import Stepper from '@material-ui/core/Stepper'
 import Step from '@material-ui/core/Step'
 import StepLabel from '@material-ui/core/StepLabel'
 import Button from '@material-ui/core/Button'
-import Typography from '@material-ui/core/Typography'
 import { Redirect } from 'react-router-dom'
 import { trialTestService } from 'src/services/api/trialTestService'
 import _ from 'lodash'
 import renderHTML from 'react-render-html'
 import { htmlEntityEncode, htmlEntityDecode } from '../../../helpers/htmlentities'
-import { getTestTypeName, getTestPartName, testTypes } from 'src/constants/test.constants'
+import { getTestPartName, TEST_PART } from 'src/constants/test.constants'
 import { LEVEL } from 'src/constants/level.constants'
-
+import { v4 as uuidv4 } from 'uuid'
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
@@ -61,7 +60,7 @@ function getSteps() {
 }
 
 const Exercise = (props) => {
-  const { quiz, onQuizItemChange, disabled, testId, part } = props
+  const { quiz, onQuizItemChange, disabled, testId, activeStep } = props
   return (
     <>
       {quiz.map((item, index) => {
@@ -74,7 +73,7 @@ const Exercise = (props) => {
             onChange={onQuizItemChange}
             disabled={disabled}
             testId={testId}
-            display={item.part === part}
+            activeStep={activeStep}
           />
         )
       })}
@@ -86,11 +85,11 @@ Exercise.propTypes = {
   onQuizItemChange: PropTypes.func,
   disabled: PropTypes.bool,
   testId: PropTypes.string,
-  part: PropTypes.number,
+  activeStep: PropTypes.number,
 }
 const QuizItem = (props) => {
   const [duplicated, setDuplicated] = useState('')
-  let { data, id, parentQuiz, onChange, disabled, testId, display } = props
+  let { data, id, parentQuiz, onChange, disabled, testId, activeStep } = props
   if (_.isEmpty(data))
     data = {
       question: '',
@@ -99,7 +98,7 @@ const QuizItem = (props) => {
       C: '',
       D: '',
       answer: 'A',
-      part: 1,
+      part: activeStep,
     }
 
   const handleInputChange = (e) => {
@@ -120,14 +119,29 @@ const QuizItem = (props) => {
       onChange(arr)
     }
   }
-  if (!display) return <></>
+
+  const getNo = (data, part, quiz) => {
+    const filtered = quiz.filter((item) => {
+      return item.part === part
+    })
+    if (data._id) {
+      let index = _.findIndex(filtered, (item) => item._id === data._id)
+      return index + 1
+    } else {
+      return filtered.length
+    }
+  }
+
+  if (data.part !== activeStep) return <></>
   else
     return (
       <div className={`quiz-item-wrapper ${duplicated}`}>
         <CRow>
           <CCol sm="12" style={{ marginTop: '0px' }}>
             <CInputGroup>
-              <CInputGroupText id={`question-label-${id}`}>Câu {id + 1}</CInputGroupText>
+              <CInputGroupText id={`question-label-${id}`}>
+                Câu {getNo(data, activeStep, parentQuiz)}
+              </CInputGroupText>
               {!disabled && (
                 <div
                   style={{
@@ -150,7 +164,7 @@ const QuizItem = (props) => {
                           let quizes = [...parentQuiz]
                           const data = editor.getData()
                           // check if exists in current test
-                          if (data) {
+                          if (!_.isEmpty(data)) {
                             let found = _.findIndex(quizes, function (quiz) {
                               return quiz.question === data
                             })
@@ -442,11 +456,12 @@ const QuizItem = (props) => {
 QuizItem.propTypes = {
   data: PropTypes.object,
   id: PropTypes.number,
+  // objectId: PropTypes.string,
   parentQuiz: PropTypes.array,
   onChange: PropTypes.func,
   disabled: PropTypes.bool,
   testId: PropTypes.string,
-  display: PropTypes.bool,
+  activeStep: PropTypes.number,
 }
 
 const TrialTest = (props) => {
@@ -479,7 +494,7 @@ const TrialTest = (props) => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1)
   }
 
-  const addQuiz = (part = 1) => {
+  const addQuiz = (part) => {
     const data = {
       question: '',
       A: '',
@@ -488,6 +503,7 @@ const TrialTest = (props) => {
       D: '',
       answer: 'A',
       part: part,
+      _id: uuidv4(),
     }
     setQuiz([...quiz, data])
   }
@@ -542,6 +558,7 @@ const TrialTest = (props) => {
     const clone = quiz.map((item) => {
       let newItem = item
       newItem.question = htmlEntityEncode(newItem.question)
+      if (newItem._id) delete newItem._id // remove ID
       return newItem
     })
     return clone
@@ -689,63 +706,242 @@ const TrialTest = (props) => {
           <div>
             <div>
               {/* Content */}
-              <CRow className="mb-3">
-                <CFormLabel htmlFor="readingContent" className="col-sm-2 col-form-label">
-                  Đề bài ({getTestPartName(activeStep)})
-                </CFormLabel>
-                <CCol sm="10">
-                  {viewAction !== 'get' && (
-                    <div
-                      id="readingContent"
-                      style={{
-                        border: '1px solid grey',
-                        borderRadius: '5px 5px 5px 5px',
-                        backgroundColor: '#fff',
-                        paddingRight: '5px',
-                        paddingLeft: '5px',
-                        paddingTop: '5px',
-                        marginTop: '7px',
-                        cursor: 'text',
-                        minHeight: 200,
-                        width: '100%',
-                      }}
-                      onClick={(e) => {
-                        const editor = window.CKEDITOR.replace('readingContent', {
-                          on: {
-                            // instanceReady: function (evt) {
-                            //   document.getElementById(evt.editor.id + '_top').style.display = 'none'
-                            // },
-                            change: function (e) {
-                              // xử lý data
-                              let content = editor.getData()
-                              setReadingContent(content)
+              {activeStep === TEST_PART.vocabulary && (
+                <CRow className="mb-3">
+                  <CFormLabel htmlFor="vocabularyContent" className="col-sm-2 col-form-label">
+                    Đề bài ({getTestPartName(activeStep)})
+                  </CFormLabel>
+                  <CCol sm="10">
+                    {viewAction !== 'get' && (
+                      <div
+                        id="vocabularyContent"
+                        style={{
+                          border: '1px solid grey',
+                          borderRadius: '5px 5px 5px 5px',
+                          backgroundColor: '#fff',
+                          paddingRight: '5px',
+                          paddingLeft: '5px',
+                          paddingTop: '5px',
+                          marginTop: '7px',
+                          cursor: 'text',
+                          minHeight: 200,
+                          width: '100%',
+                        }}
+                        onClick={(e) => {
+                          const editor = window.CKEDITOR.replace('vocabularyContent', {
+                            on: {
+                              // instanceReady: function (evt) {
+                              //   document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                              // },
+                              change: function (e) {
+                                // xử lý data
+                                let content = editor.getData()
+                                setVocabularyContent(content)
+                              },
                             },
-                          },
-                        })
-                      }}
-                    >
-                      {readingContent ? renderHTML(readingContent) : ''}
-                    </div>
-                  )}
-                  {viewAction === 'get' && !_.isEmpty(readingContent) && (
-                    <div
-                      style={{
-                        border: '1px solid grey',
-                        borderRadius: '5px 5px 5px 5px',
-                        backgroundColor: '#D8DBE0',
-                        paddingRight: '5px',
-                        paddingLeft: '5px',
-                        paddingTop: '5px',
-                        marginTop: '7px',
-                        width: '100%',
-                        height: 'auto',
-                      }}
-                    >
-                      {readingContent ? renderHTML(readingContent) : ''}
-                    </div>
-                  )}
-                </CCol>
-              </CRow>
+                          })
+                        }}
+                      >
+                        {vocabularyContent ? renderHTML(vocabularyContent) : ''}
+                      </div>
+                    )}
+                    {viewAction === 'get' && !_.isEmpty(vocabularyContent) && (
+                      <div
+                        style={{
+                          border: '1px solid grey',
+                          borderRadius: '5px 5px 5px 5px',
+                          backgroundColor: '#D8DBE0',
+                          paddingRight: '5px',
+                          paddingLeft: '5px',
+                          paddingTop: '5px',
+                          marginTop: '7px',
+                          width: '100%',
+                          height: 'auto',
+                        }}
+                      >
+                        {vocabularyContent ? renderHTML(vocabularyContent) : ''}
+                      </div>
+                    )}
+                  </CCol>
+                </CRow>
+              )}
+              {activeStep === TEST_PART.grammar && (
+                <CRow className="mb-3">
+                  <CFormLabel htmlFor="grammarContent" className="col-sm-2 col-form-label">
+                    Đề bài ({getTestPartName(activeStep)})
+                  </CFormLabel>
+                  <CCol sm="10">
+                    {viewAction !== 'get' && (
+                      <div
+                        id="grammarContent"
+                        style={{
+                          border: '1px solid grey',
+                          borderRadius: '5px 5px 5px 5px',
+                          backgroundColor: '#fff',
+                          paddingRight: '5px',
+                          paddingLeft: '5px',
+                          paddingTop: '5px',
+                          marginTop: '7px',
+                          cursor: 'text',
+                          minHeight: 200,
+                          width: '100%',
+                        }}
+                        onClick={(e) => {
+                          const editor = window.CKEDITOR.replace('grammarContent', {
+                            on: {
+                              // instanceReady: function (evt) {
+                              //   document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                              // },
+                              change: function (e) {
+                                // xử lý data
+                                let content = editor.getData()
+                                setGrammarContent(content)
+                              },
+                            },
+                          })
+                        }}
+                      >
+                        {grammarContent ? renderHTML(grammarContent) : ''}
+                      </div>
+                    )}
+                    {viewAction === 'get' && !_.isEmpty(grammarContent) && (
+                      <div
+                        style={{
+                          border: '1px solid grey',
+                          borderRadius: '5px 5px 5px 5px',
+                          backgroundColor: '#D8DBE0',
+                          paddingRight: '5px',
+                          paddingLeft: '5px',
+                          paddingTop: '5px',
+                          marginTop: '7px',
+                          width: '100%',
+                          height: 'auto',
+                        }}
+                      >
+                        {grammarContent ? renderHTML(grammarContent) : ''}
+                      </div>
+                    )}
+                  </CCol>
+                </CRow>
+              )}
+              {activeStep === TEST_PART.reading && (
+                <CRow className="mb-3">
+                  <CFormLabel htmlFor="readingContent" className="col-sm-2 col-form-label">
+                    Đề bài ({getTestPartName(activeStep)})
+                  </CFormLabel>
+                  <CCol sm="10">
+                    {viewAction !== 'get' && (
+                      <div
+                        id="readingContent"
+                        style={{
+                          border: '1px solid grey',
+                          borderRadius: '5px 5px 5px 5px',
+                          backgroundColor: '#fff',
+                          paddingRight: '5px',
+                          paddingLeft: '5px',
+                          paddingTop: '5px',
+                          marginTop: '7px',
+                          cursor: 'text',
+                          minHeight: 200,
+                          width: '100%',
+                        }}
+                        onClick={(e) => {
+                          const editor = window.CKEDITOR.replace('readingContent', {
+                            on: {
+                              // instanceReady: function (evt) {
+                              //   document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                              // },
+                              change: function (e) {
+                                // xử lý data
+                                let content = editor.getData()
+                                setReadingContent(content)
+                              },
+                            },
+                          })
+                        }}
+                      >
+                        {readingContent ? renderHTML(readingContent) : ''}
+                      </div>
+                    )}
+                    {viewAction === 'get' && !_.isEmpty(readingContent) && (
+                      <div
+                        style={{
+                          border: '1px solid grey',
+                          borderRadius: '5px 5px 5px 5px',
+                          backgroundColor: '#D8DBE0',
+                          paddingRight: '5px',
+                          paddingLeft: '5px',
+                          paddingTop: '5px',
+                          marginTop: '7px',
+                          width: '100%',
+                          height: 'auto',
+                        }}
+                      >
+                        {readingContent ? renderHTML(readingContent) : ''}
+                      </div>
+                    )}
+                  </CCol>
+                </CRow>
+              )}
+              {activeStep === TEST_PART.listening && (
+                <CRow className="mb-3">
+                  <CFormLabel htmlFor="listeningContent" className="col-sm-2 col-form-label">
+                    Đề bài ({getTestPartName(activeStep)})
+                  </CFormLabel>
+                  <CCol sm="10">
+                    {viewAction !== 'get' && (
+                      <div
+                        id="listeningContent"
+                        style={{
+                          border: '1px solid grey',
+                          borderRadius: '5px 5px 5px 5px',
+                          backgroundColor: '#fff',
+                          paddingRight: '5px',
+                          paddingLeft: '5px',
+                          paddingTop: '5px',
+                          marginTop: '7px',
+                          cursor: 'text',
+                          minHeight: 200,
+                          width: '100%',
+                        }}
+                        onClick={(e) => {
+                          const editor = window.CKEDITOR.replace('listeningContent', {
+                            on: {
+                              // instanceReady: function (evt) {
+                              //   document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                              // },
+                              change: function (e) {
+                                // xử lý data
+                                let content = editor.getData()
+                                setListeningContent(content)
+                              },
+                            },
+                          })
+                        }}
+                      >
+                        {listeningContent ? renderHTML(listeningContent) : ''}
+                      </div>
+                    )}
+                    {viewAction === 'get' && !_.isEmpty(listeningContent) && (
+                      <div
+                        style={{
+                          border: '1px solid grey',
+                          borderRadius: '5px 5px 5px 5px',
+                          backgroundColor: '#D8DBE0',
+                          paddingRight: '5px',
+                          paddingLeft: '5px',
+                          paddingTop: '5px',
+                          marginTop: '7px',
+                          width: '100%',
+                          height: 'auto',
+                        }}
+                      >
+                        {listeningContent ? renderHTML(listeningContent) : ''}
+                      </div>
+                    )}
+                  </CCol>
+                </CRow>
+              )}
               <CRow>
                 <CForm>
                   <CRow>
@@ -755,7 +951,7 @@ const TrialTest = (props) => {
                         onQuizItemChange={setQuiz}
                         disabled={viewAction === 'get'}
                         testId={itemId}
-                        part={activeStep}
+                        activeStep={activeStep}
                       />
                     </CCol>
                   </CRow>
