@@ -921,63 +921,91 @@ const TrialTest = (props) => {
                 </CRow>
               )}
               {activeStep === TEST_PART.listening && (
-                <CRow className="mb-3">
-                  <CFormLabel htmlFor="listeningContent" className="col-sm-2 col-form-label">
-                    Đề bài ({getTestPartName(activeStep)})
-                  </CFormLabel>
-                  <CCol sm="10">
-                    {viewAction !== 'get' && (
-                      <div
-                        id="listeningContent"
-                        style={{
-                          border: '1px solid grey',
-                          borderRadius: '5px 5px 5px 5px',
-                          backgroundColor: '#fff',
-                          paddingRight: '5px',
-                          paddingLeft: '5px',
-                          paddingTop: '5px',
-                          marginTop: '7px',
-                          cursor: 'text',
-                          minHeight: 200,
-                          width: '100%',
-                        }}
-                        onClick={(e) => {
-                          const editor = window.CKEDITOR.replace('listeningContent', {
-                            on: {
-                              // instanceReady: function (evt) {
-                              //   document.getElementById(evt.editor.id + '_top').style.display = 'none'
-                              // },
-                              change: function (e) {
-                                // xử lý data
-                                let content = editor.getData()
-                                setListeningContent(content)
+                <>
+                  <CRow className="mb-3">
+                    <CFormLabel htmlFor="listeningContent" className="col-sm-2 col-form-label">
+                      Đề bài ({getTestPartName(activeStep)})
+                    </CFormLabel>
+                    <CCol sm="10">
+                      {viewAction !== 'get' && (
+                        <div
+                          id="listeningContent"
+                          style={{
+                            border: '1px solid grey',
+                            borderRadius: '5px 5px 5px 5px',
+                            backgroundColor: '#fff',
+                            paddingRight: '5px',
+                            paddingLeft: '5px',
+                            paddingTop: '5px',
+                            marginTop: '7px',
+                            cursor: 'text',
+                            minHeight: 200,
+                            width: '100%',
+                          }}
+                          onClick={(e) => {
+                            const editor = window.CKEDITOR.replace('listeningContent', {
+                              on: {
+                                // instanceReady: function (evt) {
+                                //   document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                                // },
+                                change: function (e) {
+                                  // xử lý data
+                                  let content = editor.getData()
+                                  setListeningContent(content)
+                                },
                               },
-                            },
-                          })
-                        }}
-                      >
-                        {listeningContent ? renderHTML(listeningContent) : ''}
-                      </div>
-                    )}
-                    {viewAction === 'get' && !_.isEmpty(listeningContent) && (
-                      <div
-                        style={{
-                          border: '1px solid grey',
-                          borderRadius: '5px 5px 5px 5px',
-                          backgroundColor: '#D8DBE0',
-                          paddingRight: '5px',
-                          paddingLeft: '5px',
-                          paddingTop: '5px',
-                          marginTop: '7px',
-                          width: '100%',
-                          height: 'auto',
-                        }}
-                      >
-                        {listeningContent ? renderHTML(listeningContent) : ''}
-                      </div>
-                    )}
-                  </CCol>
-                </CRow>
+                            })
+                          }}
+                        >
+                          {listeningContent ? renderHTML(listeningContent) : ''}
+                        </div>
+                      )}
+                      {viewAction === 'get' && !_.isEmpty(listeningContent) && (
+                        <div
+                          style={{
+                            border: '1px solid grey',
+                            borderRadius: '5px 5px 5px 5px',
+                            backgroundColor: '#D8DBE0',
+                            paddingRight: '5px',
+                            paddingLeft: '5px',
+                            paddingTop: '5px',
+                            marginTop: '7px',
+                            width: '100%',
+                            height: 'auto',
+                          }}
+                        >
+                          {listeningContent ? renderHTML(listeningContent) : ''}
+                        </div>
+                      )}
+                    </CCol>
+                  </CRow>
+                  <CRow>
+                    <CFormLabel htmlFor="listeningAudioSrc" className="col-sm-2 col-form-label">
+                      URL file nghe
+                    </CFormLabel>
+                    <CCol sm="10" style={{ marginBottom: '5px' }}>
+                      <CFormControl
+                        type="text"
+                        component="textarea"
+                        id="listeningAudioSrc"
+                        placeholder="https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3"
+                        onChange={(e) => setListeningAudioSrc(e.target.value)}
+                        rows={2}
+                        disabled={viewAction === 'get'}
+                      />
+                    </CCol>
+                  </CRow>
+                  {!_.isEmpty(listeningAudioSrc) && (
+                    <CRow>
+                      <CCol xs="12" sm="12" lg="12" md="12">
+                        <audio controls style={{ width: '100%' }} preload="auto" type="audio/mpeg">
+                          <source src={listeningAudioSrc} />
+                          Your browser does not support the audio element.
+                        </audio>
+                      </CCol>
+                    </CRow>
+                  )}
+                </>
               )}
               <CRow>
                 <CForm>
