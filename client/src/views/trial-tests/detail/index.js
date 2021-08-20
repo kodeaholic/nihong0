@@ -53,10 +53,10 @@ const useStyles = makeStyles((theme) => ({
 
 function getSteps() {
   return [
-    'Từ vựng - Chữ Hán (文字・語彙)',
-    'Ngữ pháp (文法)',
-    'Đọc hiểu (読解)',
-    'Nghe hiểu (聴解)',
+    'P1. Từ vựng - Chữ Hán (文字・語彙)',
+    'P1. Ngữ pháp (文法)',
+    'P1. Đọc hiểu (読解)',
+    'P2. Nghe hiểu (聴解)',
   ]
 }
 
@@ -473,7 +473,8 @@ const TrialTest = (props) => {
   const [title, setTitle] = useState('')
   const [level, setLevel] = useState(LEVEL.N5)
   const [free, setFree] = useState(1)
-  const [time, setTime] = useState(0)
+  const [time_part_1, setTime1] = useState(0)
+  const [time_part_2, setTime2] = useState(0)
   const [saving, setSaving] = useState(false)
   const [visible, setVisible] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -584,7 +585,7 @@ const TrialTest = (props) => {
   }
 
   const handleSubmit = () => {
-    if (isQuizValidated() && title.length > 0 && time > 0) {
+    if (isQuizValidated() && title.length > 0 && time_part_1 > 0 && time_part_2) {
       setSaving(true)
       const quizToSave = transformQuizToSave()
       let data = {
@@ -592,7 +593,8 @@ const TrialTest = (props) => {
         level,
         free,
         quiz: quizToSave,
-        time,
+        time_part_1,
+        time_part_2,
         vocabularyContent: htmlEntityEncode(vocabularyContent),
         grammarContent: htmlEntityEncode(grammarContent),
         readingContent: htmlEntityEncode(readingContent),
@@ -634,7 +636,8 @@ const TrialTest = (props) => {
             setFree(res.free)
             setTitle(res.title)
             setLevel(res.level)
-            setTime(res.time)
+            setTime1(res.time_part_1)
+            setTime2(res.time_part_2)
             setVocabularyContent(htmlEntityDecode(res.vocabularyContent))
             setGrammarContent(htmlEntityDecode(res.grammarContent))
             setReadingContent(htmlEntityDecode(res.readingContent))
@@ -699,18 +702,35 @@ const TrialTest = (props) => {
             </CCol>
           </CRow>
           <CRow className="mb-3">
-            <CFormLabel htmlFor="time" className="col-sm-2 col-form-label">
-              Thời lượng (phút)
+            <CFormLabel htmlFor="time_part_1" className="col-sm-2 col-form-label">
+              Thời lượng P1 (phút)
             </CFormLabel>
             <CCol sm="10">
               <CFormControl
                 type="number"
-                id="time"
+                id="time_part_1"
                 min="0"
                 required
                 placeholder="Nhập 120 cho thời gian 120 phút làm bài"
-                onChange={(e) => setTime(e.target.value)}
-                defaultValue={time}
+                onChange={(e) => setTime1(e.target.value)}
+                value={parseInt(time_part_1)}
+                disabled={viewAction === 'get'}
+              />
+            </CCol>
+          </CRow>
+          <CRow className="mb-3">
+            <CFormLabel htmlFor="time_part_2" className="col-sm-2 col-form-label">
+              Thời lượng P2 (phút)
+            </CFormLabel>
+            <CCol sm="10">
+              <CFormControl
+                type="number"
+                id="time_part_2"
+                min="0"
+                required
+                placeholder="Nhập 120 cho thời gian 120 phút làm bài"
+                onChange={(e) => setTime2(e.target.value)}
+                value={parseInt(time_part_2)}
                 disabled={viewAction === 'get'}
               />
             </CCol>
@@ -991,6 +1011,7 @@ const TrialTest = (props) => {
                         placeholder="https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3"
                         onChange={(e) => setListeningAudioSrc(e.target.value)}
                         rows={2}
+                        defaultValue={listeningAudioSrc}
                         disabled={viewAction === 'get'}
                       />
                     </CCol>
