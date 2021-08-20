@@ -698,6 +698,23 @@ const TrialTest = (props) => {
               </CFormSelect>
             </CCol>
           </CRow>
+          <CRow className="mb-3">
+            <CFormLabel htmlFor="time" className="col-sm-2 col-form-label">
+              Thời lượng (phút)
+            </CFormLabel>
+            <CCol sm="10">
+              <CFormControl
+                type="number"
+                id="time"
+                min="0"
+                required
+                placeholder="Nhập 120 cho thời gian 120 phút làm bài"
+                onChange={(e) => setTime(e.target.value)}
+                defaultValue={time}
+                disabled={viewAction === 'get'}
+              />
+            </CCol>
+          </CRow>
           <fieldset className="row mb-3">
             <legend className="col-form-label col-sm-2 pt-0">Phí</legend>
             <CCol sm="10">
