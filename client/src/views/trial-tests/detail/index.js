@@ -37,6 +37,7 @@ import { htmlEntityEncode, htmlEntityDecode } from '../../../helpers/htmlentitie
 import { getTestPartName, TEST_PART } from 'src/constants/test.constants'
 import { LEVEL } from 'src/constants/level.constants'
 import { v4 as uuidv4 } from 'uuid'
+import { StepButton } from '@material-ui/core'
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
@@ -485,13 +486,31 @@ const TrialTest = (props) => {
   const classes = useStyles()
   const [activeStep, setActiveStep] = useState(1)
   const steps = getSteps()
-
+  const totalSteps = () => {
+    return TEST_PART.length
+  }
+  const isLastStep = () => {
+    return activeStep === TEST_PART.listening
+  }
+  const isFirstStep = () => {
+    return activeStep === TEST_PART.vocabulary
+  }
   const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1)
+    const newActiveStep = isLastStep()
+      ? TEST_PART.vocabulary // reset to the first
+      : activeStep + 1
+    setActiveStep(newActiveStep)
   }
 
   const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1)
+    const newActiveStep = isFirstStep()
+      ? TEST_PART.listening // reset to the first
+      : activeStep - 1
+    setActiveStep(newActiveStep)
+  }
+
+  const handleStep = (step) => () => {
+    setActiveStep(step)
   }
 
   const addQuiz = (part) => {
@@ -693,13 +712,14 @@ const TrialTest = (props) => {
         </CForm>
         <div className={classes.root} style={{ marginBottom: 10, backgroundColor: '#ebedef' }}>
           <Stepper
+            nonLinear
             activeStep={activeStep - 1}
             alternativeLabel
             style={{ backgroundColor: '#ebedef', border: '1px dotted grey', borderRadius: 10 }}
           >
-            {steps.map((label) => (
+            {steps.map((label, index) => (
               <Step key={label}>
-                <StepLabel>{label}</StepLabel>
+                <StepButton onClick={handleStep(index + 1)}>{label}</StepButton>
               </Step>
             ))}
           </Stepper>
@@ -960,20 +980,20 @@ const TrialTest = (props) => {
               {/* End content */}
               <div style={{ textAlign: 'center', marginTop: 10 }}>
                 <Button
-                  disabled={activeStep === 1}
+                  disabled={activeStep === TEST_PART.vocabulary}
                   onClick={handleBack}
                   variant="contained"
                   color="primary"
                 >
-                  BACK
+                  TRƯỚC
                 </Button>{' '}
                 <Button
                   variant="contained"
                   color="primary"
                   onClick={handleNext}
-                  disabled={activeStep === steps.length}
+                  disabled={activeStep === TEST_PART.listening}
                 >
-                  {activeStep === steps.length ? 'NEXT' : 'NEXT'}
+                  SAU
                 </Button>
               </div>
             </div>
@@ -993,7 +1013,7 @@ const TrialTest = (props) => {
                         LƯU BÀI HỌC
                       </CButton>
                       <CButton onClick={() => addQuiz(activeStep)} color="success">
-                        THÊM CÂU HỎI TRẮC NGHIỆM
+                        TẠO MỚI CÂU HỎI TRẮC NGHIỆM
                       </CButton>
                     </CButtonGroup>
                   </CCol>
