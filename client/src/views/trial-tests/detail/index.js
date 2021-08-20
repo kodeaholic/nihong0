@@ -60,21 +60,8 @@ function getSteps() {
   ]
 }
 
-function getStepContent(stepIndex) {
-  switch (stepIndex) {
-    case 0:
-      return 'Từ vựng - Chữ Hán (文字・語彙)'
-    case 1:
-      return 'Ngữ pháp (文法)'
-    case 2:
-      return 'Đọc hiểu (読解)'
-    case 3:
-      return 'Nghe hiểu (聴解)'
-  }
-}
-
 const Exercise = (props) => {
-  const { quiz, onQuizItemChange, disabled, testId } = props
+  const { quiz, onQuizItemChange, disabled, testId, part } = props
   return (
     <>
       {quiz.map((item, index) => {
@@ -87,6 +74,7 @@ const Exercise = (props) => {
             onChange={onQuizItemChange}
             disabled={disabled}
             testId={testId}
+            display={item.part === part}
           />
         )
       })}
@@ -98,10 +86,11 @@ Exercise.propTypes = {
   onQuizItemChange: PropTypes.func,
   disabled: PropTypes.bool,
   testId: PropTypes.string,
+  part: PropTypes.number,
 }
 const QuizItem = (props) => {
   const [duplicated, setDuplicated] = useState('')
-  let { data, id, parentQuiz, onChange, disabled, testId } = props
+  let { data, id, parentQuiz, onChange, disabled, testId, display } = props
   if (_.isEmpty(data))
     data = {
       question: '',
@@ -131,324 +120,323 @@ const QuizItem = (props) => {
       onChange(arr)
     }
   }
-
-  return (
-    <div className={`quiz-item-wrapper ${duplicated}`}>
-      <CRow>
-        <CCol sm="12" style={{ marginTop: '0px' }}>
-          <CInputGroup>
-            <CInputGroupText id={`question-label-${id}`}>Câu {id + 1}</CInputGroupText>
-            {!disabled && (
-              <div
-                style={{
-                  border: '1px solid #b1b7c1',
-                  backgroundColor: '#fff',
-                  paddingRight: '5px',
-                  paddingLeft: '5px',
-                  paddingTop: '5px',
-                  cursor: 'text',
-                  width: '80%',
-                }}
-                onClick={(e) => {
-                  const editor = window.CKEDITOR.replace(`question-${id}`, {
-                    on: {
-                      // instanceReady: function (evt) {
-                      //   document.getElementById(evt.editor.id + '_top').style.display = 'none'
-                      // },
-                      change: async function (e) {
-                        let index = parseInt(id)
-                        let quizes = [...parentQuiz]
-                        const data = editor.getData()
-                        // check if exists in current test
-                        if (data) {
-                          let found = _.findIndex(quizes, function (quiz) {
-                            return quiz.question === data
-                          })
-                          if (found >= 0) {
-                            if (found === index) {
-                              quizes[index]['question'] = data
-                              onChange(quizes)
-                              setDuplicated('')
-                            } else {
-                              toast.error(`Câu bị trùng`, {
-                                position: 'top-right',
-                                autoClose: 5000,
-                                hideProgressBar: true,
-                                closeOnClick: true,
-                                pauseOnHover: true,
-                                draggable: true,
-                                progress: undefined,
-                              })
-                              quizes[index]['question'] = ''
-                              onChange(quizes)
-                              setDuplicated('duplicated')
-                            }
-                          } else {
-                            // check in DB
-                            const condition = {
-                              question: htmlEntityEncode(data),
-                            }
-                            if (testId) condition.excludedId = testId
-                            const test = await trialTestService.findByQuestion(condition)
-                            if (test) {
-                              toast.error(
-                                `Câu đã có trong cơ sở dữ liệu. Xem lại ${test.title} - ${
-                                  test.level
-                                } - ${getTestTypeName(test.type)}`,
-                                {
+  if (!display) return <></>
+  else
+    return (
+      <div className={`quiz-item-wrapper ${duplicated}`}>
+        <CRow>
+          <CCol sm="12" style={{ marginTop: '0px' }}>
+            <CInputGroup>
+              <CInputGroupText id={`question-label-${id}`}>Câu {id + 1}</CInputGroupText>
+              {!disabled && (
+                <div
+                  style={{
+                    border: '1px solid #b1b7c1',
+                    backgroundColor: '#fff',
+                    paddingRight: '5px',
+                    paddingLeft: '5px',
+                    paddingTop: '5px',
+                    cursor: 'text',
+                    width: '80%',
+                  }}
+                  onClick={(e) => {
+                    const editor = window.CKEDITOR.replace(`question-${id}`, {
+                      on: {
+                        // instanceReady: function (evt) {
+                        //   document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                        // },
+                        change: async function (e) {
+                          let index = parseInt(id)
+                          let quizes = [...parentQuiz]
+                          const data = editor.getData()
+                          // check if exists in current test
+                          if (data) {
+                            let found = _.findIndex(quizes, function (quiz) {
+                              return quiz.question === data
+                            })
+                            if (found >= 0) {
+                              if (found === index) {
+                                quizes[index]['question'] = data
+                                onChange(quizes)
+                                setDuplicated('')
+                              } else {
+                                toast.error(`Câu bị trùng`, {
                                   position: 'top-right',
-                                  autoClose: 8000,
+                                  autoClose: 5000,
                                   hideProgressBar: true,
                                   closeOnClick: true,
                                   pauseOnHover: true,
                                   draggable: true,
                                   progress: undefined,
-                                },
-                              )
-                              quizes[index]['question'] = ''
-                              onChange(quizes)
-                              setDuplicated('duplicated')
+                                })
+                                quizes[index]['question'] = ''
+                                onChange(quizes)
+                                setDuplicated('duplicated')
+                              }
                             } else {
-                              quizes[index]['question'] = data
-                              onChange(quizes)
-                              setDuplicated('')
+                              // check in DB
+                              const condition = {
+                                question: htmlEntityEncode(data),
+                              }
+                              if (testId) condition.excludedId = testId
+                              const test = await trialTestService.findByQuestion(condition)
+                              if (test) {
+                                toast.error(
+                                  `Câu đã có trong cơ sở dữ liệu. Xem lại ${test.title} - ${test.level}`,
+                                  {
+                                    position: 'top-right',
+                                    autoClose: 8000,
+                                    hideProgressBar: true,
+                                    closeOnClick: true,
+                                    pauseOnHover: true,
+                                    draggable: true,
+                                    progress: undefined,
+                                  },
+                                )
+                                quizes[index]['question'] = ''
+                                onChange(quizes)
+                                setDuplicated('duplicated')
+                              } else {
+                                quizes[index]['question'] = data
+                                onChange(quizes)
+                                setDuplicated('')
+                              }
                             }
+                          } else {
+                            quizes[index]['question'] = data
+                            onChange(quizes)
+                            setDuplicated('')
                           }
-                        } else {
-                          quizes[index]['question'] = data
-                          onChange(quizes)
-                          setDuplicated('')
-                        }
+                        },
                       },
-                    },
-                  })
-                }}
-                name="question"
-                id={`question-${id}`}
-                aria-describedby="question-label"
-              >
-                {parentQuiz[parseInt(id)]['question']
-                  ? renderHTML(parentQuiz[parseInt(id)]['question'])
-                  : ''}
-              </div>
-            )}
-            {disabled && (
-              <div
-                style={{
-                  border: '1px solid #b1b7c1',
-                  backgroundColor: '#fff',
-                  paddingRight: '5px',
-                  paddingLeft: '5px',
-                  paddingTop: '5px',
-                  cursor: 'text',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
-                  width: '90%',
-                  height: 'auto',
-                }}
-              >
-                {parentQuiz[parseInt(id)]['question']
-                  ? renderHTML(parentQuiz[parseInt(id)]['question'])
-                  : renderHTML('&nbsp;&nbsp;')}
-              </div>
-            )}
-            {!disabled && (
-              <CInputGroupText
-                id={`delete_${id}`}
-                onClick={handleDeleteClicked}
-                className="quiz-delete-button"
-              >
-                Gỡ bỏ
+                    })
+                  }}
+                  name="question"
+                  id={`question-${id}`}
+                  aria-describedby="question-label"
+                >
+                  {parentQuiz[parseInt(id)]['question']
+                    ? renderHTML(parentQuiz[parseInt(id)]['question'])
+                    : ''}
+                </div>
+              )}
+              {disabled && (
+                <div
+                  style={{
+                    border: '1px solid #b1b7c1',
+                    backgroundColor: '#fff',
+                    paddingRight: '5px',
+                    paddingLeft: '5px',
+                    paddingTop: '5px',
+                    cursor: 'text',
+                    borderTopRightRadius: '5px',
+                    borderBottomRightRadius: '5px',
+                    width: '90%',
+                    height: 'auto',
+                  }}
+                >
+                  {parentQuiz[parseInt(id)]['question']
+                    ? renderHTML(parentQuiz[parseInt(id)]['question'])
+                    : renderHTML('&nbsp;&nbsp;')}
+                </div>
+              )}
+              {!disabled && (
+                <CInputGroupText
+                  id={`delete_${id}`}
+                  onClick={handleDeleteClicked}
+                  className="quiz-delete-button"
+                >
+                  Gỡ bỏ
+                </CInputGroupText>
+              )}
+            </CInputGroup>
+          </CCol>
+        </CRow>
+        <CRow>
+          <CCol sm="3" style={{ marginTop: '5px' }}>
+            <CInputGroup>
+              <CInputGroupText id={`optionA-label-${id}`} style={{ width: '15%' }}>
+                A
               </CInputGroupText>
-            )}
-          </CInputGroup>
-        </CCol>
-      </CRow>
-      <CRow>
-        <CCol sm="3" style={{ marginTop: '5px' }}>
-          <CInputGroup>
-            <CInputGroupText id={`optionA-label-${id}`} style={{ width: '15%' }}>
-              A
-            </CInputGroupText>
-            {!disabled && (
-              <CFormControl
-                type="text"
-                name="A"
-                id={`A-${id}`}
-                aria-describedby="A-label"
-                onChange={(e) => {
-                  let index = parseInt(id)
-                  let quizes = [...parentQuiz]
-                  quizes[index]['A'] = e.target.value
-                  onChange(quizes)
-                }}
-                defaultValue={parentQuiz[parseInt(id)]['A']}
-              />
-            )}
-            {disabled && (
-              <div
-                style={{
-                  border: '1px solid #b1b7c1',
-                  backgroundColor: '#fff',
-                  paddingRight: '5px',
-                  paddingLeft: '5px',
-                  paddingTop: '5px',
-                  cursor: 'text',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
-                  height: 'auto',
-                  width: '85%',
-                }}
-              >
-                {parentQuiz[parseInt(id)]['A'] ? renderHTML(parentQuiz[parseInt(id)]['A']) : ''}
-              </div>
-            )}
-          </CInputGroup>
-        </CCol>
-        <CCol sm="3" style={{ marginTop: '5px' }}>
-          <CInputGroup>
-            <CInputGroupText id={`optionB-label-${id}`} style={{ width: '15%' }}>
-              B
-            </CInputGroupText>
-            {!disabled && (
-              <CFormControl
-                type="text"
-                name="B"
-                id={`B-${id}`}
-                aria-describedby="B-label"
-                onChange={(e) => {
-                  let index = parseInt(id)
-                  let quizes = [...parentQuiz]
-                  quizes[index]['B'] = e.target.value
-                  onChange(quizes)
-                }}
-                defaultValue={parentQuiz[parseInt(id)]['B']}
-              />
-            )}
-            {disabled && (
-              <div
-                style={{
-                  border: '1px solid #b1b7c1',
-                  backgroundColor: '#fff',
-                  paddingRight: '5px',
-                  paddingLeft: '5px',
-                  paddingTop: '5px',
-                  cursor: 'text',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
-                  height: 'auto',
-                  width: '85%',
-                }}
-              >
-                {parentQuiz[parseInt(id)]['B'] ? renderHTML(parentQuiz[parseInt(id)]['B']) : ''}
-              </div>
-            )}
-          </CInputGroup>
-        </CCol>
-        <CCol sm="3" style={{ marginTop: '5px' }}>
-          <CInputGroup>
-            <CInputGroupText id={`optionC-label-${id}`} style={{ width: '15%' }}>
-              C
-            </CInputGroupText>
-            {!disabled && (
-              <CFormControl
-                type="text"
-                name="C"
-                id={`C-${id}`}
-                aria-describedby="C-label"
-                onChange={(e) => {
-                  let index = parseInt(id)
-                  let quizes = [...parentQuiz]
-                  quizes[index]['C'] = e.target.value
-                  onChange(quizes)
-                }}
-                defaultValue={parentQuiz[parseInt(id)]['C']}
-              />
-            )}
-            {disabled && (
-              <div
-                style={{
-                  border: '1px solid #b1b7c1',
-                  backgroundColor: '#fff',
-                  paddingRight: '5px',
-                  paddingLeft: '5px',
-                  paddingTop: '5px',
-                  cursor: 'text',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
-                  height: 'auto',
-                  width: '85%',
-                }}
-              >
-                {parentQuiz[parseInt(id)]['C'] ? renderHTML(parentQuiz[parseInt(id)]['C']) : ''}
-              </div>
-            )}
-          </CInputGroup>
-        </CCol>
-        <CCol sm="3" style={{ marginTop: '5px' }}>
-          <CInputGroup>
-            <CInputGroupText id={`optionD-label-${id}`} style={{ width: '15%' }}>
-              D
-            </CInputGroupText>
-            {!disabled && (
-              <CFormControl
-                type="text"
-                name="D"
-                id={`D-${id}`}
-                aria-describedby="D-label"
-                onChange={(e) => {
-                  let index = parseInt(id)
-                  let quizes = [...parentQuiz]
-                  quizes[index]['D'] = e.target.value
-                  onChange(quizes)
-                }}
-                defaultValue={parentQuiz[parseInt(id)]['D']}
-              />
-            )}
-            {disabled && (
-              <div
-                style={{
-                  border: '1px solid #b1b7c1',
-                  backgroundColor: '#fff',
-                  paddingRight: '5px',
-                  paddingLeft: '5px',
-                  paddingTop: '5px',
-                  cursor: 'text',
-                  borderTopRightRadius: '5px',
-                  borderBottomRightRadius: '5px',
-                  height: 'auto',
-                  width: '85%',
-                }}
-              >
-                {parentQuiz[parseInt(id)]['D'] ? renderHTML(parentQuiz[parseInt(id)]['D']) : ''}
-              </div>
-            )}
-          </CInputGroup>
-        </CCol>
-        {/* <CCol sm="3" style={{ marginTop: '5px', marginBottom: '0px' }}>
+              {!disabled && (
+                <CFormControl
+                  type="text"
+                  name="A"
+                  id={`A-${id}`}
+                  aria-describedby="A-label"
+                  onChange={(e) => {
+                    let index = parseInt(id)
+                    let quizes = [...parentQuiz]
+                    quizes[index]['A'] = e.target.value
+                    onChange(quizes)
+                  }}
+                  defaultValue={parentQuiz[parseInt(id)]['A']}
+                />
+              )}
+              {disabled && (
+                <div
+                  style={{
+                    border: '1px solid #b1b7c1',
+                    backgroundColor: '#fff',
+                    paddingRight: '5px',
+                    paddingLeft: '5px',
+                    paddingTop: '5px',
+                    cursor: 'text',
+                    borderTopRightRadius: '5px',
+                    borderBottomRightRadius: '5px',
+                    height: 'auto',
+                    width: '85%',
+                  }}
+                >
+                  {parentQuiz[parseInt(id)]['A'] ? renderHTML(parentQuiz[parseInt(id)]['A']) : ''}
+                </div>
+              )}
+            </CInputGroup>
+          </CCol>
+          <CCol sm="3" style={{ marginTop: '5px' }}>
+            <CInputGroup>
+              <CInputGroupText id={`optionB-label-${id}`} style={{ width: '15%' }}>
+                B
+              </CInputGroupText>
+              {!disabled && (
+                <CFormControl
+                  type="text"
+                  name="B"
+                  id={`B-${id}`}
+                  aria-describedby="B-label"
+                  onChange={(e) => {
+                    let index = parseInt(id)
+                    let quizes = [...parentQuiz]
+                    quizes[index]['B'] = e.target.value
+                    onChange(quizes)
+                  }}
+                  defaultValue={parentQuiz[parseInt(id)]['B']}
+                />
+              )}
+              {disabled && (
+                <div
+                  style={{
+                    border: '1px solid #b1b7c1',
+                    backgroundColor: '#fff',
+                    paddingRight: '5px',
+                    paddingLeft: '5px',
+                    paddingTop: '5px',
+                    cursor: 'text',
+                    borderTopRightRadius: '5px',
+                    borderBottomRightRadius: '5px',
+                    height: 'auto',
+                    width: '85%',
+                  }}
+                >
+                  {parentQuiz[parseInt(id)]['B'] ? renderHTML(parentQuiz[parseInt(id)]['B']) : ''}
+                </div>
+              )}
+            </CInputGroup>
+          </CCol>
+          <CCol sm="3" style={{ marginTop: '5px' }}>
+            <CInputGroup>
+              <CInputGroupText id={`optionC-label-${id}`} style={{ width: '15%' }}>
+                C
+              </CInputGroupText>
+              {!disabled && (
+                <CFormControl
+                  type="text"
+                  name="C"
+                  id={`C-${id}`}
+                  aria-describedby="C-label"
+                  onChange={(e) => {
+                    let index = parseInt(id)
+                    let quizes = [...parentQuiz]
+                    quizes[index]['C'] = e.target.value
+                    onChange(quizes)
+                  }}
+                  defaultValue={parentQuiz[parseInt(id)]['C']}
+                />
+              )}
+              {disabled && (
+                <div
+                  style={{
+                    border: '1px solid #b1b7c1',
+                    backgroundColor: '#fff',
+                    paddingRight: '5px',
+                    paddingLeft: '5px',
+                    paddingTop: '5px',
+                    cursor: 'text',
+                    borderTopRightRadius: '5px',
+                    borderBottomRightRadius: '5px',
+                    height: 'auto',
+                    width: '85%',
+                  }}
+                >
+                  {parentQuiz[parseInt(id)]['C'] ? renderHTML(parentQuiz[parseInt(id)]['C']) : ''}
+                </div>
+              )}
+            </CInputGroup>
+          </CCol>
+          <CCol sm="3" style={{ marginTop: '5px' }}>
+            <CInputGroup>
+              <CInputGroupText id={`optionD-label-${id}`} style={{ width: '15%' }}>
+                D
+              </CInputGroupText>
+              {!disabled && (
+                <CFormControl
+                  type="text"
+                  name="D"
+                  id={`D-${id}`}
+                  aria-describedby="D-label"
+                  onChange={(e) => {
+                    let index = parseInt(id)
+                    let quizes = [...parentQuiz]
+                    quizes[index]['D'] = e.target.value
+                    onChange(quizes)
+                  }}
+                  defaultValue={parentQuiz[parseInt(id)]['D']}
+                />
+              )}
+              {disabled && (
+                <div
+                  style={{
+                    border: '1px solid #b1b7c1',
+                    backgroundColor: '#fff',
+                    paddingRight: '5px',
+                    paddingLeft: '5px',
+                    paddingTop: '5px',
+                    cursor: 'text',
+                    borderTopRightRadius: '5px',
+                    borderBottomRightRadius: '5px',
+                    height: 'auto',
+                    width: '85%',
+                  }}
+                >
+                  {parentQuiz[parseInt(id)]['D'] ? renderHTML(parentQuiz[parseInt(id)]['D']) : ''}
+                </div>
+              )}
+            </CInputGroup>
+          </CCol>
+          {/* <CCol sm="3" style={{ marginTop: '5px', marginBottom: '0px' }}>
           <CFormLabel htmlFor="answer">Đáp án</CFormLabel>
         </CCol> */}
-        <CCol sm="3" style={{ marginTop: '5px', marginBottom: '0px' }}>
-          <CInputGroup>
-            <CInputGroupText>Đáp án</CInputGroupText>
-            <CFormSelect
-              id={`${id}`}
-              aria-label="answer"
-              defaultValue={data.answer}
-              name="answer"
-              onChange={handleInputChange}
-              disabled={disabled}
-            >
-              <option value="A">A</option>
-              <option value="B">B</option>
-              <option value="C">C</option>
-              <option value="D">D</option>
-            </CFormSelect>
-          </CInputGroup>
-        </CCol>
-      </CRow>
-    </div>
-  )
+          <CCol sm="3" style={{ marginTop: '5px', marginBottom: '0px' }}>
+            <CInputGroup>
+              <CInputGroupText>Đáp án</CInputGroupText>
+              <CFormSelect
+                id={`${id}`}
+                aria-label="answer"
+                defaultValue={data.answer}
+                name="answer"
+                onChange={handleInputChange}
+                disabled={disabled}
+              >
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+              </CFormSelect>
+            </CInputGroup>
+          </CCol>
+        </CRow>
+      </div>
+    )
 }
 
 QuizItem.propTypes = {
@@ -458,6 +446,7 @@ QuizItem.propTypes = {
   onChange: PropTypes.func,
   disabled: PropTypes.bool,
   testId: PropTypes.string,
+  display: PropTypes.bool,
 }
 
 const TrialTest = (props) => {
@@ -468,14 +457,18 @@ const TrialTest = (props) => {
   const [title, setTitle] = useState('')
   const [level, setLevel] = useState(LEVEL.N5)
   const [free, setFree] = useState(1)
-  const [type, setType] = useState(testTypes.TUVUNG)
+  const [time, setTime] = useState(0)
   const [saving, setSaving] = useState(false)
   const [visible, setVisible] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [quiz, setQuiz] = useState([])
-  const [content, setContent] = useState('')
+  const [vocabularyContent, setVocabularyContent] = useState('')
+  const [grammarContent, setGrammarContent] = useState('')
+  const [readingContent, setReadingContent] = useState('')
+  const [listeningContent, setListeningContent] = useState('')
+  const [listeningAudioSrc, setListeningAudioSrc] = useState('')
   const classes = useStyles()
-  const [activeStep, setActiveStep] = useState(0)
+  const [activeStep, setActiveStep] = useState(1)
   const steps = getSteps()
 
   const handleNext = () => {
@@ -486,10 +479,7 @@ const TrialTest = (props) => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1)
   }
 
-  const handleReset = () => {
-    setActiveStep(0)
-  }
-  const addQuiz = () => {
+  const addQuiz = (part = 1) => {
     const data = {
       question: '',
       A: '',
@@ -497,6 +487,7 @@ const TrialTest = (props) => {
       C: '',
       D: '',
       answer: 'A',
+      part: part,
     }
     setQuiz([...quiz, data])
   }
@@ -514,7 +505,7 @@ const TrialTest = (props) => {
       })
       setRedirecTo({
         isRedirected: true,
-        redirectedPath: `/sub-tests/getSubTest/${res.id}`,
+        redirectedPath: `/trial-tests/getTrialTest/${res.id}`,
       })
     } else {
       if (res.code === 400) {
@@ -565,8 +556,12 @@ const TrialTest = (props) => {
         level,
         free,
         quiz: quizToSave,
-        type,
-        content: htmlEntityEncode(content),
+        time,
+        vocabularyContent: htmlEntityEncode(vocabularyContent),
+        grammarContent: htmlEntityEncode(grammarContent),
+        readingContent: htmlEntityEncode(readingContent),
+        listeningContent: htmlEntityEncode(listeningContent),
+        listeningAudioSrc,
       }
       viewAction === 'add'
         ? trialTestService.createItem(data).then(savingCallback)
@@ -598,13 +593,17 @@ const TrialTest = (props) => {
               draggable: true,
               progress: undefined,
             })
-            setRedirecTo({ isRedirected: true, redirectedPath: '/sub-tests' })
+            setRedirecTo({ isRedirected: true, redirectedPath: '/trial-tests' })
           } else {
             setFree(res.free)
             setTitle(res.title)
             setLevel(res.level)
-            setType(res.type)
-            setContent(htmlEntityDecode(res.content))
+            setTime(res.time)
+            setVocabularyContent(htmlEntityDecode(res.vocabularyContent))
+            setGrammarContent(htmlEntityDecode(res.grammarContent))
+            setReadingContent(htmlEntityDecode(res.readingContent))
+            setListeningContent(htmlEntityDecode(res.listeningContent))
+            setListeningAudioSrc(res.listeningAudioSrc)
             let initialQuizes = res.quiz
             let clonedQuizes = [...initialQuizes]
             let resultQuizes = clonedQuizes.map(function (item) {
@@ -675,8 +674,12 @@ const TrialTest = (props) => {
             </CCol>
           </fieldset>
         </CForm>
-        <div className={classes.root} style={{ marginBottom: 10 }}>
-          <Stepper activeStep={activeStep} alternativeLabel>
+        <div className={classes.root} style={{ marginBottom: 10, backgroundColor: '#ebedef' }}>
+          <Stepper
+            activeStep={activeStep - 1}
+            alternativeLabel
+            style={{ backgroundColor: '#ebedef', border: '1px dotted grey', borderRadius: 10 }}
+          >
             {steps.map((label) => (
               <Step key={label}>
                 <StepLabel>{label}</StepLabel>
@@ -684,107 +687,104 @@ const TrialTest = (props) => {
             ))}
           </Stepper>
           <div>
-            {false ? (
-              <div>
-                <Typography className={classes.instructions}>All steps completed</Typography>
-                <Button onClick={handleReset}>Reset</Button>
+            <div>
+              {/* Content */}
+              <CRow className="mb-3">
+                <CFormLabel htmlFor="readingContent" className="col-sm-2 col-form-label">
+                  Đề bài ({getTestPartName(activeStep)})
+                </CFormLabel>
+                <CCol sm="10">
+                  {viewAction !== 'get' && (
+                    <div
+                      id="readingContent"
+                      style={{
+                        border: '1px solid grey',
+                        borderRadius: '5px 5px 5px 5px',
+                        backgroundColor: '#fff',
+                        paddingRight: '5px',
+                        paddingLeft: '5px',
+                        paddingTop: '5px',
+                        marginTop: '7px',
+                        cursor: 'text',
+                        minHeight: 200,
+                        width: '100%',
+                      }}
+                      onClick={(e) => {
+                        const editor = window.CKEDITOR.replace('readingContent', {
+                          on: {
+                            // instanceReady: function (evt) {
+                            //   document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                            // },
+                            change: function (e) {
+                              // xử lý data
+                              let content = editor.getData()
+                              setReadingContent(content)
+                            },
+                          },
+                        })
+                      }}
+                    >
+                      {readingContent ? renderHTML(readingContent) : ''}
+                    </div>
+                  )}
+                  {viewAction === 'get' && !_.isEmpty(readingContent) && (
+                    <div
+                      style={{
+                        border: '1px solid grey',
+                        borderRadius: '5px 5px 5px 5px',
+                        backgroundColor: '#D8DBE0',
+                        paddingRight: '5px',
+                        paddingLeft: '5px',
+                        paddingTop: '5px',
+                        marginTop: '7px',
+                        width: '100%',
+                        height: 'auto',
+                      }}
+                    >
+                      {readingContent ? renderHTML(readingContent) : ''}
+                    </div>
+                  )}
+                </CCol>
+              </CRow>
+              <CRow>
+                <CForm>
+                  <CRow>
+                    <CCol sm="12">
+                      <Exercise
+                        quiz={quiz}
+                        onQuizItemChange={setQuiz}
+                        disabled={viewAction === 'get'}
+                        testId={itemId}
+                        part={activeStep}
+                      />
+                    </CCol>
+                  </CRow>
+                </CForm>
+              </CRow>
+              {/* End content */}
+              <div style={{ textAlign: 'center', marginTop: 10 }}>
+                <Button
+                  disabled={activeStep === 1}
+                  onClick={handleBack}
+                  variant="contained"
+                  color="primary"
+                >
+                  BACK
+                </Button>{' '}
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleNext}
+                  disabled={activeStep === steps.length}
+                >
+                  {activeStep === steps.length ? 'NEXT' : 'NEXT'}
+                </Button>
               </div>
-            ) : (
-              <div>
-                {/* Content */}
-                <div style={{ textAlign: 'center', marginTop: 10 }}>
-                  <Button
-                    disabled={activeStep === 0}
-                    onClick={handleBack}
-                    // className={classes.backButton}
-                    variant="contained"
-                    color="primary"
-                  >
-                    BACK
-                  </Button>{' '}
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleNext}
-                    disabled={activeStep === steps.length - 1}
-                  >
-                    {activeStep === steps.length - 1 ? 'NEXT' : 'NEXT'}
-                  </Button>
-                </div>
-              </div>
-            )}
+            </div>
           </div>
         </div>
         <CRow>
           <CForm>
-            {/* <CRow className="mb-3">
-              <CFormLabel htmlFor="content" className="col-sm-2 col-form-label">
-                Nội dung đề bài
-              </CFormLabel>
-              <CCol sm="10">
-                {viewAction !== 'get' && (
-                  <div
-                    id="content"
-                    style={{
-                      border: '1px solid grey',
-                      borderRadius: '5px 5px 5px 5px',
-                      backgroundColor: '#fff',
-                      paddingRight: '5px',
-                      paddingLeft: '5px',
-                      paddingTop: '5px',
-                      marginTop: '7px',
-                      cursor: 'text',
-                      minHeight: 200,
-                      width: '100%',
-                    }}
-                    onClick={(e) => {
-                      const editor = window.CKEDITOR.replace('content', {
-                        on: {
-                          // instanceReady: function (evt) {
-                          //   document.getElementById(evt.editor.id + '_top').style.display = 'none'
-                          // },
-                          change: function (e) {
-                            // xử lý data
-                            let content = editor.getData()
-                            setContent(content)
-                          },
-                        },
-                      })
-                    }}
-                  >
-                    {content ? renderHTML(content) : ''}
-                  </div>
-                )}
-                {viewAction === 'get' && !_.isEmpty(content) && (
-                  <div
-                    style={{
-                      border: '1px solid grey',
-                      borderRadius: '5px 5px 5px 5px',
-                      backgroundColor: '#D8DBE0',
-                      paddingRight: '5px',
-                      paddingLeft: '5px',
-                      paddingTop: '5px',
-                      marginTop: '7px',
-                      width: '100%',
-                      height: 'auto',
-                    }}
-                  >
-                    {content ? renderHTML(content) : ''}
-                  </div>
-                )}
-              </CCol>
-            </CRow> */}
-            <CRow>
-              <CFormLabel className="col-sm-2 col-form-label">Câu hỏi</CFormLabel>
-              <CCol sm="12">
-                <Exercise
-                  quiz={quiz}
-                  onQuizItemChange={setQuiz}
-                  disabled={viewAction === 'get'}
-                  testId={itemId}
-                />
-              </CCol>
-            </CRow>
             <CRow>
               {viewAction !== 'get' && (
                 <>
@@ -796,7 +796,7 @@ const TrialTest = (props) => {
                       >
                         LƯU BÀI HỌC
                       </CButton>
-                      <CButton onClick={addQuiz} color="success">
+                      <CButton onClick={() => addQuiz(activeStep)} color="success">
                         THÊM CÂU HỎI TRẮC NGHIỆM
                       </CButton>
                     </CButtonGroup>
@@ -815,7 +815,7 @@ const TrialTest = (props) => {
                       onClick={() => {
                         setRedirecTo({
                           isRedirected: true,
-                          redirectedPath: `/sub-tests/editSubTest/${itemId}`,
+                          redirectedPath: `/trial-tests/editTrialTest/${itemId}`,
                         })
                       }}
                     >
@@ -865,7 +865,7 @@ const TrialTest = (props) => {
                               draggable: true,
                               progress: undefined,
                             })
-                            setRedirecTo({ isRedirected: true, redirectedPath: '/sub-tests' })
+                            setRedirecTo({ isRedirected: true, redirectedPath: '/trial-tests' })
                           }}
                         >
                           XOÁ
@@ -876,7 +876,7 @@ const TrialTest = (props) => {
                 </CCol>
               </CRow>
             )}
-            {viewAction === 'get' && (
+            {/* {viewAction === 'get' && (
               <CRow>
                 <CCol className="col-sm-3">
                   <CButton
@@ -885,7 +885,7 @@ const TrialTest = (props) => {
                     onClick={() => {
                       setRedirecTo({
                         isRedirected: true,
-                        redirectedPath: `/sub-tests/getSubTest/webview/${itemId}`,
+                        redirectedPath: `/trial-tests/getTrialTest/webview/${itemId}`,
                       })
                     }}
                   >
@@ -893,7 +893,7 @@ const TrialTest = (props) => {
                   </CButton>
                 </CCol>
               </CRow>
-            )}
+            )} */}
           </CForm>
         </CRow>
       </>
