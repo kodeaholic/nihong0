@@ -57,7 +57,12 @@ const TrialTestSchema = mongoose.Schema(
             required: true,
             default: 1
         },
-        time: {
+        time_part_1: {
+            type: Number,
+            required: true,
+            default: 1
+        },
+        time_part_2: {
             type: Number,
             required: true,
             default: 1

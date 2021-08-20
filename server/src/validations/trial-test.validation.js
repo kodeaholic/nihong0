@@ -9,14 +9,15 @@ const QuizValidation = {
   D: Joi.string().required(),
   answer: Joi.string().required(),
   part: Joi.number().required(),
-}
+};
 
 const createItem = {
   body: Joi.object().keys({
     title: Joi.string().required(),
     level: Joi.string().allow(null, ''),
     free: Joi.number().required(),
-    time: Joi.number().required(),
+    time_part_1: Joi.number().required(),
+    time_part_2: Joi.number().required(),
     quiz: Joi.array().items(QuizValidation),
     vocabularyContent: Joi.string().allow(null, ''),
     grammarContent: Joi.string().allow(null, ''),
@@ -48,26 +49,26 @@ const updateItem = {
   }),
   body: Joi.object()
     .keys({
-        title: Joi.string().required(),
-        level: Joi.string().allow(null, ''),
-        free: Joi.number().required(),
-        time: Joi.number().required(),
-        quiz: Joi.array().items(QuizValidation),
-        vocabularyContent: Joi.string().allow(null, ''),
-        grammarContent: Joi.string().allow(null, ''),
-        readingContent: Joi.string().allow(null, ''),
-        listeningContent: Joi.string().allow(null, ''),
-        listeningAudioSrc: Joi.string().required(),
+      title: Joi.string().required(),
+      level: Joi.string().allow(null, ''),
+      free: Joi.number().required(),
+      time_part_1: Joi.number().required(),
+      time_part_2: Joi.number().required(),
+      quiz: Joi.array().items(QuizValidation),
+      vocabularyContent: Joi.string().allow(null, ''),
+      grammarContent: Joi.string().allow(null, ''),
+      readingContent: Joi.string().allow(null, ''),
+      listeningContent: Joi.string().allow(null, ''),
+      listeningAudioSrc: Joi.string().required(),
     })
     .min(1),
 };
 const findTestByQuestion = {
-    body: Joi.object()
-    .keys({
-        question: Joi.string().required(),
-        excludedId: Joi.string().allow(null, ''),
-    })
-}
+  body: Joi.object().keys({
+    question: Joi.string().required(),
+    excludedId: Joi.string().allow(null, ''),
+  }),
+};
 const deleteItem = {
   params: Joi.object().keys({
     itemId: Joi.string().custom(objectId),
