@@ -9,6 +9,14 @@ const QuizValidation = {
   D: Joi.string().required(),
   answer: Joi.string().required(),
   part: Joi.number().required(),
+  point: Joi.number().required(),
+  group: Joi.string().required(),
+};
+
+const QuizGroupValidation = {
+  uuid: Joi.string().required(),
+  part: Joi.number().required(),
+  title: Joi.string().required(),
 };
 
 const createItem = {
@@ -19,6 +27,7 @@ const createItem = {
     time_part_1: Joi.number().required(),
     time_part_2: Joi.number().required(),
     quiz: Joi.array().items(QuizValidation),
+    quizGroups: Joi.array().items(QuizGroupValidation),
     vocabularyContent: Joi.string().allow(null, ''),
     grammarContent: Joi.string().allow(null, ''),
     readingContent: Joi.string().allow(null, ''),
@@ -55,6 +64,7 @@ const updateItem = {
       time_part_1: Joi.number().required(),
       time_part_2: Joi.number().required(),
       quiz: Joi.array().items(QuizValidation),
+      quizGroups: Joi.array().items(QuizGroupValidation),
       vocabularyContent: Joi.string().allow(null, ''),
       grammarContent: Joi.string().allow(null, ''),
       readingContent: Joi.string().allow(null, ''),

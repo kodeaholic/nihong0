@@ -100,6 +100,7 @@ const QuizItem = (props) => {
       D: '',
       answer: 'A',
       part: activeStep,
+      point: 0,
     }
 
   const handleInputChange = (e) => {
@@ -447,6 +448,27 @@ const QuizItem = (props) => {
                 <option value="C">C</option>
                 <option value="D">D</option>
               </CFormSelect>
+            </CInputGroup>
+          </CCol>
+          <CCol sm="3" style={{ marginTop: '5px' }}>
+            <CInputGroup>
+              <CInputGroupText id={`point-${id}`} style={{ width: '30%' }}>
+                Điểm số
+              </CInputGroupText>
+              <CFormControl
+                type="number"
+                name="point"
+                id={`point-${id}`}
+                aria-describedby="point"
+                onChange={(e) => {
+                  let index = parseInt(id)
+                  let quizes = [...parentQuiz]
+                  quizes[index]['point'] = e.target.value
+                  onChange(quizes)
+                }}
+                disabled={disabled}
+                value={parentQuiz[parseInt(id)]['point']}
+              />
             </CInputGroup>
           </CCol>
         </CRow>
