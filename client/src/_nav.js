@@ -483,7 +483,7 @@ const _nav = [
     _component: 'CNavItem',
     as: NavLink,
     anchor: 'Thêm bài',
-    to: '/trial-tests/addSubTest',
+    to: '/trial-tests/addTrialTest',
   },
 ]
 

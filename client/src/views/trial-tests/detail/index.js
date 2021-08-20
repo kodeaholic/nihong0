@@ -584,7 +584,7 @@ const TrialTest = (props) => {
   }
 
   const handleSubmit = () => {
-    if (isQuizValidated() && title.length > 0) {
+    if (isQuizValidated() && title.length > 0 && time > 0) {
       setSaving(true)
       const quizToSave = transformQuizToSave()
       let data = {
