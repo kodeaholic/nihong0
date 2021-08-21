@@ -14,6 +14,9 @@ router
   .route('/findByQuestion')
   .post(auth('manageTest'), validate(validation.findTestByQuestion), controller.findTestByQuestion)
 router
+  .route('/queryItemsByQuestion')
+  .post(auth('manageTest'), validate(validation.queryItemsByQuestion), controller.queryItemsByQuestion)
+router
   .route('/:itemId')
   .get(validate(validation.getItem), controller.getItem)
   .patch(auth('manageTest'), validate(validation.updateItem), controller.updateItem)

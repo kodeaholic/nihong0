@@ -43,12 +43,17 @@ const findTestByQuestion = catchAsync(async (req, res) => {
         res.send({code: 404});
     }
 });
-
+const queryItemsByQuestion = catchAsync(async (req, res) => {
+    const filter = req.body.filter
+    const result = await subTestService.queryItemsByQuestion(filter);
+    res.send(result);
+});
 module.exports = {
     createItem,
     getItems,
     getItem,
     updateItem,
     deleteItem,
-    findTestByQuestion
+    findTestByQuestion,
+    queryItemsByQuestion
 };

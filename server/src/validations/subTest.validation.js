@@ -32,6 +32,12 @@ const getItems = {
   }),
 };
 
+const queryItemsByQuestion = {
+  body: Joi.object().keys({
+    filter: Joi.object().required(),
+  }),
+};
+
 const getItem = {
   params: Joi.object().keys({
     itemId: Joi.string().custom(objectId),
@@ -73,4 +79,5 @@ module.exports = {
   updateItem,
   deleteItem,
   findTestByQuestion,
+  queryItemsByQuestion
 };
