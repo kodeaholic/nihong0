@@ -31,13 +31,16 @@ import Step from '@material-ui/core/Step'
 import Button from '@material-ui/core/Button'
 import { Redirect } from 'react-router-dom'
 import { trialTestService } from 'src/services/api/trialTestService'
+import { subTestService } from 'src/services/api/subTestService'
 import _ from 'lodash'
 import renderHTML from 'react-render-html'
 import { htmlEntityEncode, htmlEntityDecode } from '../../../helpers/htmlentities'
-import { TEST_PART } from 'src/constants/test.constants'
+import { getTestTypeName, testTypes, TEST_PART } from 'src/constants/test.constants'
 import { LEVEL } from 'src/constants/level.constants'
 import { v4 as uuidv4 } from 'uuid'
 import { StepButton } from '@material-ui/core'
+import Loader from 'src/components/Loader'
+import { sleep } from 'src/helpers/common'
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
@@ -60,6 +63,193 @@ function getSteps() {
   ]
 }
 
+/**Questions Bank Modal */
+const QuestionBankModal = ({ visible, setVisible, onItemClicked, group }) => {
+  const [title, setTitle] = useState('')
+  const [level, setLevel] = useState(LEVEL.N5)
+  const [type, setType] = useState(testTypes.TUVUNG)
+  const [question, setQuestion] = useState('')
+  const [loading, setLoading] = useState(false)
+  const setTitleDebounce = _.debounce(setTitle, 1000)
+  const setQuestionDebounce = _.debounce(setQuestion, 1000)
+  const [items, setItems] = useState([])
+
+  const refresh = (filter) => {
+    subTestService.queryItemsByQuestion({ filter }).then((res) => {
+      setItems(res)
+      setLoading(false)
+    })
+  }
+
+  useEffect(() => {
+    setLoading(true)
+    const filter = {}
+    if (level !== LEVEL.ALL) filter.level = level
+    if (type !== testTypes.ALL) filter.type = type
+    if (title) filter.title = title
+    if (question) filter.question = question
+    refresh(filter)
+  }, [level, type, title, question])
+  return (
+    <CModal visible={visible} onDismiss={() => setVisible(false)} size="xl">
+      <CModalHeader onDismiss={() => setVisible(false)}>
+        <CModalTitle>Thêm câu hỏi từ ngân hàng câu hỏi</CModalTitle>
+      </CModalHeader>
+      <CModalBody style={{ overflow: 'scroll' }}>
+        <CRow>
+          <CCol xs="12" sm="12" lg="12">
+            <CInputGroup className="mb-3">
+              <CFormControl
+                type="text"
+                placeholder="Tìm theo tiêu đề bài thi ..."
+                defaultValue={title}
+                onChange={(e) => {
+                  setTitleDebounce(e.target.value)
+                }}
+                id="modal-title"
+              />
+              <CFormControl
+                type="text"
+                placeholder="Tìm theo nội dung câu hỏi ..."
+                defaultValue={question}
+                onChange={(e) => {
+                  setQuestionDebounce(e.target.value)
+                }}
+                id="modal-question"
+              />
+              <CFormSelect
+                aria-label="Level"
+                onChange={(e) => {
+                  setLevel(e.target.value)
+                }}
+                id="modal-level"
+              >
+                <option value="ALL">Tìm theo trình độ</option>
+                <option value="N1">N1</option>
+                <option value="N2">N2</option>
+                <option value="N3">N3</option>
+                <option value="N4">N4</option>
+                <option value="N5">N5</option>
+              </CFormSelect>
+              <CFormSelect
+                aria-label="Loại bài"
+                onChange={(e) => {
+                  setType(e.target.value)
+                }}
+                id="modal-type"
+              >
+                <option value={testTypes.ALL}>Tìm theo phần thi</option>
+                <option value={testTypes.TUVUNG}>Từ vựng</option>
+                <option value={testTypes.CHUHAN}>Chữ Hán</option>
+                <option value={testTypes.NGUPHAP}>Ngữ pháp</option>
+                <option value={testTypes.TIMNGHIA}>Tìm đúng nghĩa</option>
+                <option value={testTypes.GHEPCAU}>Ghép câu</option>
+              </CFormSelect>
+              <CButton
+                type="button"
+                color="danger"
+                onClick={() => {
+                  const titleEl = document.getElementById('modal-title')
+                  const typeEl = document.getElementById('modal-type')
+                  const levelEl = document.getElementById('modal-level')
+                  const questionEl = document.getElementById('modal-question')
+                  if (titleEl) titleEl.value = ''
+                  if (typeEl) typeEl.value = testTypes.ALL
+                  if (levelEl) levelEl.value = LEVEL.ALL
+                  if (questionEl) questionEl.value = ''
+                  setLevel(LEVEL.ALL)
+                  setTitle('')
+                  setType(testTypes.ALL)
+                  setQuestion('')
+                }}
+                style={{ color: 'white' }}
+              >
+                ↻
+              </CButton>
+            </CInputGroup>
+          </CCol>
+        </CRow>
+        {loading && <CSpinner />}
+        {!loading && (
+          <>
+            {items.map((item, index) => {
+              if (_.isEmpty(item.quiz)) return <></>
+              else {
+                const questions = item.quiz.map((q, idx) => {
+                  return (
+                    <CRow key={index + '-' + idx}>
+                      <CCol xs="11">
+                        <CBadge color="danger" style={{ marginRight: 5 }}>
+                          {item.level}
+                        </CBadge>
+                        <CBadge color="success" style={{ marginRight: 5 }}>
+                          {getTestTypeName(item.type)}
+                        </CBadge>
+                        <CBadge color="info" style={{ marginRight: 5 }}>
+                          {item.title}
+                        </CBadge>
+                        <CBadge
+                          color={q.answer === 'A' ? 'success' : 'danger'}
+                          style={{ marginRight: 5 }}
+                        >
+                          {`A. ${q.A}`}
+                        </CBadge>
+                        <CBadge
+                          color={q.answer === 'B' ? 'success' : 'danger'}
+                          style={{ marginRight: 5 }}
+                        >
+                          {`B. ${q.B}`}
+                        </CBadge>
+                        <CBadge
+                          color={q.answer === 'C' ? 'success' : 'danger'}
+                          style={{ marginRight: 5 }}
+                        >
+                          {`C. ${q.C}`}
+                        </CBadge>
+                        <CBadge
+                          color={q.answer === 'D' ? 'success' : 'danger'}
+                          style={{ marginRight: 5 }}
+                        >
+                          {`D. ${q.D}`}
+                        </CBadge>
+                        {renderHTML(htmlEntityDecode(q.question))}
+                      </CCol>
+                      <CCol xs="1" style={{ textAlign: 'right' }}>
+                        <CButton
+                          onClick={() => {
+                            let data = q
+                            if (data.question) data.question = htmlEntityDecode(data.question)
+                            onItemClicked(group, data)
+                          }}
+                          color="success"
+                          style={{ color: 'white', marginLeft: 10 }}
+                        >
+                          <AddIcon />
+                        </CButton>
+                      </CCol>
+                    </CRow>
+                  )
+                })
+                return questions
+              }
+            })}
+          </>
+        )}
+      </CModalBody>
+      <CModalFooter>
+        <CButton color="secondary" onClick={() => setVisible(false)}>
+          QUAY LẠI
+        </CButton>
+      </CModalFooter>
+    </CModal>
+  )
+}
+QuestionBankModal.propTypes = {
+  visible: PropTypes.bool,
+  setVisible: PropTypes.func,
+  onItemClicked: PropTypes.func,
+  group: PropTypes.object,
+}
 const Exercise = (props) => {
   const { quiz, onQuizItemChange, disabled, testId, group } = props
   return (
@@ -264,7 +454,7 @@ const QuizItem = (props) => {
                               const test = await trialTestService.findByQuestion(condition)
                               if (test) {
                                 toast.error(
-                                  `Câu đã có trong cơ sở dữ liệu. Xem lại ${test.title} - ${test.level}`,
+                                  `Câu đã có trong cơ sở dữ liệu. Xem lại ${test.level} - ${test.title}`,
                                   {
                                     position: 'top-right',
                                     autoClose: 8000,
@@ -565,7 +755,7 @@ const TrialTest = (props) => {
   const [free, setFree] = useState(1)
   const [time_part_1, setTime1] = useState(0)
   const [time_part_2, setTime2] = useState(0)
-  const [saving, setSaving] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [visible, setVisible] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [quiz, setQuiz] = useState([])
@@ -578,7 +768,7 @@ const TrialTest = (props) => {
   const [selectedGroup, setSelectedGroup] = useState({})
   const classes = useStyles()
   const [activeStep, setActiveStep] = useState(1)
-
+  const [modalVisible, setModalVisible] = useState(false)
   useEffect(() => {
     // update selectedGroup
     const filteredGroups = groups.filter((group) => group.part === activeStep)
@@ -613,22 +803,66 @@ const TrialTest = (props) => {
     setActiveStep(step)
   }
 
-  const addQuiz = (group) => {
-    const data = {
-      question: '',
-      A: '',
-      B: '',
-      C: '',
-      D: '',
-      answer: 'A',
-      part: group.part,
-      group: group.uuid,
-      _id: uuidv4(),
+  const addQuiz = async (group, item = undefined) => {
+    let questionBody = item
+    if (_.isEmpty(questionBody)) {
+      questionBody = {
+        question: '',
+        A: '',
+        B: '',
+        C: '',
+        D: '',
+        answer: 'A',
+        _id: uuidv4(),
+      }
+      const data = { ...questionBody, part: group.part, group: group.uuid }
+      setQuiz([...quiz, data])
+    } else {
+      questionBody = {
+        ...item,
+        _id: uuidv4(),
+      }
+      let found = _.findIndex(quiz, function (q) {
+        return q.question === questionBody.question
+      })
+      if (found >= 0) {
+        toast.error(`Trong bài thi hiện tại đã có câu này`, {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        })
+        return
+      } else {
+        // check in DB
+        const condition = {
+          question: htmlEntityEncode(questionBody.question),
+        }
+        const test = await trialTestService.findByQuestion(condition)
+        if (test) {
+          toast.error(`Câu đã có trong cơ sở dữ liệu. Xem lại ${test.level} - ${test.title}`, {
+            position: 'top-right',
+            autoClose: 8000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          })
+          return
+        } else {
+          const data = { ...questionBody, part: group.part, group: group.uuid }
+          setQuiz([...quiz, data])
+        }
+      }
     }
-    setQuiz([...quiz, data])
   }
-  const savingCallback = (res) => {
-    setSaving(false)
+  const savingCallback = async (res) => {
+    await sleep(500)
+    setLoading(false)
     if (res && res.code !== 400 && res.code !== 403 && res.code !== 401 && res.code !== 500) {
       toast.success(`Lưu thành công bài thi`, {
         position: 'top-right',
@@ -639,10 +873,12 @@ const TrialTest = (props) => {
         draggable: true,
         progress: undefined,
       })
-      setRedirecTo({
-        isRedirected: true,
-        redirectedPath: `/trial-tests/getTrialTest/${res.id}`,
-      })
+      // setRedirecTo({
+      //   isRedirected: true,
+      //   redirectedPath: `/trial-tests/editTrialTest/${res.id}`,
+      // })
+      await sleep(500)
+      window.location.reload()
     } else {
       if (res.code === 400) {
         toast.error(`Kiểm tra các trường bỏ trống`, {
@@ -699,7 +935,7 @@ const TrialTest = (props) => {
       time_part_2 > 0 &&
       quiz.length > 0
     ) {
-      setSaving(true)
+      setLoading(true)
       const quizToSave = transformQuizToSave()
       let data = {
         title,
@@ -733,7 +969,8 @@ const TrialTest = (props) => {
   /* Load item */
   useEffect(() => {
     if (itemId) {
-      trialTestService.getItem(itemId).then((res) => {
+      setLoading(true)
+      trialTestService.getItem(itemId).then(async (res) => {
         if (res) {
           if (res.status === 401 || res.status === 404 || res.status === 400) {
             toast.error(`Bài thi không tồn tại`, {
@@ -769,6 +1006,8 @@ const TrialTest = (props) => {
             setGroups(res.quizGroups)
           }
         }
+        await sleep(1500)
+        setLoading(false)
       })
     }
   }, [itemId])
@@ -778,111 +1017,128 @@ const TrialTest = (props) => {
   } else
     return (
       <>
-        <CForm>
-          <CRow className="mb-3">
-            <CFormLabel htmlFor="title" className="col-sm-2 col-form-label">
-              Tiêu đề <span style={{ color: 'red' }}>*</span>
-            </CFormLabel>
-            <CCol sm="10">
-              <CFormControl
-                type="text"
-                id="title"
-                required
-                placeholder="Ví dụ: Bài 01 - N5"
-                onChange={(e) => setTitle(e.target.value)}
-                defaultValue={title}
-                disabled={viewAction === 'get'}
-                style={title.length ? {} : { border: '2px dotted red' }}
-              />
-            </CCol>
-          </CRow>
-          <CRow className="mb-3">
-            <CFormLabel htmlFor="level" className="col-sm-2 col-form-label">
-              Trình độ
-            </CFormLabel>
-            <CCol sm="10">
-              <CFormSelect
-                aria-label="Level"
-                onChange={(e) => {
-                  setLevel(e.target.value)
-                }}
-                id="level"
-                disabled={viewAction === 'get'}
-                value={level}
+        {loading && (
+          <Loader
+            loading={true}
+            customClasses={{
+              wrapper: 'custom-four-circle-loader-wrapper',
+              loader: 'four-circle-loader',
+            }}
+          />
+        )}
+        {!loading && (
+          <>
+            <QuestionBankModal
+              visible={modalVisible}
+              setVisible={setModalVisible}
+              onItemClicked={addQuiz}
+              group={selectedGroup}
+            />
+            <CForm>
+              <CRow className="mb-3">
+                <CFormLabel htmlFor="title" className="col-sm-2 col-form-label">
+                  Tiêu đề <span style={{ color: 'red' }}>*</span>
+                </CFormLabel>
+                <CCol sm="10">
+                  <CFormControl
+                    type="text"
+                    id="title"
+                    required
+                    placeholder="Ví dụ: Bài 01 - N5"
+                    onChange={(e) => setTitle(e.target.value)}
+                    defaultValue={title}
+                    disabled={viewAction === 'get'}
+                    style={title.length ? {} : { border: '2px dotted red' }}
+                  />
+                </CCol>
+              </CRow>
+              <CRow className="mb-3">
+                <CFormLabel htmlFor="level" className="col-sm-2 col-form-label">
+                  Trình độ
+                </CFormLabel>
+                <CCol sm="10">
+                  <CFormSelect
+                    aria-label="Level"
+                    onChange={(e) => {
+                      setLevel(e.target.value)
+                    }}
+                    id="level"
+                    disabled={viewAction === 'get'}
+                    value={level}
+                  >
+                    <option value="N1">N1</option>
+                    <option value="N2">N2</option>
+                    <option value="N3">N3</option>
+                    <option value="N4">N4</option>
+                    <option value="N5">N5</option>
+                  </CFormSelect>
+                </CCol>
+              </CRow>
+              <CRow className="mb-3">
+                <CFormLabel htmlFor="time_part_1" className="col-sm-2 col-form-label">
+                  Thời lượng P1 (phút)
+                </CFormLabel>
+                <CCol sm="2">
+                  <CFormControl
+                    type="number"
+                    id="time_part_1"
+                    min="0"
+                    required
+                    placeholder="Nhập 120 cho thời gian 120 phút làm bài"
+                    onChange={(e) => setTime1(e.target.value)}
+                    value={parseInt(time_part_1)}
+                    disabled={viewAction === 'get'}
+                    style={time_part_1 > 0 ? {} : { border: '2px dotted red' }}
+                  />
+                </CCol>
+              </CRow>
+              <CRow className="mb-3">
+                <CFormLabel htmlFor="time_part_2" className="col-sm-2 col-form-label">
+                  Thời lượng P2 (phút)
+                </CFormLabel>
+                <CCol sm="2">
+                  <CFormControl
+                    type="number"
+                    id="time_part_2"
+                    min="0"
+                    required
+                    placeholder="Nhập 120 cho thời gian 120 phút làm bài"
+                    onChange={(e) => setTime2(e.target.value)}
+                    value={parseInt(time_part_2)}
+                    disabled={viewAction === 'get'}
+                    style={time_part_2 > 0 ? {} : { border: '2px dotted red' }}
+                  />
+                </CCol>
+              </CRow>
+              <fieldset className="row mb-3">
+                <legend className="col-form-label col-sm-2 pt-0">Phí</legend>
+                <CCol sm="10">
+                  <CFormCheck
+                    id="free"
+                    label="Miễn phí"
+                    checked={free === 1}
+                    onChange={() => setFree(1 - free)}
+                  />
+                </CCol>
+              </fieldset>
+            </CForm>
+            <div className={classes.root} style={{ marginBottom: 10, backgroundColor: '#ebedef' }}>
+              <Stepper
+                nonLinear
+                activeStep={activeStep - 1}
+                alternativeLabel
+                style={{ backgroundColor: '#ebedef', border: '1px dotted grey', borderRadius: 10 }}
               >
-                <option value="N1">N1</option>
-                <option value="N2">N2</option>
-                <option value="N3">N3</option>
-                <option value="N4">N4</option>
-                <option value="N5">N5</option>
-              </CFormSelect>
-            </CCol>
-          </CRow>
-          <CRow className="mb-3">
-            <CFormLabel htmlFor="time_part_1" className="col-sm-2 col-form-label">
-              Thời lượng P1 (phút)
-            </CFormLabel>
-            <CCol sm="2">
-              <CFormControl
-                type="number"
-                id="time_part_1"
-                min="0"
-                required
-                placeholder="Nhập 120 cho thời gian 120 phút làm bài"
-                onChange={(e) => setTime1(e.target.value)}
-                value={parseInt(time_part_1)}
-                disabled={viewAction === 'get'}
-                style={time_part_1 > 0 ? {} : { border: '2px dotted red' }}
-              />
-            </CCol>
-          </CRow>
-          <CRow className="mb-3">
-            <CFormLabel htmlFor="time_part_2" className="col-sm-2 col-form-label">
-              Thời lượng P2 (phút)
-            </CFormLabel>
-            <CCol sm="2">
-              <CFormControl
-                type="number"
-                id="time_part_2"
-                min="0"
-                required
-                placeholder="Nhập 120 cho thời gian 120 phút làm bài"
-                onChange={(e) => setTime2(e.target.value)}
-                value={parseInt(time_part_2)}
-                disabled={viewAction === 'get'}
-                style={time_part_2 > 0 ? {} : { border: '2px dotted red' }}
-              />
-            </CCol>
-          </CRow>
-          <fieldset className="row mb-3">
-            <legend className="col-form-label col-sm-2 pt-0">Phí</legend>
-            <CCol sm="10">
-              <CFormCheck
-                id="free"
-                label="Miễn phí"
-                checked={free === 1}
-                onChange={() => setFree(1 - free)}
-              />
-            </CCol>
-          </fieldset>
-        </CForm>
-        <div className={classes.root} style={{ marginBottom: 10, backgroundColor: '#ebedef' }}>
-          <Stepper
-            nonLinear
-            activeStep={activeStep - 1}
-            alternativeLabel
-            style={{ backgroundColor: '#ebedef', border: '1px dotted grey', borderRadius: 10 }}
-          >
-            {steps.map((label, index) => (
-              <Step key={label}>
-                <StepButton onClick={handleStep(index + 1)}>{label}</StepButton>
-              </Step>
-            ))}
-          </Stepper>
-          <div>
-            <div>
-              {/* Content */}
-              {/* {activeStep === TEST_PART.vocabulary && (
+                {steps.map((label, index) => (
+                  <Step key={label}>
+                    <StepButton onClick={handleStep(index + 1)}>{label}</StepButton>
+                  </Step>
+                ))}
+              </Stepper>
+              <div>
+                <div>
+                  {/* Content */}
+                  {/* {activeStep === TEST_PART.vocabulary && (
                 <CRow className="mb-3">
                   <CFormLabel htmlFor="vocabularyContent" className="col-sm-2 col-form-label">
                     Đề bài ({getTestPartName(activeStep)})
@@ -941,7 +1197,7 @@ const TrialTest = (props) => {
                   </CCol>
                 </CRow>
               )} */}
-              {/* {activeStep === TEST_PART.grammar && (
+                  {/* {activeStep === TEST_PART.grammar && (
                 <CRow className="mb-3">
                   <CFormLabel htmlFor="grammarContent" className="col-sm-2 col-form-label">
                     Đề bài ({getTestPartName(activeStep)})
@@ -1000,7 +1256,7 @@ const TrialTest = (props) => {
                   </CCol>
                 </CRow>
               )} */}
-              {/* {activeStep === TEST_PART.reading && (
+                  {/* {activeStep === TEST_PART.reading && (
                 <CRow className="mb-3">
                   <CFormLabel htmlFor="readingContent" className="col-sm-2 col-form-label">
                     Đề bài ({getTestPartName(activeStep)})
@@ -1059,9 +1315,9 @@ const TrialTest = (props) => {
                   </CCol>
                 </CRow>
               )} */}
-              {activeStep === TEST_PART.listening && (
-                <>
-                  {/* <CRow className="mb-3">
+                  {activeStep === TEST_PART.listening && (
+                    <>
+                      {/* <CRow className="mb-3">
                     <CFormLabel htmlFor="listeningContent" className="col-sm-2 col-form-label">
                       Đề bài ({getTestPartName(activeStep)})
                     </CFormLabel>
@@ -1118,255 +1374,272 @@ const TrialTest = (props) => {
                       )}
                     </CCol>
                   </CRow> */}
-                  <CRow>
-                    <CFormLabel htmlFor="listeningAudioSrc" className="col-sm-2 col-form-label">
-                      URL file nghe
-                    </CFormLabel>
-                    <CCol sm="10" style={{ marginBottom: '5px', marginTop: '5px' }}>
-                      <CFormControl
-                        type="text"
-                        component="textarea"
-                        id="listeningAudioSrc"
-                        placeholder="https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3"
-                        onChange={(e) => setListeningAudioSrc(e.target.value)}
-                        rows={2}
-                        defaultValue={listeningAudioSrc}
-                        disabled={viewAction === 'get'}
-                      />
-                    </CCol>
-                  </CRow>
-                  {!_.isEmpty(listeningAudioSrc) && (
-                    <CRow>
-                      <CCol xs="12" sm="12" lg="12" md="12">
-                        <audio controls style={{ width: '100%' }} preload="auto" type="audio/mpeg">
-                          <source src={listeningAudioSrc} />
-                          Your browser does not support the audio element.
-                        </audio>
-                      </CCol>
-                    </CRow>
+                      <CRow>
+                        <CFormLabel htmlFor="listeningAudioSrc" className="col-sm-2 col-form-label">
+                          URL file nghe
+                        </CFormLabel>
+                        <CCol sm="10" style={{ marginBottom: '5px', marginTop: '5px' }}>
+                          <CFormControl
+                            type="text"
+                            component="textarea"
+                            id="listeningAudioSrc"
+                            placeholder="https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3"
+                            onChange={(e) => setListeningAudioSrc(e.target.value)}
+                            rows={2}
+                            defaultValue={listeningAudioSrc}
+                            disabled={viewAction === 'get'}
+                          />
+                        </CCol>
+                      </CRow>
+                      {!_.isEmpty(listeningAudioSrc) && (
+                        <CRow>
+                          <CCol xs="12" sm="12" lg="12" md="12">
+                            <audio
+                              controls
+                              style={{ width: '100%' }}
+                              preload="auto"
+                              type="audio/mpeg"
+                            >
+                              <source src={listeningAudioSrc} />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </CCol>
+                        </CRow>
+                      )}
+                    </>
                   )}
-                </>
-              )}
-              <CRow>
-                <CForm>
-                  {!_.isEmpty(groups) &&
-                    groups
-                      .filter((group) => {
-                        return group.part === activeStep
-                      })
-                      .map((group, index) => {
-                        return (
-                          <div key={group.uuid}>
-                            <CRow>
-                              <CFormLabel htmlFor="group-title" className="col-sm-2 col-form-label">
-                                問題{index + 1}
-                              </CFormLabel>
-                              <CCol sm="10" style={{ marginBottom: '5px', marginTop: '5px' }}>
-                                <CInputGroup>
-                                  <CFormControl
-                                    type="text"
-                                    component="textarea"
-                                    id={`group-${group.uuid}`}
-                                    placeholder="Ví dụ: 問題1　＿＿＿の言葉の読み方として最もよいものを、１・２・３・４から一つ選びなさい。"
-                                    onChange={(e) => {
-                                      let newGroup = { ...group }
-                                      newGroup.title = e.target.value
-                                      let index = _.findIndex(
-                                        groups,
-                                        (item) => item.uuid === newGroup.uuid,
-                                      )
-                                      let newGroups = [...groups]
-                                      newGroups[index] = newGroup
-                                      setGroups(newGroups)
-                                    }}
-                                    rows={2}
-                                    defaultValue={group.title}
-                                    disabled={viewAction === 'get'}
-                                    style={
-                                      _.get(
-                                        groups.filter((group) => {
-                                          return group.part === activeStep
-                                        })[index],
-                                        'title',
-                                      ).length
-                                        ? {}
-                                        : { border: '2px dotted red' }
-                                    }
-                                  />
-                                  {viewAction !== 'get' && (
-                                    <CInputGroupText
-                                      id={`delete-group-${group.uuid}`}
-                                      onClick={() => {
-                                        const newGroups = [...groups]
-                                        let index = _.findIndex(
-                                          groups,
-                                          (item) => item.uuid === group.uuid,
-                                        )
-                                        newGroups.splice(index, 1)
-                                        setGroups(newGroups)
-                                      }}
-                                      className="quiz-delete-button"
-                                    >
-                                      Gỡ bỏ
-                                    </CInputGroupText>
-                                  )}
-                                </CInputGroup>
-                              </CCol>
-                            </CRow>
-                            <CRow>
-                              <CCol sm="12">
-                                <Exercise
-                                  quiz={quiz}
-                                  onQuizItemChange={setQuiz}
-                                  disabled={viewAction === 'get'}
-                                  testId={itemId}
-                                  group={group}
-                                />
-                              </CCol>
-                            </CRow>
-                          </div>
-                        )
-                      })}
-                </CForm>
-              </CRow>
-              {/* End content */}
-              <div style={{ textAlign: 'center', marginTop: 10 }}>
-                <Button
-                  disabled={activeStep === TEST_PART.vocabulary}
-                  onClick={handleBack}
-                  variant="contained"
-                  color="primary"
-                >
-                  TRƯỚC
-                </Button>{' '}
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleNext}
-                  disabled={activeStep === TEST_PART.listening}
-                >
-                  SAU
-                </Button>
+                  <CRow>
+                    <CForm>
+                      {!_.isEmpty(groups) &&
+                        groups
+                          .filter((group) => {
+                            return group.part === activeStep
+                          })
+                          .map((group, index) => {
+                            return (
+                              <div key={group.uuid}>
+                                <CRow>
+                                  <CFormLabel
+                                    htmlFor="group-title"
+                                    className="col-sm-2 col-form-label"
+                                  >
+                                    問題{index + 1}
+                                  </CFormLabel>
+                                  <CCol sm="10" style={{ marginBottom: '5px', marginTop: '5px' }}>
+                                    <CInputGroup>
+                                      <CFormControl
+                                        type="text"
+                                        component="textarea"
+                                        id={`group-${group.uuid}`}
+                                        placeholder="Ví dụ: 問題1　＿＿＿の言葉の読み方として最もよいものを、１・２・３・４から一つ選びなさい。"
+                                        onChange={(e) => {
+                                          let newGroup = { ...group }
+                                          newGroup.title = e.target.value
+                                          let index = _.findIndex(
+                                            groups,
+                                            (item) => item.uuid === newGroup.uuid,
+                                          )
+                                          let newGroups = [...groups]
+                                          newGroups[index] = newGroup
+                                          setGroups(newGroups)
+                                        }}
+                                        rows={2}
+                                        defaultValue={group.title}
+                                        disabled={viewAction === 'get'}
+                                        style={
+                                          _.get(
+                                            groups.filter((group) => {
+                                              return group.part === activeStep
+                                            })[index],
+                                            'title',
+                                          ).length
+                                            ? {}
+                                            : { border: '2px dotted red' }
+                                        }
+                                      />
+                                      {viewAction !== 'get' && (
+                                        <CInputGroupText
+                                          id={`delete-group-${group.uuid}`}
+                                          onClick={() => {
+                                            const newGroups = [...groups]
+                                            let index = _.findIndex(
+                                              groups,
+                                              (item) => item.uuid === group.uuid,
+                                            )
+                                            newGroups.splice(index, 1)
+                                            setGroups(newGroups)
+                                          }}
+                                          className="quiz-delete-button"
+                                        >
+                                          Gỡ bỏ
+                                        </CInputGroupText>
+                                      )}
+                                    </CInputGroup>
+                                  </CCol>
+                                </CRow>
+                                <CRow>
+                                  <CCol sm="12">
+                                    <Exercise
+                                      quiz={quiz}
+                                      onQuizItemChange={setQuiz}
+                                      disabled={viewAction === 'get'}
+                                      testId={itemId}
+                                      group={group}
+                                    />
+                                  </CCol>
+                                </CRow>
+                              </div>
+                            )
+                          })}
+                    </CForm>
+                  </CRow>
+                  {/* End content */}
+                  <div style={{ textAlign: 'center', marginTop: 10 }}>
+                    <Button
+                      disabled={activeStep === TEST_PART.vocabulary}
+                      onClick={handleBack}
+                      variant="contained"
+                      color="primary"
+                    >
+                      TRƯỚC
+                    </Button>{' '}
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleNext}
+                      disabled={activeStep === TEST_PART.listening}
+                    >
+                      SAU
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-        <CRow>
-          <CForm>
             <CRow>
-              {viewAction !== 'get' && (
-                <>
-                  <CCol className="col-sm-6" style={{ marginTop: '5px' }}>
-                    <CButtonGroup>
-                      <CButton
-                        onClick={handleSubmit}
-                        style={{ color: 'white', marginRight: '5px' }}
-                      >
-                        LƯU BÀI HỌC
-                      </CButton>
-                      <CButton
-                        onClick={() => {
-                          const uuid = uuidv4()
-                          const newGroup = { title: '', part: activeStep, uuid: uuid }
-                          let newGroups = [...groups]
-                          newGroups.push(newGroup)
-                          setGroups(newGroups)
-                        }}
-                        color="success"
-                        style={{ color: 'white', marginRight: '5px' }}
-                        disabled={
-                          !_.isEmpty(selectedGroup) &&
-                          quiz.filter((item) => item.group === selectedGroup.uuid).length === 0
-                        }
-                      >
-                        <AddIcon /> 問題
-                      </CButton>
-                      <CButton
-                        onClick={() => addQuiz(selectedGroup)}
-                        color="success"
-                        style={{ color: 'white', marginRight: '5px' }}
-                        disabled={selectedGroup === undefined}
-                      >
-                        <AddIcon /> CÂU HỎI TRẮC NGHIỆM
-                      </CButton>
-                    </CButtonGroup>
-                  </CCol>
-                </>
-              )}
-            </CRow>
-
-            {viewAction === 'get' && (
-              <CRow>
-                <CCol className="col-sm-3">
-                  {saving && <CSpinner />}
-                  {!saving && (
-                    <CButton
-                      style={{ color: 'white', marginBottom: '10px' }}
-                      onClick={() => {
-                        setRedirecTo({
-                          isRedirected: true,
-                          redirectedPath: `/trial-tests/editTrialTest/${itemId}`,
-                        })
-                      }}
-                    >
-                      SỬA BÀI NÀY
-                    </CButton>
+              <CForm>
+                <CRow>
+                  {viewAction !== 'get' && (
+                    <>
+                      <CCol className="col-sm-12" style={{ marginTop: '5px' }}>
+                        <CButtonGroup>
+                          <CButton
+                            onClick={handleSubmit}
+                            style={{ color: 'white', marginRight: '5px' }}
+                            disabled={loading}
+                          >
+                            LƯU BÀI THI
+                          </CButton>
+                          <CButton
+                            onClick={() => {
+                              const uuid = uuidv4()
+                              const newGroup = { title: '', part: activeStep, uuid: uuid }
+                              let newGroups = [...groups]
+                              newGroups.push(newGroup)
+                              setGroups(newGroups)
+                            }}
+                            color="success"
+                            style={{ color: 'white', marginRight: '5px' }}
+                            disabled={
+                              !_.isEmpty(selectedGroup) &&
+                              quiz.filter((item) => item.group === selectedGroup.uuid).length === 0
+                            }
+                          >
+                            <AddIcon /> 問題
+                          </CButton>
+                          <CButton
+                            onClick={() => addQuiz(selectedGroup)}
+                            color="success"
+                            style={{ color: 'white', marginRight: '5px' }}
+                            disabled={selectedGroup === undefined}
+                          >
+                            <AddIcon /> CÂU HỎI TRẮC NGHIỆM MỚI
+                          </CButton>
+                          <CButton
+                            onClick={() => setModalVisible(true)}
+                            color="success"
+                            style={{ color: 'white', marginRight: '5px' }}
+                            disabled={selectedGroup === undefined}
+                          >
+                            <AddIcon /> CÂU HỎI TRẮC NGHIỆM TỪ NGÂN HÀNG CÂU HỎI
+                          </CButton>
+                        </CButtonGroup>
+                      </CCol>
+                    </>
                   )}
-                </CCol>
-              </CRow>
-            )}
+                </CRow>
 
-            {viewAction === 'get' && (
-              <CRow>
-                <CCol className="col-sm-3">
-                  <CButton
-                    color="danger"
-                    style={{ color: 'white' }}
-                    onClick={() => setVisible(!visible)}
-                  >
-                    XOÁ BÀI NÀY
-                  </CButton>
-                  <CModal visible={visible} onDismiss={() => setVisible(false)}>
-                    <CModalHeader onDismiss={() => setVisible(false)}>
-                      <CModalTitle>XÁC NHẬN XOÁ THẺ NÀY</CModalTitle>
-                    </CModalHeader>
-                    <CModalBody>
-                      Bạn chắc chắn muốn xoá <CBadge color="success">{title}</CBadge> ?
-                    </CModalBody>
-                    <CModalFooter>
-                      <CButton color="secondary" onClick={() => setVisible(false)}>
-                        HUỶ BỎ
-                      </CButton>
-                      {deleting && <CSpinner />}
-                      {!deleting && (
+                {viewAction === 'get' && (
+                  <CRow>
+                    <CCol className="col-sm-3">
+                      {loading && <CSpinner />}
+                      {!loading && (
                         <CButton
-                          color="danger"
+                          style={{ color: 'white', marginBottom: '10px' }}
                           onClick={() => {
-                            setDeleting(true)
-                            trialTestService.deleteItem(itemId).then((res) => {
-                              setDeleting(false)
+                            setRedirecTo({
+                              isRedirected: true,
+                              redirectedPath: `/trial-tests/editTrialTest/${itemId}`,
                             })
-                            toast.success(`Xoá thành công`, {
-                              position: 'top-right',
-                              autoClose: 2500,
-                              hideProgressBar: true,
-                              closeOnClick: true,
-                              pauseOnHover: true,
-                              draggable: true,
-                              progress: undefined,
-                            })
-                            setRedirecTo({ isRedirected: true, redirectedPath: '/trial-tests' })
                           }}
                         >
-                          XOÁ
+                          SỬA BÀI NÀY
                         </CButton>
                       )}
-                    </CModalFooter>
-                  </CModal>
-                </CCol>
-              </CRow>
-            )}
-            {/* {viewAction === 'get' && (
+                    </CCol>
+                  </CRow>
+                )}
+
+                {viewAction === 'get' && (
+                  <CRow>
+                    <CCol className="col-sm-3">
+                      <CButton
+                        color="danger"
+                        style={{ color: 'white' }}
+                        onClick={() => setVisible(!visible)}
+                      >
+                        XOÁ BÀI NÀY
+                      </CButton>
+                      <CModal visible={visible} onDismiss={() => setVisible(false)}>
+                        <CModalHeader onDismiss={() => setVisible(false)}>
+                          <CModalTitle>XÁC NHẬN XOÁ THẺ NÀY</CModalTitle>
+                        </CModalHeader>
+                        <CModalBody>
+                          Bạn chắc chắn muốn xoá <CBadge color="success">{title}</CBadge> ?
+                        </CModalBody>
+                        <CModalFooter>
+                          <CButton color="secondary" onClick={() => setVisible(false)}>
+                            HUỶ BỎ
+                          </CButton>
+                          {deleting && <CSpinner />}
+                          {!deleting && (
+                            <CButton
+                              color="danger"
+                              onClick={() => {
+                                setDeleting(true)
+                                trialTestService.deleteItem(itemId).then((res) => {
+                                  setDeleting(false)
+                                })
+                                toast.success(`Xoá thành công`, {
+                                  position: 'top-right',
+                                  autoClose: 2500,
+                                  hideProgressBar: true,
+                                  closeOnClick: true,
+                                  pauseOnHover: true,
+                                  draggable: true,
+                                  progress: undefined,
+                                })
+                                setRedirecTo({ isRedirected: true, redirectedPath: '/trial-tests' })
+                              }}
+                            >
+                              XOÁ
+                            </CButton>
+                          )}
+                        </CModalFooter>
+                      </CModal>
+                    </CCol>
+                  </CRow>
+                )}
+                {/* {viewAction === 'get' && (
               <CRow>
                 <CCol className="col-sm-3">
                   <CButton
@@ -1384,8 +1657,10 @@ const TrialTest = (props) => {
                 </CCol>
               </CRow>
             )} */}
-          </CForm>
-        </CRow>
+              </CForm>
+            </CRow>
+          </>
+        )}
       </>
     )
 }

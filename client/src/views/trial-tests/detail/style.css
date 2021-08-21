@@ -1,26 +1,31 @@
 .quiz-delete-button {
-    cursor: no-drop;
-    width: 10%;
+  cursor: no-drop;
+  width: 10%;
 }
 
 .quiz-item-wrapper {
-    border: 2px dotted #000;
-    padding: 5px;
-    margin-bottom: 15px;
-    border-radius: 10px;
+  border: 2px dotted #000;
+  padding: 5px;
+  margin-bottom: 15px;
+  border-radius: 10px;
 }
 .quiz-item-wrapper.duplicated {
-    border: 2px dotted red;
+  border: 2px dotted red;
 }
-div[id*="cke_question"] {
-    width: 80%;
+div[id*='cke_question'] {
+  width: 80%;
 }
-[id*="question-label"] {
-    width: 10%;
+[id*='question-label'] {
+  width: 10%;
 }
-[id*="question-content"]:after {
-    content: 'Nội dung đọc (nếu có)';
+[id*='question-content']:after {
+  content: 'Nội dung đọc (nếu có)';
 }
-div[id*="cke_question-content"] {
-    width: 100%;
+div[id*='cke_question-content'] {
+  width: 100%;
+}
+.custom-four-circle-loader-wrapper {
+  align-items: center;
+  display: flex;
+  justify-content: center;
 }

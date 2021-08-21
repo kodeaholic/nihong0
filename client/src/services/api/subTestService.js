@@ -7,6 +7,7 @@ export const subTestService = {
   updateItem,
   deleteItem,
   findByQuestion,
+  queryItemsByQuestion,
 }
 
 async function getItems(filter, options = { sortBy: 'title:desc', limit: 1000, page: 1 }) {
@@ -23,6 +24,20 @@ async function getItems(filter, options = { sortBy: 'title:desc', limit: 1000, p
   for (const [key, value] of Object.entries(options)) {
     url += `&${key}=${value}`
   }
+  const response = await fetch(url, requestOptions)
+  const res = await response.json()
+  if (response.status === 200 && response.ok) {
+    return res
+  } else return []
+}
+
+async function queryItemsByQuestion(filter) {
+  const requestOptions = {
+    method: 'POST',
+    headers: authHeader(),
+    body: JSON.stringify(filter),
+  }
+  let url = `${config.apiEndpoint}/sub-tests/queryItemsByQuestion`
   const response = await fetch(url, requestOptions)
   const res = await response.json()
   if (response.status === 200 && response.ok) {
