@@ -34,7 +34,7 @@ import { trialTestService } from 'src/services/api/trialTestService'
 import _ from 'lodash'
 import renderHTML from 'react-render-html'
 import { htmlEntityEncode, htmlEntityDecode } from '../../../helpers/htmlentities'
-import { TEST_PART } from 'src/constants/test.constants'
+import { TEST_PART, getTestPartName } from 'src/constants/test.constants'
 import { LEVEL } from 'src/constants/level.constants'
 import { v4 as uuidv4 } from 'uuid'
 import { StepButton } from '@material-ui/core'
@@ -929,7 +929,7 @@ const TrialTest = (props) => {
                   </CCol>
                 </CRow>
               )} */}
-              {/* {activeStep === TEST_PART.reading && (
+              {activeStep === TEST_PART.reading && (
                 <CRow className="mb-3">
                   <CFormLabel htmlFor="readingContent" className="col-sm-2 col-form-label">
                     Đề bài ({getTestPartName(activeStep)})
@@ -987,7 +987,7 @@ const TrialTest = (props) => {
                     )}
                   </CCol>
                 </CRow>
-              )} */}
+              )}
               {activeStep === TEST_PART.listening && (
                 <>
                   {/* <CRow className="mb-3">
