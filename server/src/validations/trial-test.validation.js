@@ -11,6 +11,7 @@ const QuizValidation = {
   part: Joi.number().required(),
   point: Joi.number().required(),
   group: Joi.string().required(),
+  content: Joi.string().allow(null, ''),
 };
 
 const QuizGroupValidation = {

@@ -18,3 +18,9 @@ div[id*="cke_question"] {
 [id*="question-label"] {
     width: 10%;
 }
+[id*="question-content"]:after {
+    content: 'Nội dung đọc (nếu có)';
+}
+div[id*="cke_question-content"] {
+    width: 100%;
+}

@@ -46,6 +46,11 @@ const Quiz = mongoose.Schema({
     required: true,
     trim: false,
   },
+  content: {
+    type: String,
+    required: false,
+    trim: false,
+  }
 });
 
 const QuizGroup = mongoose.Schema(

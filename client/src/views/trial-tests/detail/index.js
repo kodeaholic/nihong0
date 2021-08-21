@@ -34,7 +34,7 @@ import { trialTestService } from 'src/services/api/trialTestService'
 import _ from 'lodash'
 import renderHTML from 'react-render-html'
 import { htmlEntityEncode, htmlEntityDecode } from '../../../helpers/htmlentities'
-import { TEST_PART, getTestPartName } from 'src/constants/test.constants'
+import { TEST_PART } from 'src/constants/test.constants'
 import { LEVEL } from 'src/constants/level.constants'
 import { v4 as uuidv4 } from 'uuid'
 import { StepButton } from '@material-ui/core'
@@ -141,6 +141,69 @@ const QuizItem = (props) => {
   else
     return (
       <div className={`quiz-item-wrapper ${duplicated}`}>
+        {data.part === TEST_PART.reading && (
+          <CRow className="mb-3">
+            <CCol sm="12">
+              {!disabled && (
+                <div
+                  id={`question-content-${data._id}`}
+                  style={{
+                    border: '1px solid grey',
+                    borderRadius: '5px 5px 5px 5px',
+                    backgroundColor: '#fff',
+                    paddingRight: '5px',
+                    paddingLeft: '5px',
+                    paddingTop: '5px',
+                    marginTop: '7px',
+                    cursor: 'text',
+                    minHeight: 200,
+                    width: '100%',
+                  }}
+                  onClick={(e) => {
+                    const editor = window.CKEDITOR.replace(`question-content-${data._id}`, {
+                      on: {
+                        // instanceReady: function (evt) {
+                        //   document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                        // },
+                        change: function (e) {
+                          // xử lý data
+                          let content = editor.getData()
+                          let index = parseInt(id)
+                          let quizes = [...parentQuiz]
+                          quizes[index]['content'] = content
+                          onChange(quizes)
+                        },
+                      },
+                    })
+                  }}
+                >
+                  {parentQuiz[parseInt(id)]['content']
+                    ? renderHTML(parentQuiz[parseInt(id)]['content'])
+                    : ''}
+                </div>
+              )}
+              {disabled && !_.isEmpty(parentQuiz[parseInt(id)]['content']) && (
+                <div
+                  style={{
+                    border: '1px solid grey',
+                    borderRadius: '5px 5px 5px 5px',
+                    backgroundColor: '#D8DBE0',
+                    paddingRight: '5px',
+                    paddingLeft: '5px',
+                    paddingTop: '5px',
+                    marginTop: '7px',
+                    width: '100%',
+                    height: 'auto',
+                  }}
+                >
+                  {parentQuiz[parseInt(id)]['content']
+                    ? renderHTML(parentQuiz[parseInt(id)]['content'])
+                    : ''}
+                </div>
+              )}
+            </CCol>
+          </CRow>
+        )}
         <CRow>
           <CCol sm="12" style={{ marginTop: '0px' }}>
             <CInputGroup>
@@ -606,8 +669,14 @@ const TrialTest = (props) => {
   const isQuizValidated = () => {
     let valid = true
     quiz.forEach((item) => {
-      if (!(item.question && item.A && item.B && item.C && item.D && item.answer)) valid = false
+      if (
+        !(item.question && item.A && item.B && item.C && item.D && item.answer && item.point > 0)
+      ) {
+        valid = false
+        // console.log(item)
+      }
     })
+    // console.log(valid)
     return valid
   }
 
@@ -615,6 +684,7 @@ const TrialTest = (props) => {
     const clone = quiz.map((item) => {
       let newItem = item
       newItem.question = htmlEntityEncode(newItem.question)
+      if (newItem.part === TEST_PART.reading) newItem.content = htmlEntityEncode(newItem.content)
       if (newItem._id) delete newItem._id // remove ID
       return newItem
     })
@@ -626,7 +696,7 @@ const TrialTest = (props) => {
       isQuizValidated() &&
       title.length > 0 &&
       time_part_1 > 0 &&
-      time_part_2 &&
+      time_part_2 > 0 &&
       quiz.length > 0
     ) {
       setSaving(true)
@@ -692,6 +762,7 @@ const TrialTest = (props) => {
             let resultQuizes = clonedQuizes.map(function (item) {
               let newItem = { ...item }
               newItem.question = htmlEntityDecode(newItem.question)
+              if (newItem.content) newItem.content = htmlEntityDecode(newItem.content)
               return newItem
             })
             setQuiz(resultQuizes)
@@ -929,7 +1000,7 @@ const TrialTest = (props) => {
                   </CCol>
                 </CRow>
               )} */}
-              {activeStep === TEST_PART.reading && (
+              {/* {activeStep === TEST_PART.reading && (
                 <CRow className="mb-3">
                   <CFormLabel htmlFor="readingContent" className="col-sm-2 col-form-label">
                     Đề bài ({getTestPartName(activeStep)})
@@ -987,7 +1058,7 @@ const TrialTest = (props) => {
                     )}
                   </CCol>
                 </CRow>
-              )}
+              )} */}
               {activeStep === TEST_PART.listening && (
                 <>
                   {/* <CRow className="mb-3">
@@ -1111,6 +1182,16 @@ const TrialTest = (props) => {
                                     rows={2}
                                     defaultValue={group.title}
                                     disabled={viewAction === 'get'}
+                                    style={
+                                      _.get(
+                                        groups.filter((group) => {
+                                          return group.part === activeStep
+                                        })[index],
+                                        'title',
+                                      ).length
+                                        ? {}
+                                        : { border: '2px dotted red' }
+                                    }
                                   />
                                   {viewAction !== 'get' && (
                                     <CInputGroupText
