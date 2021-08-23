@@ -16,7 +16,7 @@ const Part = (props) => {
   const { part, updateScore } = props
   const [answeredQuiz, setAnsweredQuiz] = useState({})
   // const [activeStep, setActiveStep] = useState(1)
-  const { quiz, time, groups } = part
+  const { quiz, time, groups, partType, listeningAudioSrc } = part
   const onQuizAnswered = (e, uuid) => {
     const { value } = e.target
     let clone = { ...answeredQuiz }
@@ -37,11 +37,19 @@ const Part = (props) => {
     }
   }
 
+  const parts =
+    partType === PART.one
+      ? [TEST_PART.vocabulary, TEST_PART.grammar, TEST_PART.reading]
+      : [TEST_PART.listening]
   return (
     <>
-      {/* <div className="content">{renderHTML('content')}</div> */}
+      {!_.isEmpty(listeningAudioSrc) && (
+        <audio controls preload="metadata">
+          <source src={listeningAudioSrc} />
+        </audio>
+      )}
       <div className="quiz-container">
-        {[TEST_PART.vocabulary, TEST_PART.grammar, TEST_PART.reading].map((type, typeIndex) => {
+        {parts.map((type, typeIndex) => {
           const filteredGroup = groups.filter((g) => g.part === type)
           return (
             <div key={typeIndex}>
@@ -57,7 +65,7 @@ const Part = (props) => {
                       const selectedGroup = groups[found]
                       return (
                         <div key={`quiz-${item.uuid}`}>
-                          {groupIndex === 0 && idx === 0 && (
+                          {groupIndex === 0 && idx === 0 && type !== TEST_PART.listening && (
                             <p
                               style={{
                                 fontFamily: "'Source Sans Pro', sans-serif",
@@ -246,6 +254,7 @@ const TrialTestWebView = (props) => {
                     })
                   : 0,
               groups: groupsOne,
+              partType: PART.one,
             })
             setPartTwo({
               quiz: quizTwo,
@@ -263,6 +272,8 @@ const TrialTestWebView = (props) => {
                     })
                   : 0,
               groups: groupsTwo,
+              partType: PART.two,
+              listeningAudioSrc: res.listeningAudioSrc,
             })
             sleep(1500).then(() => {
               setLoading(false)
@@ -281,7 +292,7 @@ const TrialTestWebView = (props) => {
       while (paras[0]) paras[0].parentNode.removeChild(paras[0])
     }
     /* load css on the fly */
-    const css = ['css/sub-tests/webview.css', 'css/sub-tests/switch.css']
+    const css = ['css/trial-tests/webview.css', 'css/trial-tests/switch.css']
     css.forEach((item) => {
       const link = document.createElement('link')
       // set the attributes for link element
@@ -366,11 +377,12 @@ const TrialTestWebView = (props) => {
                             }}
                             onClick={() => {
                               setSelectedPart(PART.one)
+                              setPartOne({ ...partOne, status: TEST_STATUS.doing })
                               setTitle('文字・語彙 - 文法 - 読解')
                               setScreen(SCREEN.TEST)
                             }}
                           >
-                            Bắt đầu bài thi
+                            Bắt đầu
                           </button>
                         )}
                         {partOne.status === TEST_STATUS.completed && (
@@ -414,7 +426,7 @@ const TrialTestWebView = (props) => {
                           justifyContent: 'center',
                           alignContent: 'center',
                           width: '100%',
-                          marginBottom: 10,
+                          marginBottom: 20,
                           paddingTop: 35,
                           lineHeight: 1.6,
                           fontWeight: 'bold',
@@ -423,12 +435,84 @@ const TrialTestWebView = (props) => {
                       >
                         <p style={{ fontSize: 20 }}>聴解</p>
                         <p style={{ fontWeigth: 'heavy' }}>Thời lượng: {partTwo.time} phút</p>
-                        <p style={{ fontWeigth: 'heavy' }}>Tổng số: {partOne.total} câu</p>
+                        <p style={{ fontWeigth: 'heavy' }}>Tổng số: {partTwo.total} câu</p>
+                        <p style={{ fontWeigth: 'heavy' }}>Tổng điểm: {partTwo.totalScore.point}</p>
+                        <hr
+                          style={{
+                            paddingLeft: 10,
+                            paddingRight: 10,
+                            marginLeft: 20,
+                            marginRight: 20,
+                          }}
+                        ></hr>
+                        {partTwo.status === TEST_STATUS.new && (
+                          <button
+                            style={{
+                              backgroundColor: '#65DD57',
+                              outline: 'none',
+                              borderRadius: 5,
+                              border: 'none',
+                              boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px',
+                              textAlign: 'center',
+                              justifyContent: 'center',
+                              alignContent: 'center',
+                              color: '#ffffff',
+                              textTransform: 'uppercase',
+                              fontSize: 20,
+                              fontWeigth: 'heavy !important',
+                              height: 50,
+                              marginTop: 10,
+                              padding: 10,
+                            }}
+                            onClick={() => {
+                              setPartTwo({ ...partTwo, status: TEST_STATUS.doing })
+                              setSelectedPart(PART.two)
+                              setTitle('聴解')
+                              setScreen(SCREEN.TEST)
+                            }}
+                          >
+                            Bắt đầu
+                          </button>
+                        )}
+                        {partTwo.status === TEST_STATUS.completed && (
+                          <>
+                            <p style={{ fontWeigth: 'heavy' }}>Đã trả lời: {partTwo.total} câu</p>
+                            <p style={{ fontWeigth: 'heavy' }}>
+                              Trả lời đúng: {partTwo.correct} câu
+                            </p>
+                            <p style={{ fontWeigth: 'heavy' }}>Đạt: {partTwo.correct} điểm</p>
+                            <p style={{ fontWeigth: 'heavy' }}>Thời gian làm: {partTwo.duration}</p>
+                            <button
+                              style={{
+                                backgroundColor: '#65DD57',
+                                outline: 'none',
+                                borderRadius: 5,
+                                border: 'none',
+                                boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px',
+                                textAlign: 'center',
+                                justifyContent: 'center',
+                                alignContent: 'center',
+                                color: '#ffffff',
+                                textTransform: 'uppercase',
+                                fontSize: 20,
+                                fontWeigth: 'heavy !important',
+                                height: 50,
+                                marginTop: 10,
+                                padding: 10,
+                              }}
+                            >
+                              Xem lại
+                            </button>
+                          </>
+                        )}
                       </div>
                     </>
                   )}
                   {screen === SCREEN.TEST && selectedPart === PART.one && (
                     <Part part={partOne} updateScore={setPartOne} />
+                  )}
+                  {screen === SCREEN.TEST && selectedPart === PART.two && (
+                    <Part part={partTwo} updateScore={setPartTwo} />
                   )}
                 </main>
               </>
