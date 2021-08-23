@@ -13,15 +13,23 @@ import PropTypes from 'prop-types'
 import { getTestPartName, TEST_PART } from 'src/constants/test.constants'
 import { v4 as uuidv4 } from 'uuid'
 const Part = (props) => {
-  const { part, updateScore } = props
+  const { part, updateScore, setScreen } = props
   const [answeredQuiz, setAnsweredQuiz] = useState({})
-  // const [activeStep, setActiveStep] = useState(1)
   const { quiz, time, groups, partType, listeningAudioSrc } = part
-  const onQuizAnswered = (e, uuid) => {
+  const onQuizAnswered = (e, item) => {
     const { value } = e.target
+    const uuid = item.uuid
     let clone = { ...answeredQuiz }
     clone[uuid] = value
     setAnsweredQuiz(clone)
+    const state = { ...part }
+    state.answered = state.answered + 1
+    if (value === item.answer) {
+      state.correct = state.correct + 1
+      state.score = state.score + item.point
+      if (state.status !== TEST_STATUS.doing) state.status = TEST_STATUS.doing
+    }
+    updateScore(state)
   }
 
   const getNo = (data, group, quiz) => {
@@ -71,7 +79,7 @@ const Part = (props) => {
                                 fontFamily: "'Source Sans Pro', sans-serif",
                                 textAlign: 'center',
                                 fontSize: '15px',
-                                fontWeight: 'bold',
+                                fontWeight: 'normal',
                                 border: '1px solid #000',
                               }}
                             >{`${getTestPartName(type)}`}</p>
@@ -111,10 +119,13 @@ const Part = (props) => {
                               )}
                               name={'quiz-' + item.uuid}
                               onClick={(e) => {
-                                onQuizAnswered(e, item.uuid)
+                                onQuizAnswered(e, item)
                               }}
                               value="A"
-                              disabled={!_.isEmpty(answeredQuiz[item.uuid])}
+                              disabled={
+                                part.status === TEST_STATUS.completed ||
+                                !_.isEmpty(answeredQuiz[item.uuid])
+                              }
                               id={`quiz-${item.uuid}-A`}
                             />
                             <CFormCheck
@@ -126,10 +137,13 @@ const Part = (props) => {
                               )}
                               name={'quiz-' + item.uuid}
                               onClick={(e) => {
-                                onQuizAnswered(e, item.uuid)
+                                onQuizAnswered(e, item)
                               }}
                               value="B"
-                              disabled={!_.isEmpty(answeredQuiz[item.uuid])}
+                              disabled={
+                                part.status === TEST_STATUS.completed ||
+                                !_.isEmpty(answeredQuiz[item.uuid])
+                              }
                               id={`quiz-${item.uuid}-B`}
                             />
                             <CFormCheck
@@ -141,10 +155,13 @@ const Part = (props) => {
                               )}
                               name={'quiz-' + item.uuid}
                               onClick={(e) => {
-                                onQuizAnswered(e, item.uuid)
+                                onQuizAnswered(e, item)
                               }}
                               value="C"
-                              disabled={!_.isEmpty(answeredQuiz[item.uuid])}
+                              disabled={
+                                part.status === TEST_STATUS.completed ||
+                                !_.isEmpty(answeredQuiz[item.uuid])
+                              }
                               id={`quiz-${item.uuid}-C`}
                             />
                             <CFormCheck
@@ -156,10 +173,13 @@ const Part = (props) => {
                               )}
                               name={'quiz-' + item.uuid}
                               onClick={(e) => {
-                                onQuizAnswered(e, item.uuid)
+                                onQuizAnswered(e, item)
                               }}
                               value="D"
-                              disabled={!_.isEmpty(answeredQuiz[item.uuid])}
+                              disabled={
+                                part.status === TEST_STATUS.completed ||
+                                !_.isEmpty(answeredQuiz[item.uuid])
+                              }
                               id={`quiz-${item.uuid}-D`}
                             />
                           </div>
@@ -174,6 +194,27 @@ const Part = (props) => {
           )
         })}
       </div>
+      <div className="scoreboard-wrapper">
+        <div className="scoreboard">
+          <div className="timer">00:00:00</div>
+          <div className="score">{time}</div>
+          <div
+            className="submit-button"
+            onClick={() => {
+              if (part.status !== TEST_STATUS.completed) {
+                const state = { ...part }
+                state.status = TEST_STATUS.completed
+                updateScore(state)
+                setScreen(SCREEN.home)
+              } else {
+                setScreen(SCREEN.home)
+              }
+            }}
+          >
+            {part.status !== TEST_STATUS.completed ? 'Nộp bài' : 'Quay lại'}
+          </div>
+        </div>
+      </div>
     </>
   )
 }
@@ -182,6 +223,7 @@ Part.propTypes = {
   time: PropTypes.number,
   updateScore: PropTypes.func,
   part: PropTypes.object,
+  setScreen: PropTypes.func,
 }
 const PART = {
   one: 'ONE',
@@ -199,6 +241,7 @@ const TEST_STATUS = {
 const TrialTestWebView = (props) => {
   const { itemId } = useParams()
   const [title, setTitle] = useState('')
+  const [originalTitle, setOriginalTitle] = useState('')
   const [pageNotFound, setPageNotFound] = useState(false)
   const [loading, setLoading] = useState(true)
   const [partOne, setPartOne] = useState({})
@@ -214,6 +257,7 @@ const TrialTestWebView = (props) => {
             setPageNotFound(true)
           } else {
             setTitle(res?.title.includes(':') ? _.trim(res.title.split(':')[1]) : res.title)
+            setOriginalTitle(res?.title.includes(':') ? _.trim(res.title.split(':')[1]) : res.title)
             let initialQuizes = res.quiz
             let clonedQuizes = [...initialQuizes]
             let resultQuizes = clonedQuizes.map(function (item) {
@@ -308,6 +352,15 @@ const TrialTestWebView = (props) => {
       removeAllElementsWithClass('css-on-the-fly')
     }
   }, [])
+
+  useEffect(() => {
+    if (screen === SCREEN.home) {
+      setTitle(originalTitle)
+    } else {
+      if (selectedPart === PART.one) setTitle('文字・語彙 - 文法 - 読解')
+      else setTitle('聴解')
+    }
+  }, [screen, selectedPart, originalTitle])
   if (pageNotFound) {
     return <PageNotFoundComponent />
   } else
@@ -338,16 +391,17 @@ const TrialTestWebView = (props) => {
                           alignContent: 'center',
                           width: '100%',
                           marginBottom: 20,
-                          paddingTop: 35,
+                          paddingTop: 10,
                           lineHeight: 1.6,
                           fontWeight: 'bold',
                           fontFamily: "'Source Sans Pro', sans-serif",
                         }}
                       >
                         <p style={{ fontSize: 20 }}>文字・語彙 - 文法 - 読解</p>
-                        <p style={{ fontWeigth: 'heavy' }}>Thời lượng: {partOne.time} phút</p>
-                        <p style={{ fontWeigth: 'heavy' }}>Tổng số: {partOne.total} câu</p>
-                        <p style={{ fontWeigth: 'heavy' }}>Tổng điểm: {partOne.totalScore.point}</p>
+                        <p style={{ fontWeigth: 'heavy' }}>
+                          {partOne.total} câu | {partOne.totalScore.point} điểm | {partOne.time}{' '}
+                          phút
+                        </p>
                         <hr
                           style={{
                             paddingLeft: 10,
@@ -378,7 +432,6 @@ const TrialTestWebView = (props) => {
                             onClick={() => {
                               setSelectedPart(PART.one)
                               setPartOne({ ...partOne, status: TEST_STATUS.doing })
-                              setTitle('文字・語彙 - 文法 - 読解')
                               setScreen(SCREEN.TEST)
                             }}
                           >
@@ -387,12 +440,10 @@ const TrialTestWebView = (props) => {
                         )}
                         {partOne.status === TEST_STATUS.completed && (
                           <>
-                            <p style={{ fontWeigth: 'heavy' }}>Đã trả lời: {partOne.total} câu</p>
                             <p style={{ fontWeigth: 'heavy' }}>
-                              Trả lời đúng: {partOne.correct} câu
+                              Đã trả lời: {partOne.answered} câu
                             </p>
                             <p style={{ fontWeigth: 'heavy' }}>Đạt: {partOne.correct} điểm</p>
-                            <p style={{ fontWeigth: 'heavy' }}>Thời gian làm: {partOne.duration}</p>
                             <button
                               style={{
                                 backgroundColor: '#65DD57',
@@ -408,8 +459,11 @@ const TrialTestWebView = (props) => {
                                 fontSize: 20,
                                 fontWeigth: 'heavy !important',
                                 height: 50,
-                                marginTop: 10,
                                 padding: 10,
+                              }}
+                              onClick={() => {
+                                setSelectedPart(PART.one)
+                                setScreen(SCREEN.TEST)
                               }}
                             >
                               Xem lại
@@ -427,16 +481,17 @@ const TrialTestWebView = (props) => {
                           alignContent: 'center',
                           width: '100%',
                           marginBottom: 20,
-                          paddingTop: 35,
+                          paddingTop: 10,
                           lineHeight: 1.6,
                           fontWeight: 'bold',
                           fontFamily: "'Source Sans Pro', sans-serif",
                         }}
                       >
                         <p style={{ fontSize: 20 }}>聴解</p>
-                        <p style={{ fontWeigth: 'heavy' }}>Thời lượng: {partTwo.time} phút</p>
-                        <p style={{ fontWeigth: 'heavy' }}>Tổng số: {partTwo.total} câu</p>
-                        <p style={{ fontWeigth: 'heavy' }}>Tổng điểm: {partTwo.totalScore.point}</p>
+                        <p style={{ fontWeigth: 'heavy' }}>
+                          {partTwo.total} câu | {partTwo.totalScore.point} điểm | {partTwo.time}{' '}
+                          phút
+                        </p>
                         <hr
                           style={{
                             paddingLeft: 10,
@@ -467,7 +522,6 @@ const TrialTestWebView = (props) => {
                             onClick={() => {
                               setPartTwo({ ...partTwo, status: TEST_STATUS.doing })
                               setSelectedPart(PART.two)
-                              setTitle('聴解')
                               setScreen(SCREEN.TEST)
                             }}
                           >
@@ -476,12 +530,10 @@ const TrialTestWebView = (props) => {
                         )}
                         {partTwo.status === TEST_STATUS.completed && (
                           <>
-                            <p style={{ fontWeigth: 'heavy' }}>Đã trả lời: {partTwo.total} câu</p>
                             <p style={{ fontWeigth: 'heavy' }}>
-                              Trả lời đúng: {partTwo.correct} câu
+                              Đã trả lời: {partTwo.answered} câu
                             </p>
                             <p style={{ fontWeigth: 'heavy' }}>Đạt: {partTwo.correct} điểm</p>
-                            <p style={{ fontWeigth: 'heavy' }}>Thời gian làm: {partTwo.duration}</p>
                             <button
                               style={{
                                 backgroundColor: '#65DD57',
@@ -497,8 +549,11 @@ const TrialTestWebView = (props) => {
                                 fontSize: 20,
                                 fontWeigth: 'heavy !important',
                                 height: 50,
-                                marginTop: 10,
-                                padding: 10,
+                                padding: '10px 10px 0 10px',
+                              }}
+                              onClick={() => {
+                                setSelectedPart(PART.two)
+                                setScreen(SCREEN.TEST)
                               }}
                             >
                               Xem lại
@@ -509,10 +564,10 @@ const TrialTestWebView = (props) => {
                     </>
                   )}
                   {screen === SCREEN.TEST && selectedPart === PART.one && (
-                    <Part part={partOne} updateScore={setPartOne} />
+                    <Part part={partOne} updateScore={setPartOne} setScreen={setScreen} />
                   )}
                   {screen === SCREEN.TEST && selectedPart === PART.two && (
-                    <Part part={partTwo} updateScore={setPartTwo} />
+                    <Part part={partTwo} updateScore={setPartTwo} setScreen={setScreen} />
                   )}
                 </main>
               </>
