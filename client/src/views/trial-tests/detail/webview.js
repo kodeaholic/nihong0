@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import './style.css'
-import { CFormCheck } from '@coreui/react'
+import { CFormCheck, CBadge } from '@coreui/react'
 import { useParams } from 'react-router-dom'
 import { trialTestService } from 'src/services/api/trialTestService'
 import _ from 'lodash'
@@ -399,8 +399,9 @@ const TrialTestWebView = (props) => {
                       >
                         <p style={{ fontSize: 20 }}>文字・語彙 - 文法 - 読解</p>
                         <p style={{ fontWeigth: 'heavy' }}>
-                          {partOne.total} câu | {partOne.totalScore.point} điểm | {partOne.time}{' '}
-                          phút
+                          <CBadge color="info">{partOne.total} câu</CBadge>{' '}
+                          <CBadge color="success">{partOne.totalScore.point} điểm</CBadge>{' '}
+                          <CBadge color="danger">{partOne.time} phút</CBadge>
                         </p>
                         <hr
                           style={{
@@ -444,6 +445,7 @@ const TrialTestWebView = (props) => {
                               Đã trả lời: {partOne.answered} câu
                             </p>
                             <p style={{ fontWeigth: 'heavy' }}>Đạt: {partOne.correct} điểm</p>
+                            <p style={{ fontWeigth: 'heavy' }}>Thời gian làm: {partOne.duration}</p>
                             <button
                               style={{
                                 backgroundColor: '#65DD57',
@@ -489,8 +491,9 @@ const TrialTestWebView = (props) => {
                       >
                         <p style={{ fontSize: 20 }}>聴解</p>
                         <p style={{ fontWeigth: 'heavy' }}>
-                          {partTwo.total} câu | {partTwo.totalScore.point} điểm | {partTwo.time}{' '}
-                          phút
+                          <CBadge color="info">{partTwo.total} câu</CBadge>{' '}
+                          <CBadge color="success">{partTwo.totalScore.point} điểm</CBadge>{' '}
+                          <CBadge color="danger">{partTwo.time} phút</CBadge>
                         </p>
                         <hr
                           style={{
@@ -534,6 +537,7 @@ const TrialTestWebView = (props) => {
                               Đã trả lời: {partTwo.answered} câu
                             </p>
                             <p style={{ fontWeigth: 'heavy' }}>Đạt: {partTwo.correct} điểm</p>
+                            <p style={{ fontWeigth: 'heavy' }}>Thời gian làm: {partTwo.duration}</p>
                             <button
                               style={{
                                 backgroundColor: '#65DD57',
@@ -549,7 +553,7 @@ const TrialTestWebView = (props) => {
                                 fontSize: 20,
                                 fontWeigth: 'heavy !important',
                                 height: 50,
-                                padding: '10px 10px 0 10px',
+                                padding: 10,
                               }}
                               onClick={() => {
                                 setSelectedPart(PART.two)
