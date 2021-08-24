@@ -468,7 +468,7 @@ const TrialTestWebView = (props) => {
                               textTransform: 'uppercase',
                               fontSize: 20,
                               fontWeigth: 'heavy !important',
-                              height: 50,
+                              height: 40,
                               marginTop: 10,
                               padding: 10,
                             }}
@@ -506,7 +506,7 @@ const TrialTestWebView = (props) => {
                                 textTransform: 'uppercase',
                                 fontSize: 20,
                                 fontWeigth: 'heavy !important',
-                                height: 50,
+                                height: 40,
                                 padding: 10,
                               }}
                               onClick={() => {
@@ -564,7 +564,7 @@ const TrialTestWebView = (props) => {
                               textTransform: 'uppercase',
                               fontSize: 20,
                               fontWeigth: 'heavy !important',
-                              height: 50,
+                              height: 40,
                               marginTop: 10,
                               padding: 10,
                             }}
@@ -602,7 +602,7 @@ const TrialTestWebView = (props) => {
                                 textTransform: 'uppercase',
                                 fontSize: 20,
                                 fontWeigth: 'heavy !important',
-                                height: 50,
+                                height: 40,
                                 padding: 10,
                               }}
                               onClick={() => {
