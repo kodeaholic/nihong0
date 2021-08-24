@@ -399,9 +399,9 @@ const TrialTestWebView = (props) => {
                       >
                         <p style={{ fontSize: 20 }}>文字・語彙 - 文法 - 読解</p>
                         <p style={{ fontWeigth: 'heavy' }}>
-                          <CBadge color="info">{partOne.total} câu</CBadge>{' '}
-                          <CBadge color="success">{partOne.totalScore.point} điểm</CBadge>{' '}
-                          <CBadge color="danger">{partOne.time} phút</CBadge>
+                          <CBadge color="info">{partOne.total} 問</CBadge>{' '}
+                          <CBadge color="success">{partOne.totalScore.point} 点</CBadge>{' '}
+                          <CBadge color="danger">{partOne.time} 分</CBadge>
                         </p>
                         <hr
                           style={{
@@ -436,15 +436,13 @@ const TrialTestWebView = (props) => {
                               setScreen(SCREEN.TEST)
                             }}
                           >
-                            Bắt đầu
+                            はじめよう
                           </button>
                         )}
                         {partOne.status === TEST_STATUS.completed && (
                           <>
-                            <p style={{ fontWeigth: 'heavy' }}>
-                              Đã trả lời: {partOne.answered} câu
-                            </p>
-                            <p style={{ fontWeigth: 'heavy' }}>Đạt: {partOne.correct} điểm</p>
+                            <p style={{ fontWeigth: 'heavy' }}>Đã trả lời: {partOne.answered} 問</p>
+                            <p style={{ fontWeigth: 'heavy' }}>Đạt: {partOne.correct} 点</p>
                             <p style={{ fontWeigth: 'heavy' }}>Thời gian làm: {partOne.duration}</p>
                             <button
                               style={{
@@ -491,9 +489,9 @@ const TrialTestWebView = (props) => {
                       >
                         <p style={{ fontSize: 20 }}>聴解</p>
                         <p style={{ fontWeigth: 'heavy' }}>
-                          <CBadge color="info">{partTwo.total} câu</CBadge>{' '}
-                          <CBadge color="success">{partTwo.totalScore.point} điểm</CBadge>{' '}
-                          <CBadge color="danger">{partTwo.time} phút</CBadge>
+                          <CBadge color="info">{partTwo.total} 問</CBadge>{' '}
+                          <CBadge color="success">{partTwo.totalScore.point} 点</CBadge>{' '}
+                          <CBadge color="danger">{partTwo.time} 分</CBadge>
                         </p>
                         <hr
                           style={{
@@ -528,15 +526,13 @@ const TrialTestWebView = (props) => {
                               setScreen(SCREEN.TEST)
                             }}
                           >
-                            Bắt đầu
+                            はじめよう
                           </button>
                         )}
                         {partTwo.status === TEST_STATUS.completed && (
                           <>
-                            <p style={{ fontWeigth: 'heavy' }}>
-                              Đã trả lời: {partTwo.answered} câu
-                            </p>
-                            <p style={{ fontWeigth: 'heavy' }}>Đạt: {partTwo.correct} điểm</p>
+                            <p style={{ fontWeigth: 'heavy' }}>Đã trả lời: {partTwo.answered} 問</p>
+                            <p style={{ fontWeigth: 'heavy' }}>Đạt: {partTwo.correct} 点</p>
                             <p style={{ fontWeigth: 'heavy' }}>Thời gian làm: {partTwo.duration}</p>
                             <button
                               style={{
