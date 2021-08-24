@@ -483,17 +483,13 @@ const TrialTestWebView = (props) => {
                         )}
                         {partOneStatus === TEST_STATUS.completed && (
                           <>
-                            <p style={{ fontWeigth: 'heavy', margin: 1, padding: 1 }}>
+                            <p style={{ fontWeigth: 'heavy', margin: 5, padding: 1 }}>
                               <CBadge color="info">
                                 {partOne.answered} | {partOne.total} 問
-                              </CBadge>
-                            </p>
-                            <p style={{ fontWeigth: 'heavy', margin: 1, padding: 1 }}>
+                              </CBadge>{' '}
                               <CBadge color="success">
                                 {partOne.score} | {partOne.totalScore.point} 点
-                              </CBadge>
-                            </p>
-                            <p style={{ fontWeigth: 'heavy', margin: 5, padding: 1 }}>
+                              </CBadge>{' '}
                               <CBadge color="danger">{msToTime(partOneDuration)}</CBadge>
                             </p>
                             <button
@@ -583,17 +579,13 @@ const TrialTestWebView = (props) => {
                         )}
                         {partTwoStatus === TEST_STATUS.completed && (
                           <>
-                            <p style={{ fontWeigth: 'heavy', margin: 1, padding: 1 }}>
+                            <p style={{ fontWeigth: 'heavy', margin: 5, padding: 1 }}>
                               <CBadge color="info">
                                 {partTwo.answered} | {partTwo.total} 問
-                              </CBadge>
-                            </p>
-                            <p style={{ fontWeigth: 'heavy', margin: 1, padding: 1 }}>
+                              </CBadge>{' '}
                               <CBadge color="success">
                                 {partTwo.score} | {partTwo.totalScore.point} 点
-                              </CBadge>
-                            </p>
-                            <p style={{ fontWeigth: 'heavy', margin: 5, padding: 1 }}>
+                              </CBadge>{' '}
                               <CBadge color="danger">{msToTime(partTwoDuration)}</CBadge>
                             </p>
                             <button
