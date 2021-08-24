@@ -222,7 +222,7 @@ const Part = (props) => {
       </div>
       <div className="scoreboard-wrapper">
         <div className="scoreboard">
-          <div className="timer">{msToTime(timer)}</div>
+          <div className="timer">{msToTime(time * 60 * 1000 - timer)}</div>
           <div className="score">
             <p style={{ margin: 1, padding: 1 }}>
               <CBadge color="info">
