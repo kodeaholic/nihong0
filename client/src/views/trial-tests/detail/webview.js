@@ -14,7 +14,7 @@ import { getTestPartName, TEST_PART } from 'src/constants/test.constants'
 import { v4 as uuidv4 } from 'uuid'
 import { msToTime } from 'src/helpers/time.helper'
 const Part = (props) => {
-  const { part, updateScore, setScreen, status, updateStatus } = props
+  const { part, updateScore, setScreen, status, updateStatus, duration, updateDuration } = props
   const [answeredQuiz, setAnsweredQuiz] = useState({})
   const { quiz, time, groups, partType, listeningAudioSrc } = part
   const [timer, setTimer] = useState(0)
@@ -65,6 +65,16 @@ const Part = (props) => {
       clearInterval(tm)
     }
   }, [status])
+
+  /**Submit on time ends */
+  useEffect(() => {
+    const msTime = time * 60 * 1000 // time in minutes to ms
+    if (timer >= msTime) {
+      updateDuration(timer)
+      updateStatus(TEST_STATUS.completed)
+      setScreen(SCREEN.home)
+    }
+  }, [timer, time, setScreen, updateStatus, updateDuration])
   return (
     <>
       {!_.isEmpty(listeningAudioSrc) && (
@@ -219,7 +229,7 @@ const Part = (props) => {
             onClick={() => {
               if (status !== TEST_STATUS.completed) {
                 const state = { ...part }
-                state.duration = timer
+                updateDuration(timer)
                 updateScore(state)
                 updateStatus(TEST_STATUS.completed)
                 setScreen(SCREEN.home)
@@ -243,6 +253,8 @@ Part.propTypes = {
   setScreen: PropTypes.func,
   updateStatus: PropTypes.func,
   status: PropTypes.string,
+  updateDuration: PropTypes.func,
+  duration: PropTypes.number,
 }
 const PART = {
   one: 'ONE',
@@ -269,6 +281,8 @@ const TrialTestWebView = (props) => {
   const [screen, setScreen] = useState('HOME')
   const [partOneStatus, setPartOneStatus] = useState(TEST_STATUS.new)
   const [partTwoStatus, setPartTwoStatus] = useState(TEST_STATUS.new)
+  const [partOneDuration, setPartOneDuration] = useState(0)
+  const [partTwoDuration, setPartTwoDuration] = useState(0)
   /* Load item */
   useEffect(() => {
     if (itemId) {
@@ -309,7 +323,6 @@ const TrialTestWebView = (props) => {
               answered: 0,
               correct: 0,
               score: 0,
-              duration: 0,
               time: res.time_part_1 || 0,
               totalScore:
                 !_.isEmpty(cloneOne) && cloneOne.length
@@ -326,7 +339,6 @@ const TrialTestWebView = (props) => {
               answered: 0,
               correct: 0,
               score: 0,
-              duration: 0,
               time: res.time_part_2 || 0,
               totalScore:
                 !_.isEmpty(cloneTwo) && cloneTwo.length
@@ -463,7 +475,7 @@ const TrialTestWebView = (props) => {
                             <p style={{ fontWeigth: 'heavy' }}>Đã trả lời: {partOne.answered} 問</p>
                             <p style={{ fontWeigth: 'heavy' }}>Đạt: {partOne.correct} 点</p>
                             <p style={{ fontWeigth: 'heavy' }}>
-                              Thời gian làm: {msToTime(partOne.duration)}
+                              Thời gian làm: {msToTime(partOneDuration)}
                             </p>
                             <button
                               style={{
@@ -555,7 +567,7 @@ const TrialTestWebView = (props) => {
                             <p style={{ fontWeigth: 'heavy' }}>Đã trả lời: {partTwo.answered} 問</p>
                             <p style={{ fontWeigth: 'heavy' }}>Đạt: {partTwo.correct} 点</p>
                             <p style={{ fontWeigth: 'heavy' }}>
-                              Thời gian làm: {msToTime(partTwo.duration)}
+                              Thời gian làm: {msToTime(partTwoDuration)}
                             </p>
                             <button
                               style={{
@@ -593,6 +605,8 @@ const TrialTestWebView = (props) => {
                       setScreen={setScreen}
                       status={partOneStatus}
                       updateStatus={setPartOneStatus}
+                      duration={partOneDuration}
+                      updateDuration={setPartOneDuration}
                     />
                   )}
                   {screen === SCREEN.TEST && selectedPart === PART.two && (
@@ -602,6 +616,8 @@ const TrialTestWebView = (props) => {
                       setScreen={setScreen}
                       status={partTwoStatus}
                       updateStatus={setPartTwoStatus}
+                      duration={partTwoDuration}
+                      updateDuration={setPartTwoDuration}
                     />
                   )}
                 </main>
