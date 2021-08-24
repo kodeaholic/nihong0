@@ -12,10 +12,12 @@ import { sleep } from 'src/helpers/common'
 import PropTypes from 'prop-types'
 import { getTestPartName, TEST_PART } from 'src/constants/test.constants'
 import { v4 as uuidv4 } from 'uuid'
+import { msToTime } from 'src/helpers/time.helper'
 const Part = (props) => {
-  const { part, updateScore, setScreen } = props
+  const { part, updateScore, setScreen, status, updateStatus } = props
   const [answeredQuiz, setAnsweredQuiz] = useState({})
   const { quiz, time, groups, partType, listeningAudioSrc } = part
+  const [timer, setTimer] = useState(0)
   const onQuizAnswered = (e, item) => {
     const { value } = e.target
     const uuid = item.uuid
@@ -27,7 +29,6 @@ const Part = (props) => {
     if (value === item.answer) {
       state.correct = state.correct + 1
       state.score = state.score + item.point
-      if (state.status !== TEST_STATUS.doing) state.status = TEST_STATUS.doing
     }
     updateScore(state)
   }
@@ -49,6 +50,21 @@ const Part = (props) => {
     partType === PART.one
       ? [TEST_PART.vocabulary, TEST_PART.grammar, TEST_PART.reading]
       : [TEST_PART.listening]
+
+  /**Component did mount */
+  useEffect(() => {
+    let tm
+    if (status !== TEST_STATUS.completed) {
+      tm = setInterval(() => {
+        setTimer((t) => t + 1000)
+      }, 1000)
+    } else if (status === TEST_STATUS.completed) {
+      clearInterval(tm)
+    }
+    return () => {
+      clearInterval(tm)
+    }
+  }, [status])
   return (
     <>
       {!_.isEmpty(listeningAudioSrc) && (
@@ -123,7 +139,7 @@ const Part = (props) => {
                               }}
                               value="A"
                               disabled={
-                                part.status === TEST_STATUS.completed ||
+                                status === TEST_STATUS.completed ||
                                 !_.isEmpty(answeredQuiz[item.uuid])
                               }
                               id={`quiz-${item.uuid}-A`}
@@ -141,7 +157,7 @@ const Part = (props) => {
                               }}
                               value="B"
                               disabled={
-                                part.status === TEST_STATUS.completed ||
+                                status === TEST_STATUS.completed ||
                                 !_.isEmpty(answeredQuiz[item.uuid])
                               }
                               id={`quiz-${item.uuid}-B`}
@@ -159,7 +175,7 @@ const Part = (props) => {
                               }}
                               value="C"
                               disabled={
-                                part.status === TEST_STATUS.completed ||
+                                status === TEST_STATUS.completed ||
                                 !_.isEmpty(answeredQuiz[item.uuid])
                               }
                               id={`quiz-${item.uuid}-C`}
@@ -177,7 +193,7 @@ const Part = (props) => {
                               }}
                               value="D"
                               disabled={
-                                part.status === TEST_STATUS.completed ||
+                                status === TEST_STATUS.completed ||
                                 !_.isEmpty(answeredQuiz[item.uuid])
                               }
                               id={`quiz-${item.uuid}-D`}
@@ -196,22 +212,23 @@ const Part = (props) => {
       </div>
       <div className="scoreboard-wrapper">
         <div className="scoreboard">
-          <div className="timer">00:00:00</div>
+          <div className="timer">{msToTime(timer)}</div>
           <div className="score">{time}</div>
           <div
             className="submit-button"
             onClick={() => {
-              if (part.status !== TEST_STATUS.completed) {
+              if (status !== TEST_STATUS.completed) {
                 const state = { ...part }
-                state.status = TEST_STATUS.completed
+                state.duration = timer
                 updateScore(state)
+                updateStatus(TEST_STATUS.completed)
                 setScreen(SCREEN.home)
               } else {
                 setScreen(SCREEN.home)
               }
             }}
           >
-            {part.status !== TEST_STATUS.completed ? 'Nộp bài' : 'Quay lại'}
+            {status !== TEST_STATUS.completed ? 'Nộp bài' : 'Quay lại'}
           </div>
         </div>
       </div>
@@ -224,6 +241,8 @@ Part.propTypes = {
   updateScore: PropTypes.func,
   part: PropTypes.object,
   setScreen: PropTypes.func,
+  updateStatus: PropTypes.func,
+  status: PropTypes.string,
 }
 const PART = {
   one: 'ONE',
@@ -248,6 +267,8 @@ const TrialTestWebView = (props) => {
   const [partTwo, setPartTwo] = useState({})
   const [selectedPart, setSelectedPart] = useState('')
   const [screen, setScreen] = useState('HOME')
+  const [partOneStatus, setPartOneStatus] = useState(TEST_STATUS.new)
+  const [partTwoStatus, setPartTwoStatus] = useState(TEST_STATUS.new)
   /* Load item */
   useEffect(() => {
     if (itemId) {
@@ -290,7 +311,6 @@ const TrialTestWebView = (props) => {
               score: 0,
               duration: 0,
               time: res.time_part_1 || 0,
-              status: TEST_STATUS.new,
               totalScore:
                 !_.isEmpty(cloneOne) && cloneOne.length
                   ? cloneOne.reduce((a, b) => {
@@ -308,7 +328,6 @@ const TrialTestWebView = (props) => {
               score: 0,
               duration: 0,
               time: res.time_part_2 || 0,
-              status: TEST_STATUS.new,
               totalScore:
                 !_.isEmpty(cloneTwo) && cloneTwo.length
                   ? cloneTwo.reduce((a, b) => {
@@ -411,7 +430,7 @@ const TrialTestWebView = (props) => {
                             marginRight: 20,
                           }}
                         ></hr>
-                        {partOne.status === TEST_STATUS.new && (
+                        {partOneStatus === TEST_STATUS.new && (
                           <button
                             style={{
                               backgroundColor: '#65DD57',
@@ -431,19 +450,21 @@ const TrialTestWebView = (props) => {
                               padding: 10,
                             }}
                             onClick={() => {
-                              setSelectedPart(PART.one)
-                              setPartOne({ ...partOne, status: TEST_STATUS.doing })
                               setScreen(SCREEN.TEST)
+                              setSelectedPart(PART.one)
+                              setPartOneStatus(TEST_STATUS.doing)
                             }}
                           >
                             はじめよう
                           </button>
                         )}
-                        {partOne.status === TEST_STATUS.completed && (
+                        {partOneStatus === TEST_STATUS.completed && (
                           <>
                             <p style={{ fontWeigth: 'heavy' }}>Đã trả lời: {partOne.answered} 問</p>
                             <p style={{ fontWeigth: 'heavy' }}>Đạt: {partOne.correct} 点</p>
-                            <p style={{ fontWeigth: 'heavy' }}>Thời gian làm: {partOne.duration}</p>
+                            <p style={{ fontWeigth: 'heavy' }}>
+                              Thời gian làm: {msToTime(partOne.duration)}
+                            </p>
                             <button
                               style={{
                                 backgroundColor: '#65DD57',
@@ -501,7 +522,7 @@ const TrialTestWebView = (props) => {
                             marginRight: 20,
                           }}
                         ></hr>
-                        {partTwo.status === TEST_STATUS.new && (
+                        {partTwoStatus === TEST_STATUS.new && (
                           <button
                             style={{
                               backgroundColor: '#65DD57',
@@ -521,19 +542,21 @@ const TrialTestWebView = (props) => {
                               padding: 10,
                             }}
                             onClick={() => {
-                              setPartTwo({ ...partTwo, status: TEST_STATUS.doing })
-                              setSelectedPart(PART.two)
                               setScreen(SCREEN.TEST)
+                              setSelectedPart(PART.two)
+                              setPartTwoStatus(TEST_STATUS.doing)
                             }}
                           >
                             はじめよう
                           </button>
                         )}
-                        {partTwo.status === TEST_STATUS.completed && (
+                        {partTwoStatus === TEST_STATUS.completed && (
                           <>
                             <p style={{ fontWeigth: 'heavy' }}>Đã trả lời: {partTwo.answered} 問</p>
                             <p style={{ fontWeigth: 'heavy' }}>Đạt: {partTwo.correct} 点</p>
-                            <p style={{ fontWeigth: 'heavy' }}>Thời gian làm: {partTwo.duration}</p>
+                            <p style={{ fontWeigth: 'heavy' }}>
+                              Thời gian làm: {msToTime(partTwo.duration)}
+                            </p>
                             <button
                               style={{
                                 backgroundColor: '#65DD57',
@@ -564,10 +587,22 @@ const TrialTestWebView = (props) => {
                     </>
                   )}
                   {screen === SCREEN.TEST && selectedPart === PART.one && (
-                    <Part part={partOne} updateScore={setPartOne} setScreen={setScreen} />
+                    <Part
+                      part={partOne}
+                      updateScore={setPartOne}
+                      setScreen={setScreen}
+                      status={partOneStatus}
+                      updateStatus={setPartOneStatus}
+                    />
                   )}
                   {screen === SCREEN.TEST && selectedPart === PART.two && (
-                    <Part part={partTwo} updateScore={setPartTwo} setScreen={setScreen} />
+                    <Part
+                      part={partTwo}
+                      updateScore={setPartTwo}
+                      setScreen={setScreen}
+                      status={partTwoStatus}
+                      updateStatus={setPartTwoStatus}
+                    />
                   )}
                 </main>
               </>
