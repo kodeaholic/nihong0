@@ -223,7 +223,18 @@ const Part = (props) => {
       <div className="scoreboard-wrapper">
         <div className="scoreboard">
           <div className="timer">{msToTime(timer)}</div>
-          <div className="score">{time}</div>
+          <div className="score">
+            <p style={{ margin: 1, padding: 1 }}>
+              <CBadge color="info">
+                {part.answered} | {part.total} 問
+              </CBadge>
+            </p>
+            <p style={{ margin: 1, padding: 1 }}>
+              <CBadge color="success">
+                {part.score} | {part.totalScore.point} 点
+              </CBadge>
+            </p>
+          </div>
           <div
             className="submit-button"
             onClick={() => {
@@ -472,10 +483,18 @@ const TrialTestWebView = (props) => {
                         )}
                         {partOneStatus === TEST_STATUS.completed && (
                           <>
-                            <p style={{ fontWeigth: 'heavy' }}>Đã trả lời: {partOne.answered} 問</p>
-                            <p style={{ fontWeigth: 'heavy' }}>Đạt: {partOne.correct} 点</p>
-                            <p style={{ fontWeigth: 'heavy' }}>
-                              Thời gian làm: {msToTime(partOneDuration)}
+                            <p style={{ fontWeigth: 'heavy', margin: 1, padding: 1 }}>
+                              <CBadge color="info">
+                                {partOne.answered} | {partOne.total} 問
+                              </CBadge>
+                            </p>
+                            <p style={{ fontWeigth: 'heavy', margin: 1, padding: 1 }}>
+                              <CBadge color="success">
+                                {partOne.score} | {partOne.totalScore.point} 点
+                              </CBadge>
+                            </p>
+                            <p style={{ fontWeigth: 'heavy', margin: 5, padding: 1 }}>
+                              <CBadge color="danger">{msToTime(partOneDuration)}</CBadge>
                             </p>
                             <button
                               style={{
@@ -564,10 +583,18 @@ const TrialTestWebView = (props) => {
                         )}
                         {partTwoStatus === TEST_STATUS.completed && (
                           <>
-                            <p style={{ fontWeigth: 'heavy' }}>Đã trả lời: {partTwo.answered} 問</p>
-                            <p style={{ fontWeigth: 'heavy' }}>Đạt: {partTwo.correct} 点</p>
-                            <p style={{ fontWeigth: 'heavy' }}>
-                              Thời gian làm: {msToTime(partTwoDuration)}
+                            <p style={{ fontWeigth: 'heavy', margin: 1, padding: 1 }}>
+                              <CBadge color="info">
+                                {partTwo.answered} | {partTwo.total} 問
+                              </CBadge>
+                            </p>
+                            <p style={{ fontWeigth: 'heavy', margin: 1, padding: 1 }}>
+                              <CBadge color="success">
+                                {partTwo.score} | {partTwo.totalScore.point} 点
+                              </CBadge>
+                            </p>
+                            <p style={{ fontWeigth: 'heavy', margin: 5, padding: 1 }}>
+                              <CBadge color="danger">{msToTime(partTwoDuration)}</CBadge>
                             </p>
                             <button
                               style={{
