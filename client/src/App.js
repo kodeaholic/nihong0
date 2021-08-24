@@ -6,6 +6,8 @@ import { useDispatch } from 'react-redux'
 import { authConstants } from './constants/auth.constants'
 import PageNotFoundComponent from './components/404'
 import ReadingBoardWebView from './views/reading-boards/detail/webview'
+import SubTestWebView from './views/sub-tests/detail/webview'
+import TrialTestWebView from './views/trial-tests/detail/webview'
 const loading = (
   <div className="pt-3 text-center">
     <div className="sk-spinner sk-spinner-pulse"></div>
@@ -62,6 +64,26 @@ class App extends Component {
                 return (
                   <>
                     <ReadingBoardWebView {...props} />
+                  </>
+                )
+              }}
+            />
+            <Route
+              path="/sub-tests/getSubTest/webview/:itemId"
+              render={(props) => {
+                return (
+                  <>
+                    <SubTestWebView {...props} />
+                  </>
+                )
+              }}
+            />
+            <Route
+              path="/trial-tests/getTrialTest/webview/:itemId"
+              render={(props) => {
+                return (
+                  <>
+                    <TrialTestWebView {...props} />
                   </>
                 )
               }}

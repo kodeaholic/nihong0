@@ -14,6 +14,8 @@ const lessonRoute = require('./lesson.route');
 const vocabRoute = require('./vocab.route');
 const searchRoute = require('./search.route');
 const dictionaryRoute = require('./dictionary.route');
+const subTestRoute = require('./subTest.route');
+const trialTestRoute = require('./trial-test.route');
 const config = require('../../config/config');
 
 const router = express.Router();
@@ -75,6 +77,14 @@ const defaultRoutes = [
   {
     path: '/dictionary',
     route: dictionaryRoute
+  },
+  {
+    path: '/sub-tests',
+    route: subTestRoute
+  },
+  {
+    path: '/trial-tests',
+    route: trialTestRoute
   }
 ];
 
