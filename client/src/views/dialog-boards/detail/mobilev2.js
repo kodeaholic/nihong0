@@ -49,6 +49,8 @@ const ListItem = (props) => {
   }, [audio])
   let string = htmlEntityDecode(data.contentFurigana)
   string = string.replaceAll('style="background: white;"', '')
+  string = string.replaceAll('style="background: white"', '')
+  string = string.replaceAll('style="background:white"', '')
   return (
     <div className="listItem">
       <div className={`listItem_left ${audioButtonClassName}`} onClick={onButtonClick} />
