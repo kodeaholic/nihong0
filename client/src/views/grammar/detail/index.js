@@ -366,6 +366,7 @@ const Grammar = (props) => {
   const itemId = viewAction === 'add' ? undefined : getLastPartFromPathName(pathName)
   const [redirectTo, setRedirecTo] = useState({ isRedirected: false, redirectedPath: '' })
   const [title, setTitle] = useState('')
+  const [name, setName] = useState('')
   const [level, setLevel] = useState(LEVEL.N5)
   const [free, setFree] = useState(1)
   const [saving, setSaving] = useState(false)
@@ -444,7 +445,7 @@ const Grammar = (props) => {
   }
 
   const handleSubmit = () => {
-    if (isQuizValidated() && title.length > 0) {
+    if (isQuizValidated() && title.length > 0 && name.length > 0) {
       setSaving(true)
       const quizToSave = transformQuizToSave()
       let data = {
@@ -456,6 +457,7 @@ const Grammar = (props) => {
         example: htmlEntityEncode(example),
         usage,
         meaning,
+        name,
       }
       viewAction === 'add'
         ? grammarService.createItem(data).then(savingCallback)
@@ -490,6 +492,7 @@ const Grammar = (props) => {
             setRedirecTo({ isRedirected: true, redirectedPath: '/grammar' })
           } else {
             setFree(res.free)
+            setName(res.name)
             setTitle(res.title)
             setLevel(res.level)
             setMeaning(res.meaning)
@@ -529,6 +532,22 @@ const Grammar = (props) => {
                   placeholder="Ví dụ: Bài 01"
                   onChange={(e) => setTitle(e.target.value)}
                   defaultValue={title}
+                  disabled={viewAction === 'get'}
+                />
+              </CCol>
+            </CRow>
+            <CRow className="mb-3">
+              <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">
+                Tên ngữ pháp <span style={{ color: 'red' }}>*</span>
+              </CFormLabel>
+              <CCol sm="10">
+                <CFormControl
+                  type="text"
+                  id="name"
+                  required
+                  placeholder="Ví dụ: 〜（か）と思うと・〜（か）と思ったら"
+                  onChange={(e) => setName(e.target.value)}
+                  defaultValue={name}
                   disabled={viewAction === 'get'}
                 />
               </CCol>

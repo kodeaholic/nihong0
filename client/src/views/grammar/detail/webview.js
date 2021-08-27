@@ -2,21 +2,24 @@ import React, { useState, useEffect } from 'react'
 import './style.css'
 import { CFormCheck } from '@coreui/react'
 import { useParams } from 'react-router-dom'
-import { subTestService } from 'src/services/api/subTestService'
+import { grammarService } from 'src/services/api/grammarService'
 import _ from 'lodash'
 import renderHTML from 'react-render-html'
 import { htmlEntityDecode } from '../../../helpers/htmlentities'
 import PageNotFoundComponent from 'src/components/404'
 import Loader from 'src/components/Loader'
 import { sleep } from 'src/helpers/common'
-import { testTypes } from 'src/constants/test.constants'
 import { LEVEL } from 'src/constants/level.constants'
 
-const SubTestWebView = (props) => {
+const GrammarWebview = (props) => {
   const { itemId } = useParams()
   const [title, setTitle] = useState('')
+  const [name, setName] = useState('')
   const [content, setContent] = useState('')
-  const [type, setType] = useState(testTypes.TUVUNG)
+  const [meaning, setMeaning] = useState('')
+  const [usage, setUsage] = useState('')
+  const [example, setExample] = useState('')
+  const [free, setFree] = useState(1)
   const [level, setLevel] = useState(LEVEL.N5)
   const [quiz, setQuiz] = useState([])
   const [pageNotFound, setPageNotFound] = useState(false)
@@ -32,15 +35,26 @@ const SubTestWebView = (props) => {
   /* Load item */
   useEffect(() => {
     if (itemId) {
-      subTestService.getItem(itemId).then((res) => {
+      grammarService.getItem(itemId).then((res) => {
         if (res) {
           if (res.status === 401 || res.status === 404 || res.status === 400) {
             setPageNotFound(true)
           } else {
             setTitle(res?.title.includes(':') ? _.trim(res.title.split(':')[1]) : res.title)
-            setType(res.type)
+            setName(res.name)
             setLevel(res.level)
-            setContent(res.content ? htmlEntityDecode(res.content) : '')
+            setMeaning(res.meaning)
+            setUsage(res.usage)
+            setContent(
+              res.content
+                ? htmlEntityDecode(res.content).replace(
+                    '>',
+                    `>${'<span style="color: red; font-weight: bold;">Cấu trúc: </span>'}`,
+                  )
+                : '',
+            )
+            setExample(res.example ? htmlEntityDecode(res.example) : '')
+            setFree(res.free)
             let initialQuizes = res.quiz
             let clonedQuizes = [...initialQuizes]
             let resultQuizes = clonedQuizes.map(function (item) {
@@ -66,7 +80,7 @@ const SubTestWebView = (props) => {
       while (paras[0]) paras[0].parentNode.removeChild(paras[0])
     }
     /* load css on the fly */
-    const css = ['css/sub-tests/webview.css', 'css/sub-tests/switch.css']
+    const css = ['css/grammar/webview.css']
     css.forEach((item) => {
       const link = document.createElement('link')
       // set the attributes for link element
@@ -99,10 +113,22 @@ const SubTestWebView = (props) => {
                       fontFamily: "'Source Sans Pro', sans-serif",
                       textAlign: 'center',
                       fontSize: '20px',
+                      color: 'green',
                     }}
-                  >{`${title}`}</p>
+                  >{`${name}`}</p>
                   <div className="content">{renderHTML(content)}</div>
-                  <hr style={{ height: '1px' }} />
+                  <div className="content">
+                    <span style={{ color: '#002060', fontWeight: 'bold' }}>Ý nghĩa:</span> {meaning}
+                  </div>
+                  <br />
+                  <div className="content">
+                    <span style={{ color: '#548DD4', fontWeight: 'bold' }}>Cách dùng:</span> {usage}
+                  </div>
+                  <br />
+                  <span style={{ color: '#E36C0A', fontWeight: 'bold' }}>Ví dụ minh họa</span>
+                  <div className="content">{renderHTML(example)}</div>
+                  <br />
+                  <span style={{ color: '#4F3074', fontWeight: 'bold' }}>Bài tập củng cố</span>
                   <div className="quiz-container">
                     {quiz.map((item, index) => {
                       let question = item.question
@@ -188,11 +214,11 @@ const SubTestWebView = (props) => {
                     })}
                   </div>
                 </main>
-                {answeredQuiz && (
+                {/* {answeredQuiz && (
                   <div className={`fab ${count < quiz.length / 2 ? 'red' : 'green'}`}>
                     {count} | {quiz.length}
                   </div>
-                )}
+                )} */}
               </>
             )}
           </div>
@@ -201,6 +227,6 @@ const SubTestWebView = (props) => {
     )
 }
 
-SubTestWebView.propTypes = {}
+GrammarWebview.propTypes = {}
 
-export default SubTestWebView
+export default GrammarWebview

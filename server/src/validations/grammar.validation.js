@@ -12,6 +12,7 @@ const QuizValidation = {
 
 const createItem = {
   body: Joi.object().keys({
+    name: Joi.string().required(),
     title: Joi.string().required(),
     level: Joi.string().allow(null, ''),
     content: Joi.string().allow(null, ''),
@@ -45,6 +46,7 @@ const updateItem = {
   }),
   body: Joi.object()
     .keys({
+        name: Joi.string().required(),
         title: Joi.string().required(),
         level: Joi.string().allow(null, ''),
         content: Joi.string().allow(null, ''),

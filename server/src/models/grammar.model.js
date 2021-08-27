@@ -37,6 +37,11 @@ const Quiz = mongoose.Schema(
 
 const GrammarSchema = mongoose.Schema(
     {
+        name: {
+            type: String,
+            required: true,
+            trim: false,
+        },
         title: {
             type: String,
             required: true,
