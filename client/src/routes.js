@@ -79,6 +79,8 @@ const Furigana = React.lazy(() => import('./views/furigana/index'))
 const Dictionary = React.lazy(() => import('./views/dictionary/index'))
 const SubTests = React.lazy(() => import('./views/sub-tests/master/index'))
 const SubTest = React.lazy(() => import('./views/sub-tests/detail/index'))
+const Grammars = React.lazy(() => import('./views/grammar/master/index'))
+const Grammar = React.lazy(() => import('./views/grammar/detail/index'))
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Tổng quan', component: Dashboard },
@@ -279,6 +281,25 @@ const routes = [
     name: 'Thêm mới',
     component: TrialTest,
     specificName: 'addTrialTest',
+  },
+  { path: '/grammar', name: 'Ngữ pháp', component: Grammars, exact: true },
+  {
+    path: '/grammar/getGrammar/:itemId',
+    name: 'Thông tin bài học',
+    component: Grammar,
+    specificName: 'getGrammar',
+  },
+  {
+    path: '/grammar/editGrammar/:itemId',
+    name: 'Sửa',
+    component: Grammar,
+    specificName: 'editGrammar',
+  },
+  {
+    path: '/grammar/addGrammar',
+    name: 'Thêm mới',
+    component: Grammar,
+    specificName: 'addGrammar',
   },
 ]
 

@@ -445,6 +445,22 @@ const _nav = [
   },
   {
     _component: 'CNavTitle',
+    anchor: 'Bài học ngữ pháp',
+  },
+  {
+    _component: 'CNavItem',
+    as: NavLink,
+    anchor: 'Danh sách bài ngữ pháp',
+    to: '/grammar',
+  },
+  {
+    _component: 'CNavItem',
+    as: NavLink,
+    anchor: 'Thêm bài ngữ pháp',
+    to: '/grammar/addGrammar',
+  },
+  {
+    _component: 'CNavTitle',
     anchor: 'Từ điển',
   },
   {
