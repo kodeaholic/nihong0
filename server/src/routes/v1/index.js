@@ -16,6 +16,7 @@ const searchRoute = require('./search.route');
 const dictionaryRoute = require('./dictionary.route');
 const subTestRoute = require('./subTest.route');
 const trialTestRoute = require('./trial-test.route');
+const grammarRoute = require('./grammar.route');
 const config = require('../../config/config');
 
 const router = express.Router();
@@ -85,6 +86,10 @@ const defaultRoutes = [
   {
     path: '/trial-tests',
     route: trialTestRoute
+  },
+  {
+    path: '/grammar',
+    route: grammarRoute
   }
 ];
 
