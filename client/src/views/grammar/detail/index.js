@@ -536,7 +536,7 @@ const Grammar = (props) => {
                 />
               </CCol>
             </CRow>
-            <CRow className="mb-3">
+            {/* <CRow className="mb-3">
               <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">
                 Tên ngữ pháp <span style={{ color: 'red' }}>*</span>
               </CFormLabel>
@@ -551,10 +551,10 @@ const Grammar = (props) => {
                   disabled={viewAction === 'get'}
                 />
               </CCol>
-            </CRow>
+            </CRow> */}
             <CRow className="mb-3">
               <CFormLabel htmlFor="content" className="col-sm-2 col-form-label">
-                Cấu trúc ngữ pháp
+                Nội dung
               </CFormLabel>
               <CCol sm="10">
                 {viewAction !== 'get' && (
@@ -609,7 +609,7 @@ const Grammar = (props) => {
                 )}
               </CCol>
             </CRow>
-            <CRow className="mb-3">
+            {/* <CRow className="mb-3">
               <CFormLabel htmlFor="meaning" className="col-sm-2 col-form-label">
                 Ý nghĩa
               </CFormLabel>
@@ -626,8 +626,8 @@ const Grammar = (props) => {
                   disabled={viewAction === 'get'}
                 />
               </CCol>
-            </CRow>
-            <CRow className="mb-3">
+            </CRow> */}
+            {/* <CRow className="mb-3">
               <CFormLabel htmlFor="usage" className="col-sm-2 col-form-label">
                 Cách dùng
               </CFormLabel>
@@ -644,8 +644,8 @@ const Grammar = (props) => {
                   disabled={viewAction === 'get'}
                 />
               </CCol>
-            </CRow>
-            <CRow className="mb-3">
+            </CRow> */}
+            {/* <CRow className="mb-3">
               <CFormLabel htmlFor="example" className="col-sm-2 col-form-label">
                 Ví dụ
               </CFormLabel>
@@ -701,7 +701,7 @@ const Grammar = (props) => {
                   </div>
                 )}
               </CCol>
-            </CRow>
+            </CRow> */}
             <CRow className="mb-3">
               <CFormLabel htmlFor="level" className="col-sm-2 col-form-label">
                 Trình độ
@@ -724,7 +724,7 @@ const Grammar = (props) => {
                 </CFormSelect>
               </CCol>
             </CRow>
-            <fieldset className="row mb-3">
+            {/* <fieldset className="row mb-3">
               <legend className="col-form-label col-sm-2 pt-0">Phí</legend>
               <CCol sm="10">
                 <CFormCheck
@@ -734,8 +734,8 @@ const Grammar = (props) => {
                   onChange={() => setFree(1 - free)}
                 />
               </CCol>
-            </fieldset>
-            <CRow>
+            </fieldset> */}
+            {/* <CRow>
               <CFormLabel className="col-sm-2 col-form-label">Câu hỏi</CFormLabel>
               <CCol sm="12">
                 <Exercise
@@ -745,7 +745,7 @@ const Grammar = (props) => {
                   testId={itemId}
                 />
               </CCol>
-            </CRow>
+            </CRow> */}
             <CRow>
               {viewAction !== 'get' && (
                 <>
@@ -757,9 +757,9 @@ const Grammar = (props) => {
                       >
                         LƯU BÀI HỌC
                       </CButton>
-                      <CButton onClick={addQuiz} color="success">
+                      {/* <CButton onClick={addQuiz} color="success">
                         THÊM CÂU HỎI TRẮC NGHIỆM
-                      </CButton>
+                      </CButton> */}
                     </CButtonGroup>
                   </CCol>
                 </>

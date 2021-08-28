@@ -115,9 +115,9 @@ const GrammarWebview = (props) => {
                       fontSize: '20px',
                       color: 'green',
                     }}
-                  >{`${name}`}</p>
+                  >{`${title}`}</p>
                   <div className="content">{renderHTML(content)}</div>
-                  <div className="content">
+                  {/* <div className="content">
                     <span style={{ color: '#002060', fontWeight: 'bold' }}>Ý nghĩa:</span> {meaning}
                   </div>
                   <br />
@@ -127,9 +127,9 @@ const GrammarWebview = (props) => {
                   <br />
                   <span style={{ color: '#E36C0A', fontWeight: 'bold' }}>Ví dụ minh họa</span>
                   <div className="content">{renderHTML(example)}</div>
-                  <br />
-                  <span style={{ color: '#4F3074', fontWeight: 'bold' }}>Bài tập củng cố</span>
-                  <div className="quiz-container">
+                  <br /> */}
+                  {/* <span style={{ color: '#4F3074', fontWeight: 'bold' }}>Bài tập củng cố</span> */}
+                  {/* <div className="quiz-container">
                     {quiz.map((item, index) => {
                       let question = item.question
                       question = question.replace('>', `>${index + 1} 、`)
@@ -212,7 +212,7 @@ const GrammarWebview = (props) => {
                         </div>
                       )
                     })}
-                  </div>
+                  </div> */}
                 </main>
                 {/* {answeredQuiz && (
                   <div className={`fab ${count < quiz.length / 2 ? 'red' : 'green'}`}>
