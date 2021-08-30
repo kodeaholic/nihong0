@@ -45,14 +45,17 @@ const GrammarWebview = (props) => {
             setLevel(res.level)
             setMeaning(res.meaning)
             setUsage(res.usage)
-            setContent(
-              res.content
-                ? htmlEntityDecode(res.content).replace(
-                    '>',
-                    `>${'<span style="color: red; font-weight: bold;">Cấu trúc: </span>'}`,
-                  )
-                : '',
-            )
+            let ct = res.content
+              ? htmlEntityDecode(res.content).replace(
+                  '>',
+                  `>${'<span style="color: red; font-weight: bold;">Cấu trúc: </span>'}`,
+                )
+              : ''
+            ct = ct.replace(/style="font-family: "Times New Roman", serif;"/g, '')
+            ct = ct.replace(/style="font-family:"Times New Roman",serif;"/g, '')
+            ct = ct.replace(/font-family:"Times New Roman",serif;/g, '')
+            ct = ct.replace(/font-family: "Times New Roman", serif;/g, '')
+            setContent(ct)
             setExample(res.example ? htmlEntityDecode(res.example) : '')
             setFree(res.free)
             let initialQuizes = res.quiz
@@ -114,6 +117,7 @@ const GrammarWebview = (props) => {
                       textAlign: 'center',
                       fontSize: '20px',
                       color: 'green',
+                      fontWeight: 'bold',
                     }}
                   >{`${title}`}</p>
                   <div className="content">{renderHTML(content)}</div>
