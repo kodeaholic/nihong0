@@ -12,7 +12,7 @@ router
   .get(auth('getGrammar'), validate(validation.getItems), controller.getItems);
 router
   .route('/:itemId')
-  .get(auth('getGrammar'), validate(validation.getItem), controller.getItem)
+  .get(validate(validation.getItem), controller.getItem)
   .patch(auth('manageGrammar'), validate(validation.updateItem), controller.updateItem)
   .delete(auth('manageGrammar'), validate(validation.deleteItem), controller.deleteItem);
 

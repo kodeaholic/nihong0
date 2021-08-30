@@ -13,7 +13,7 @@ router
 
 router
   .route('/:boardId')
-  .get(auth('getBoards'), validate(boardValidation.getBoard), boardController.getBoard)
+  .get(validate(boardValidation.getBoard), boardController.getBoard)
   .patch(auth('manageBoards'), validate(boardValidation.updateBoard), boardController.updateBoard)
   .delete(auth('manageBoards'), validate(boardValidation.deleteBoard), boardController.deleteBoard);
 
