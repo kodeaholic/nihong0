@@ -1,7 +1,7 @@
 const roles = ['user', 'admin'];
 
 const roleRights = new Map();
-roleRights.set(roles[0], ['getCards', 'getBoards', 'getTopics', 'getChapters', 'getLessons', 'getVocabs', 'search', 'dictionary', 'test']);
+roleRights.set(roles[0], ['getCards', 'getBoards', 'getTopics', 'getChapters', 'getLessons', 'getVocabs', 'search', 'dictionary', 'test', 'getGrammar']);
 roleRights.set(roles[1], [
   'getUsers', 'manageUsers',
   'getCards', 'manageCards',
@@ -13,7 +13,8 @@ roleRights.set(roles[1], [
   'admin',
   'search',
   'dictionary', 'setDictionary',
-  'test', 'manageTest'
+  'test', 'manageTest',
+  'getGrammar', 'manageGrammar'
 ]);
 module.exports = {
   roles,

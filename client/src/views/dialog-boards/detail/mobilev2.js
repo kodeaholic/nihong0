@@ -47,12 +47,16 @@ const ListItem = (props) => {
       audio.removeEventListener('ended', () => setAudioButtonClassName('background-material_play'))
     }
   }, [audio])
+  let string = htmlEntityDecode(data.contentFurigana)
+  string = string.replaceAll('style="background: white;"', '')
+  string = string.replaceAll('style="background: white"', '')
+  string = string.replaceAll('style="background:white"', '')
   return (
     <div className="listItem">
       <div className={`listItem_left ${audioButtonClassName}`} onClick={onButtonClick} />
       <div className="listItem_right">
         {/* <div className={`listItem_avatar ${avatarClass}`} /> */}
-        <div className="content">{renderHTML(htmlEntityDecode(data.contentFurigana))}</div>
+        <div className="content">{renderHTML(string)}</div>
       </div>
     </div>
   )
