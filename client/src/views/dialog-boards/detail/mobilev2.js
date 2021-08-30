@@ -108,49 +108,55 @@ const MobileDialogBoardV2 = (props) => {
     if (boardId) {
       async function loadData() {
         await sleep(3000)
-        dialogBoardService.getBoard(boardId).then((res) => {
-          if (res) {
-            if (
-              res.status === 401 ||
-              res.status === 404 ||
-              res.status === 400 ||
-              res.status === 500
-            ) {
-              toast.error(`Bài học không tồn tại`, {
-                position: 'top-right',
-                autoClose: 3000,
-                hideProgressBar: true,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-              })
-              setRedirecTo({ isRedirected: true, redirectedPath: '/dialog-boards' })
-            } else {
-              setData(res)
-              setFree(res.free)
-              setTitle(res.title)
-              setLevel(res.level)
-              setScript(res.script ? htmlEntityDecode(res.script) : '')
-              setSubtitle(res.subtitle ? htmlEntityDecode(res.subtitle) : '')
-              setAudioSrc(res.audioSrc)
-              let initialTracks = res.tracks
-              let clonedTrackes = [...initialTracks]
-              let resultTracks = clonedTrackes.map(function (item) {
-                let newItem = { ...item }
-                newItem.contentFurigana = htmlEntityDecode(item.contentFurigana)
-                if (_.isEmpty(item.start) || item.start >= 0) newItem.start = '00:00:00'
-                if (_.isEmpty(item.stop) || item.stop >= 0) newItem.stop = '00:00:00'
-                newItem.start = hhmmssToSeconds(newItem.start)
-                newItem.stop = hhmmssToSeconds(newItem.stop)
-                return newItem
-              })
+        dialogBoardService
+          .getBoard(boardId)
+          .then((res) => {
+            if (res) {
+              if (
+                res.status === 401 ||
+                res.status === 404 ||
+                res.status === 400 ||
+                res.status === 500
+              ) {
+                toast.error(`Bài học không tồn tại`, {
+                  position: 'top-right',
+                  autoClose: 3000,
+                  hideProgressBar: true,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                })
+                setRedirecTo({ isRedirected: true, redirectedPath: '/dialog-boards' })
+              } else {
+                setData(res)
+                setFree(res.free)
+                setTitle(res.title)
+                setLevel(res.level)
+                setScript(res.script ? htmlEntityDecode(res.script) : '')
+                setSubtitle(res.subtitle ? htmlEntityDecode(res.subtitle) : '')
+                setAudioSrc(res.audioSrc)
+                let initialTracks = res.tracks
+                let clonedTrackes = [...initialTracks]
+                let resultTracks = clonedTrackes.map(function (item) {
+                  let newItem = { ...item }
+                  newItem.contentFurigana = htmlEntityDecode(item.contentFurigana)
+                  if (_.isEmpty(item.start) || item.start >= 0) newItem.start = '00:00:00'
+                  if (_.isEmpty(item.stop) || item.stop >= 0) newItem.stop = '00:00:00'
+                  newItem.start = hhmmssToSeconds(newItem.start)
+                  newItem.stop = hhmmssToSeconds(newItem.stop)
+                  return newItem
+                })
 
-              setTracks(resultTracks)
+                setTracks(resultTracks)
+              }
+              setLoading(false)
             }
+          })
+          .cath((error) => {
+            alert(error)
             setLoading(false)
-          }
-        })
+          })
       }
       loadData()
     }
