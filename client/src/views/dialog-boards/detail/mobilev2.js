@@ -153,7 +153,7 @@ const MobileDialogBoardV2 = (props) => {
               setLoading(false)
             }
           })
-          .cath((error) => {
+          .catch((error) => {
             alert(error)
             setLoading(false)
           })
