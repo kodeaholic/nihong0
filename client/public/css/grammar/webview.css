@@ -25,7 +25,7 @@ strong {
   height: 100vh;
   background: #fdfdfd;
   font-family: 'Encode Sans Condensed', sans-serif;
-  font-weight: 600;
+  font-weight: normal;
   letter-spacing: 0.03em;
   color: #212121;
 }
@@ -194,7 +194,7 @@ main {
 }
 .content {
   font-family: 'Source Sans Pro', serif;
-  font-weight: normal;
+  font-weight: bold;
   line-height: 220%;
   word-break: break-word;
   /* white-space: pre-wrap; */

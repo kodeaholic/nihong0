@@ -15,7 +15,7 @@ router
   .post(auth('manageTest'), validate(validation.findTestByQuestion), controller.findTestByQuestion)
 router
   .route('/:itemId')
-  .get(auth('test'), validate(validation.getItem), controller.getItem)
+  .get(validate(validation.getItem), controller.getItem)
   .patch(auth('manageTest'), validate(validation.updateItem), controller.updateItem)
   .delete(auth('manageTest'), validate(validation.deleteItem), controller.deleteItem);
 

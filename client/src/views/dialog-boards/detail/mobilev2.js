@@ -151,6 +151,10 @@ const MobileDialogBoardV2 = (props) => {
             setLoading(false)
           }
         })
+        // .catch((error) => {
+        //   alert(error)
+        //   setLoading(false)
+        // })
       }
       loadData()
     }
