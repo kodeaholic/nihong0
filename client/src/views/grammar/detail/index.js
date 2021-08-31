@@ -445,7 +445,7 @@ const Grammar = (props) => {
   }
 
   const handleSubmit = () => {
-    if (isQuizValidated() && title.length > 0 && name.length > 0) {
+    if (title.length > 0) {
       setSaving(true)
       const quizToSave = transformQuizToSave()
       let data = {
