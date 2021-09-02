@@ -6,6 +6,8 @@ const createItem = {
     title: Joi.string().required(),
     content: Joi.string().allow(null, ''),
     parent: Joi.string().allow(null, ''),
+    thumbnail: Joi.string().allow(null, ''),
+    description: Joi.string().allow(null, ''),
   }),
 };
 
@@ -35,6 +37,8 @@ const updateItem = {
       title: Joi.string().required(),
       content: Joi.string().allow(null, ''),
       parent: Joi.string().allow(null, ''),
+      thumbnail: Joi.string().allow(null, ''),
+      description: Joi.string().allow(null, ''),
     })
     .min(1),
 };

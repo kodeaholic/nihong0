@@ -20,6 +20,16 @@ const NewsSchema = mongoose.Schema(
       required: false,
       trim: false,
     },
+    thumbnail: {
+      type: String,
+      required: false,
+      trim: false,
+    },
+    description: {
+      type: String,
+      required: false,
+      trim: false,
+    },
   },
   {
     timestamps: true,

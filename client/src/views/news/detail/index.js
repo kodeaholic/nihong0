@@ -37,6 +37,8 @@ const NewsItem = (props) => {
   const itemId = viewAction === 'add' ? undefined : getLastPartFromPathName(pathName)
   const [redirectTo, setRedirecTo] = useState({ isRedirected: false, redirectedPath: '' })
   const [title, setTitle] = useState('')
+  const [thumbnail, setThumbnail] = useState('')
+  const [description, setDescription] = useState('')
   const [saving, setSaving] = useState(false)
   const [visible, setVisible] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -90,6 +92,8 @@ const NewsItem = (props) => {
       let data = {
         title,
         content: htmlEntityEncode(content),
+        description,
+        thumbnail,
       }
       if (parent) data.parent = parent
       viewAction === 'add'
@@ -128,6 +132,8 @@ const NewsItem = (props) => {
             setParent(res.parent)
             setContent(!_.isEmpty(res.content) ? htmlEntityDecode(res.content) : '')
             setItem(res)
+            setThumbnail(res.thumbnail)
+            setDescription(res.description)
           }
         }
       })
@@ -170,6 +176,50 @@ const NewsItem = (props) => {
                 />
               </CCol>
             </CRow>
+            <CRow className="mb-3">
+              <CFormLabel htmlFor="description" className="col-sm-2 col-form-label">
+                Mô tả ngắn gọn
+              </CFormLabel>
+              <CCol sm="10">
+                <CFormControl
+                  type="text"
+                  component="textarea"
+                  rows={3}
+                  id="description"
+                  required
+                  placeholder="Mô tả vắn tắt bài viết"
+                  onChange={(e) => setDescription(e.target.value)}
+                  defaultValue={description}
+                  disabled={viewAction === 'get'}
+                />
+              </CCol>
+            </CRow>
+            <CRow className="mb-3">
+              <CFormLabel htmlFor="thumbnail" className="col-sm-2 col-form-label">
+                Link tới hình ảnh đại diện bài viết
+              </CFormLabel>
+              <CCol sm="10">
+                <CFormControl
+                  type="text"
+                  id="thumbnail"
+                  required
+                  placeholder="https://f5.photo.talk.zdn.vn/392747813383548417/85261eaf33acc5f29cbd.jpg"
+                  onChange={(e) => setThumbnail(e.target.value)}
+                  defaultValue={thumbnail}
+                  disabled={viewAction === 'get'}
+                />
+              </CCol>
+            </CRow>
+            {thumbnail.length > 0 && (
+              <CRow className="mb-3">
+                <CFormLabel htmlFor="thumbnail" className="col-sm-2 col-form-label">
+                  Hình ảnh đại diện
+                </CFormLabel>
+                <CCol sm="10">
+                  <img src={thumbnail} height="200px" width="auto" alt="Ảnh thumbnail" />
+                </CCol>
+              </CRow>
+            )}
             <CRow className="mb-3">
               <CFormLabel htmlFor="content" className="col-sm-2 col-form-label">
                 Nội dung bài viết
