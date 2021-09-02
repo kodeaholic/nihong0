@@ -39,7 +39,7 @@ const NewsCategory = (props) => {
   const [deleting, setDeleting] = useState(false)
   const [parent, setParent] = useState('')
   const [children, setChildren] = useState([])
-  const [description, setDescription] = useState([])
+  const [description, setDescription] = useState('')
   const [categories, setCategories] = useState([])
   const [item, setItem] = useState({})
   const savingCallback = (res) => {
