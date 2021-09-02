@@ -1,4 +1,6 @@
 import React from 'react'
+import NewsItem from './views/news/detail'
+import News from './views/news/master'
 import TrialTest from './views/trial-tests/detail'
 import TrialTests from './views/trial-tests/master'
 
@@ -321,6 +323,25 @@ const routes = [
     name: 'Thêm mới',
     component: NewsCategory,
     specificName: 'addCategory',
+  },
+  { path: '/news', name: 'Bài viết báo mạng', component: News, exact: true },
+  {
+    path: '/news/getNews/:itemId',
+    name: 'Thông tin bài viết',
+    component: NewsItem,
+    specificName: 'getNews',
+  },
+  {
+    path: '/news/editNews/:itemId',
+    name: 'Sửa',
+    component: NewsItem,
+    specificName: 'editNews',
+  },
+  {
+    path: '/news/addNews',
+    name: 'Thêm mới',
+    component: NewsItem,
+    specificName: 'addNews',
   },
 ]
 

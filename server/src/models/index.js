@@ -14,3 +14,4 @@ module.exports.SubTest = require('./subTest.model');
 module.exports.TrialTest = require('./trial-test.model');
 module.exports.Grammar = require('./grammar.model');
 module.exports.NewsCategory = require('./news-category.model');
+module.exports.News = require('./news.model');

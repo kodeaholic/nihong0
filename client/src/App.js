@@ -9,6 +9,7 @@ import ReadingBoardWebView from './views/reading-boards/detail/webview'
 import SubTestWebView from './views/sub-tests/detail/webview'
 import TrialTestWebView from './views/trial-tests/detail/webview'
 import GrammarWebview from './views/grammar/detail/webview'
+import NewsWebview from './views/news/detail/webview'
 const loading = (
   <div className="pt-3 text-center">
     <div className="sk-spinner sk-spinner-pulse"></div>
@@ -95,6 +96,16 @@ class App extends Component {
                 return (
                   <>
                     <GrammarWebview {...props} />
+                  </>
+                )
+              }}
+            />
+            <Route
+              path="/news/getNews/webview/:itemId"
+              render={(props) => {
+                return (
+                  <>
+                    <NewsWebview {...props} />
                   </>
                 )
               }}
