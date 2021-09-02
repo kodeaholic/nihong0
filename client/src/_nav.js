@@ -501,6 +501,22 @@ const _nav = [
     anchor: 'Thêm bài',
     to: '/trial-tests/addTrialTest',
   },
+  {
+    _component: 'CNavTitle',
+    anchor: 'Chuyên mục báo mạng',
+  },
+  {
+    _component: 'CNavItem',
+    as: NavLink,
+    anchor: 'Danh sách chuyên mục',
+    to: '/news-categories',
+  },
+  {
+    _component: 'CNavItem',
+    as: NavLink,
+    anchor: 'Thêm chuyên mục',
+    to: '/news-categories/addCategory',
+  },
 ]
 
 export default _nav
