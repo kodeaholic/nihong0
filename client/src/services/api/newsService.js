@@ -1,6 +1,6 @@
 import { config } from './config'
 import { authHeader } from '../helpers/authHelper'
-export const newsCategoryService = {
+export const newsService = {
   getItems,
   createItem,
   getItem,

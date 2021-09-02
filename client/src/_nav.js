@@ -523,6 +523,22 @@ const _nav = [
   },
   {
     _component: 'CNavTitle',
+    anchor: 'Bài viết báo mạng',
+  },
+  {
+    _component: 'CNavItem',
+    as: NavLink,
+    anchor: 'Danh sách bài viết',
+    to: '/news',
+  },
+  {
+    _component: 'CNavItem',
+    as: NavLink,
+    anchor: 'Viết bài',
+    to: '/news/addNews',
+  },
+  {
+    _component: 'CNavTitle',
     anchor: 'Khác',
   },
   {
