@@ -17,10 +17,12 @@ import {
   CModalHeader,
   CModalBody,
   CModalTitle,
-  CInputGroup,
-  CInputGroupText,
   CFormSelect,
   CButtonGroup,
+  CCard,
+  CCardBody,
+  CCardTitle,
+  CCardText,
 } from '@coreui/react'
 import { Redirect } from 'react-router-dom'
 import { newsCategoryService } from 'src/services/api/newsCategoryService'
@@ -124,6 +126,7 @@ const NewsCategory = (props) => {
             setDescription(res.description)
             setParent(res.parent)
             setChildren(res.children)
+            console.log(res.children)
             setItem(res)
           }
         }
@@ -135,6 +138,7 @@ const NewsCategory = (props) => {
           setCategories([])
         } else {
           const list = res.results.filter((itm) => itm.id !== itemId)
+          console.log(list)
           setCategories(list)
         }
       }
@@ -142,7 +146,11 @@ const NewsCategory = (props) => {
   }, [itemId])
 
   if (redirectTo.isRedirected) {
-    return <Redirect to={redirectTo.redirectedPath} />
+    if (redirectTo.reload)
+      setTimeout(() => {
+        window.location.reload()
+      }, 300)
+    return <Redirect exact to={redirectTo.redirectedPath} />
   } else
     return (
       <>
@@ -181,7 +189,7 @@ const NewsCategory = (props) => {
                 />
               </CCol>
             </CRow>
-            {!_.isEmpty(categories) && (
+            {viewAction !== 'get' && !_.isEmpty(categories) && (
               <CRow className="mb-3">
                 <CFormLabel htmlFor="parent" className="col-sm-2 col-form-label">
                   Chuyên mục cha
@@ -193,7 +201,6 @@ const NewsCategory = (props) => {
                       console.log(e.target.value)
                     }}
                     id="parent"
-                    disabled={viewAction === 'get'}
                     value={parent}
                   >
                     <option value="">Không có</option>
@@ -203,6 +210,84 @@ const NewsCategory = (props) => {
                       </option>
                     ))}
                   </CFormSelect>
+                </CCol>
+              </CRow>
+            )}
+            {viewAction === 'get' && !_.isEmpty(parent) && (
+              <CRow>
+                <CFormLabel className="col-sm-2 col-form-label">Chuyên mục cha</CFormLabel>
+                <CCol sm="10">
+                  <CRow>
+                    {!_.isEmpty(categories) &&
+                      [parent].map((item) => {
+                        const index = _.findIndex(categories, function (category) {
+                          return category.id.toString() === item
+                        })
+                        const category = index > -1 ? categories[index] : {}
+                        return (
+                          <CCol
+                            key={category.id}
+                            xs="12"
+                            sm="6"
+                            lg="3"
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => {
+                              setRedirecTo({
+                                isRedirected: true,
+                                redirectedPath: `/news-categories/getCategory/${category.id}`,
+                                reload: true,
+                              })
+                            }}
+                          >
+                            <CCard style={{ width: '18rem', marginBottom: '5px' }}>
+                              <CCardBody>
+                                <CCardTitle>{category.title}</CCardTitle>
+                                <CCardText>{category.description}</CCardText>
+                              </CCardBody>
+                            </CCard>
+                          </CCol>
+                        )
+                      })}
+                  </CRow>
+                </CCol>
+              </CRow>
+            )}
+            {viewAction === 'get' && !_.isEmpty(children) && (
+              <CRow>
+                <CFormLabel className="col-sm-2 col-form-label">Chuyên mục con</CFormLabel>
+                <CCol sm="10">
+                  <CRow>
+                    {!_.isEmpty(categories) &&
+                      children.map((item) => {
+                        const index = _.findIndex(categories, function (category) {
+                          return category.id.toString() === item
+                        })
+                        const category = index > -1 ? categories[index] : {}
+                        return (
+                          <CCol
+                            key={category.id}
+                            xs="12"
+                            sm="6"
+                            lg="3"
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => {
+                              setRedirecTo({
+                                isRedirected: true,
+                                redirectedPath: `/news-categories/getCategory/${category.id}`,
+                                reload: true,
+                              })
+                            }}
+                          >
+                            <CCard style={{ width: '18rem', marginBottom: '5px' }}>
+                              <CCardBody>
+                                <CCardTitle>{category.title}</CCardTitle>
+                                <CCardText>{category.description}</CCardText>
+                              </CCardBody>
+                            </CCard>
+                          </CCol>
+                        )
+                      })}
+                  </CRow>
                 </CCol>
               </CRow>
             )}
@@ -217,9 +302,6 @@ const NewsCategory = (props) => {
                       >
                         LƯU
                       </CButton>
-                      {/* <CButton onClick={addChild} color="success">
-                        THÊM CÂU HỎI TRẮC NGHIỆM
-                      </CButton> */}
                     </CButtonGroup>
                   </CCol>
                 </>

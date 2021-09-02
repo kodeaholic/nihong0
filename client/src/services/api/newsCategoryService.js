@@ -8,7 +8,7 @@ export const newsCategoryService = {
   deleteItem,
 }
 
-async function getItems(filter, options = { sortBy: 'title:desc', limit: 1000, page: 1 }) {
+async function getItems(filter, options = { sortBy: 'title:asc', limit: 1000, page: 1 }) {
   const requestOptions = {
     method: 'GET',
     headers: authHeader(),
