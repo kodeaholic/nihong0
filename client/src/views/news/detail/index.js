@@ -380,7 +380,7 @@ const NewsItem = (props) => {
                 </CCol>
               </CRow>
             )}
-            {/* {viewAction === 'get' && (
+            {viewAction === 'get' && (
               <CRow>
                 <CCol className="col-sm-3">
                   <CButton
@@ -389,7 +389,7 @@ const NewsItem = (props) => {
                     onClick={() => {
                       setRedirecTo({
                         isRedirected: true,
-                        redirectedPath: `/news-categories/getNewsItem/webview/${itemId}`,
+                        redirectedPath: `/news/getNews/webview/${itemId}`,
                       })
                     }}
                   >
@@ -397,7 +397,7 @@ const NewsItem = (props) => {
                   </CButton>
                 </CCol>
               </CRow>
-            )} */}
+            )}
           </CForm>
         </CRow>
       </>
