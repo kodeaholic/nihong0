@@ -18,6 +18,7 @@ const subTestRoute = require('./subTest.route');
 const trialTestRoute = require('./trial-test.route');
 const grammarRoute = require('./grammar.route');
 const newsCategoryRoute = require('./news-category.route');
+const newsRoute = require('./news.route');
 const config = require('../../config/config');
 
 const router = express.Router();
@@ -95,6 +96,10 @@ const defaultRoutes = [
   {
     path: '/news-categories',
     route: newsCategoryRoute
+  },
+  {
+    path: '/news',
+    route: newsRoute
   }
 ];
 
