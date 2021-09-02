@@ -16,3 +16,4 @@ module.exports.dictionaryService = require('./dictionary.service');
 module.exports.subTestService = require('./subTest.service');
 module.exports.trialTestService = require('./trial-test.service');
 module.exports.grammarService = require('./grammar.service');
+module.exports.newsCategoryService = require('./news-category.service');

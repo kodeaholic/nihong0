@@ -4,6 +4,10 @@ import { NavLink } from 'react-router-dom'
 
 const _nav = [
   {
+    _component: 'CNavTitle',
+    anchor: 'Trang chủ',
+  },
+  {
     _component: 'CNavItem',
     as: NavLink,
     anchor: 'Tổng quan',
@@ -500,6 +504,32 @@ const _nav = [
     as: NavLink,
     anchor: 'Thêm bài',
     to: '/trial-tests/addTrialTest',
+  },
+  {
+    _component: 'CNavTitle',
+    anchor: 'Chuyên mục báo mạng',
+  },
+  {
+    _component: 'CNavItem',
+    as: NavLink,
+    anchor: 'Danh sách chuyên mục',
+    to: '/news-categories',
+  },
+  {
+    _component: 'CNavItem',
+    as: NavLink,
+    anchor: 'Thêm chuyên mục',
+    to: '/news-categories/addCategory',
+  },
+  {
+    _component: 'CNavTitle',
+    anchor: 'Khác',
+  },
+  {
+    _component: 'CNavItem',
+    as: NavLink,
+    anchor: 'Đăng xuất',
+    to: '/logout',
   },
 ]
 

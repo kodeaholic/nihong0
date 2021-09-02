@@ -81,6 +81,8 @@ const SubTests = React.lazy(() => import('./views/sub-tests/master/index'))
 const SubTest = React.lazy(() => import('./views/sub-tests/detail/index'))
 const Grammars = React.lazy(() => import('./views/grammar/master/index'))
 const Grammar = React.lazy(() => import('./views/grammar/detail/index'))
+const NewsCategories = React.lazy(() => import('./views/news-category/master/index'))
+const NewsCategory = React.lazy(() => import('./views/news-category/detail/index'))
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Tổng quan', component: Dashboard },
@@ -300,6 +302,25 @@ const routes = [
     name: 'Thêm mới',
     component: Grammar,
     specificName: 'addGrammar',
+  },
+  { path: '/news-categories', name: 'Chuyên mục báo mạng', component: NewsCategories, exact: true },
+  {
+    path: '/news-categories/getCategory/:itemId',
+    name: 'Thông tin chuyên mục',
+    component: NewsCategory,
+    specificName: 'getCategory',
+  },
+  {
+    path: '/news-categories/editCategory/:itemId',
+    name: 'Sửa',
+    component: NewsCategory,
+    specificName: 'editCategory',
+  },
+  {
+    path: '/news-categories/addCategory',
+    name: 'Thêm mới',
+    component: NewsCategory,
+    specificName: 'addCategory',
   },
 ]
 
