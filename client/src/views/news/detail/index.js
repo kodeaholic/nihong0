@@ -210,7 +210,7 @@ const NewsItem = (props) => {
                 />
               </CCol>
             </CRow>
-            {thumbnail.length > 0 && (
+            {!_.isEmpty(thumbnail) && (
               <CRow className="mb-3">
                 <CFormLabel htmlFor="thumbnail" className="col-sm-2 col-form-label">
                   Hình ảnh đại diện
