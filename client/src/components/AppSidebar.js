@@ -34,14 +34,14 @@ const AppSidebar = () => {
       //   dispatch({ type: 'set', sidebarShow: !sidebarShow })
       // }}
     >
-      <CSidebarBrand className="d-none d-md-flex" to="/">
+      {/* <CSidebarBrand className="d-none d-md-flex" to="/">
         <CImage
           className="sidebar-brand-full"
           src="avatars/logo.jpg"
           height={90}
           style={{ marginBottom: '5px', marginTop: '5px' }}
         />
-      </CSidebarBrand>
+      </CSidebarBrand> */}
       <CSidebarNav>
         <SimpleBar>
           <CCreateNavItem items={navigation} />
