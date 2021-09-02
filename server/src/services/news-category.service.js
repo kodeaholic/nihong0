@@ -52,22 +52,50 @@ const getItemById = async (id) => {
  * @returns {Promise<Board>}
  */
 const updateItemById = async (itemId, itemBody) => {
-  const item = await getItemById(itemId);
+  let item = await getItemById(itemId);
   if (!item) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Mục không tồn tại hoặc đã bị xoá');
   }
-  Object.assign(item, itemBody);
-  await item.save();
-  if (!_.isEmpty(itemBody.parent)) {
-    const parent = await getItemById(itemBody.parent);
-    if (!_.isEmpty(parent)) {
-      let children = parent.children;
-      if (_.isEmpty(children)) children = [];
-      if (!children.includes(itemBody.parent)) children.push(itemBody.parent);
-      Object.assign(parent, { children });
-      await parent.save();
+  console.log(item);
+  console.log(typeof item);
+  const oldParent = item.parent;
+  // delete from oldParent.childredn
+  const old = await getItemById(oldParent);
+  console.log('oldParent: ', oldParent);
+  console.log('item._id.toString: ', item._id.toString());
+  console.log('old: ', old);
+  if (!_.isEmpty(old)) {
+    let children = old.children;
+    console.log('old.children: ', children);
+    const index = _.findIndex(children, function (child) {
+      console.log(typeof child);
+      return child.toString() === item._id.toString();
+    });
+    if (index >= 0) children.splice(index, 1);
+    console.log(children);
+    Object.assign(old, { children: children });
+    await old.save();
+  }
+
+  const newParent = itemBody.parent;
+  if (_.isEmpty(newParent)) {
+    delete itemBody.parent;
+    await NewsCategory.updateOne({ _id: item._id }, { $unset: { parent: 1 } }); // remove old parent
+  } else {
+    // update newParent.children
+    const newP = await getItemById(newParent);
+    console.log('newP: ', newP);
+    if (!_.isEmpty(newP)) {
+      let children = [...newP.children];
+      console.log('newP.children: ', children);
+      if (!children.includes(item._id.toString())) children.push(item._id.toString());
+      Object.assign(newP, { children: children });
+      await newP.save();
     }
   }
+  item = await getItemById(itemId);
+  Object.assign(item, itemBody);
+  await item.save();
   return item;
 };
 

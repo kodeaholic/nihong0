@@ -38,6 +38,8 @@ const NewsCategory = (props) => {
   const [parent, setParent] = useState('')
   const [children, setChildren] = useState([])
   const [description, setDescription] = useState([])
+  const [categories, setCategories] = useState([])
+  const [item, setItem] = useState({})
   const savingCallback = (res) => {
     setSaving(false)
     if (res && res.code !== 400 && res.code !== 403 && res.code !== 401 && res.code !== 500) {
@@ -84,8 +86,8 @@ const NewsCategory = (props) => {
       let data = {
         title,
         description,
-        parent,
       }
+      if (parent) data.parent = parent
       viewAction === 'add'
         ? newsCategoryService.createItem(data).then(savingCallback)
         : newsCategoryService.updateItem(data, itemId).then(savingCallback)
@@ -122,10 +124,21 @@ const NewsCategory = (props) => {
             setDescription(res.description)
             setParent(res.parent)
             setChildren(res.children)
+            setItem(res)
           }
         }
       })
     }
+    newsCategoryService.getItems().then((res) => {
+      if (res) {
+        if (res.status === 401 || res.status === 404 || res.status === 400) {
+          setCategories([])
+        } else {
+          const list = res.results.filter((itm) => itm.id !== itemId)
+          setCategories(list)
+        }
+      }
+    })
   }, [itemId])
 
   if (redirectTo.isRedirected) {
@@ -168,6 +181,31 @@ const NewsCategory = (props) => {
                 />
               </CCol>
             </CRow>
+            {!_.isEmpty(categories) && (
+              <CRow className="mb-3">
+                <CFormLabel htmlFor="parent" className="col-sm-2 col-form-label">
+                  Chuyên mục cha
+                </CFormLabel>
+                <CCol sm="10">
+                  <CFormSelect
+                    onChange={(e) => {
+                      setParent(e.target.value)
+                      console.log(e.target.value)
+                    }}
+                    id="parent"
+                    disabled={viewAction === 'get'}
+                    value={parent}
+                  >
+                    <option value="">Không có</option>
+                    {categories.map((itm) => (
+                      <option key={itm.id} value={itm.id}>
+                        {itm.title}
+                      </option>
+                    ))}
+                  </CFormSelect>
+                </CCol>
+              </CRow>
+            )}
             <CRow>
               {viewAction !== 'get' && (
                 <>
