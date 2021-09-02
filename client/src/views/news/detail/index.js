@@ -249,6 +249,17 @@ const NewsItem = (props) => {
                           change: function (e) {
                             // xử lý data
                             let content = editor.getData()
+                            content = content.replace(
+                              /style="font-family: "Times New Roman", serif;"/g,
+                              '',
+                            )
+                            content = content.replace(
+                              /style="font-family:"Times New Roman",serif;"/g,
+                              '',
+                            )
+                            content = content.replace(/font-family:"Times New Roman",serif;/g, '')
+                            content = content.replace(/font-family: "Times New Roman", serif;/g, '')
+                            console.log(content)
                             setContent(content)
                           },
                         },
