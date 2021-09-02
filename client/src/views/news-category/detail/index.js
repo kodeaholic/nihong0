@@ -137,7 +137,8 @@ const NewsCategory = (props) => {
         if (res.status === 401 || res.status === 404 || res.status === 400) {
           setCategories([])
         } else {
-          const list = res.results.filter((itm) => itm.id !== itemId)
+          console.log(res.results)
+          const list = res.results.filter((itm) => itm.id !== itemId && _.isEmpty(itm.parent))
           console.log(list)
           setCategories(list)
         }
