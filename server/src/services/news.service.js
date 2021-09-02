@@ -21,7 +21,7 @@ const createItem = async (itemBody) => {
  * @param {number} [options.page] - Current page (default = 1)
  * @returns {Promise<QueryResult>}
  */
-const queryItems = async (filter, options) => {
+const queryItems = async (filter, options = { sortBy: 'createdAt:desc' }) => {
   const items = await News.paginate(filter, options);
   return items;
 };
@@ -46,7 +46,7 @@ const updateItemById = async (itemId, itemBody) => {
   if (!item) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Mục không tồn tại hoặc đã bị xoá');
   }
-  
+
   const newParent = itemBody.parent;
   if (_.isEmpty(newParent)) {
     delete itemBody.parent;
