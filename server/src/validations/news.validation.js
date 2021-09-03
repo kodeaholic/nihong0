@@ -19,12 +19,17 @@ const getItems = {
     limit: Joi.number().integer(),
     page: Joi.number().integer(),
     populate: Joi.string(),
+    mobile: Joi.number().integer(),
   }),
 };
 
 const getItem = {
   params: Joi.object().keys({
     itemId: Joi.string().custom(objectId),
+  }),
+  query: Joi.object().keys({
+    mobile: Joi.number().integer(),
+    clientWidth: Joi.number().integer(),
   }),
 };
 

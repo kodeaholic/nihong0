@@ -12,14 +12,23 @@ const createItem = catchAsync(async (req, res) => {
 const getItems = catchAsync(async (req, res) => {
     const filter = pick(req.query, ['title', 'parent']);
     if (filter.title) filter.title = new RegExp(filter.title, 'i') // this will add {title: /title/i} to filter to search by regex, not search by identical string comparison
-    let options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
+    let options = pick(req.query, ['sortBy', 'limit', 'page', 'populate', 'mobile']);
     if (_.isEmpty(options.sortBy)) options.sortBy = 'createdAt:desc'
     const result = await newsService.queryItems(filter, options);
     res.send(result);
 });
 
 const getItem = catchAsync(async (req, res) => {
-    const item = await newsService.getItemById(req.params.itemId);
+    let options = pick(req.query, ['mobile', 'clientWidth']);
+    if (!options.mobile || !options.clientWidth) {
+        options.mobile = 0;
+        options.clientWidth = 0;
+    }
+    else {
+        options.mobile = parseInt(options.mobile);
+        options.clientWidth = parseInt(options.clientWidth);
+    }
+    const item = await newsService.getItemById(req.params.itemId, options.mobile, options.clientWidth);
     if (!item) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Mục không tồn tại hoặc đã bị xoá');
     }
