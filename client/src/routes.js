@@ -1,4 +1,5 @@
 import React from 'react'
+import Chat from './views/chat'
 import NewsItem from './views/news/detail'
 import News from './views/news/master'
 import TrialTest from './views/trial-tests/detail'
@@ -343,6 +344,7 @@ const routes = [
     component: NewsItem,
     specificName: 'addNews',
   },
+  { path: '/chat', name: 'Chat', component: Chat, exact: true },
 ]
 
 export default routes

@@ -5,6 +5,16 @@ import { NavLink } from 'react-router-dom'
 const _nav = [
   {
     _component: 'CNavTitle',
+    anchor: 'Nihongo365 Chat',
+  },
+  {
+    _component: 'CNavItem',
+    as: NavLink,
+    anchor: 'Chat',
+    to: '/chat',
+  },
+  {
+    _component: 'CNavTitle',
     anchor: 'Trang chủ',
   },
   {
