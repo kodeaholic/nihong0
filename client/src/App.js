@@ -33,6 +33,19 @@ class App extends Component {
         <React.Suspense fallback={loading}>
           <Switch>
             {/* <Route exact path="/login" name="Login Page" render={(props) => <Login {...props} />} /> */}
+            <Route
+              path="/terms-and-contitions.html"
+              // onEnter={() => {
+              //   window.location.reload()
+              // }}
+            />
+            <Route
+              path="/privacy-policy.html"
+              // onEnter={() => {
+              //   window.location.reload()
+              // }}
+            />
+
             <Route exact path="/login">
               {/* {localStorage.getItem('user') ? <Redirect to="/dashboard" /> : <Login />} */}
               <Login />
