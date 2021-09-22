@@ -399,10 +399,10 @@ const Dashboard = () => {
               <CTable hover responsive align="middle" className="mb-0 border">
                 <CTableHead color="light">
                   <CTableRow>
+                    <CTableHeaderCell className="text-center">Số</CTableHeaderCell>
                     <CTableHeaderCell className="text-center">
                       <CIcon name="cil-people" />
                     </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">Số</CTableHeaderCell>
                     <CTableHeaderCell className="text-left">User ({users.length})</CTableHeaderCell>
                     {/* <CTableHeaderCell className="text-center">Country</CTableHeaderCell> */}
                     {/* <CTableHeaderCell>Usage</CTableHeaderCell>
