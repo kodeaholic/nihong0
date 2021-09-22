@@ -6,15 +6,16 @@
     src: url('../../../fonts/SawarabiMincho-Regular.ttf');
 }
 
-html, body {margin: 0; height: 100%; overflow: hidden; background-color: #FFEFDD; background-color: #F7D4D6;}
+html, body {margin: 0; height: 100%; overflow: hidden; background-color: #fff; background-color: #fff;}
 .viewContainer {
   width: 100%;
   padding-bottom: 15px;  /* for android bottom navigation */
   height: calc(100vh + 10px);
-  background-image: url('https://png.pngtree.com/thumb_back/fw800/back_our/20190625/ourmid/pngtree-pink-japanese-mount-fuji-background-poster-image_257307.jpg');
+  /* background-image: url('https://png.pngtree.com/thumb_back/fw800/back_our/20190625/ourmid/pngtree-pink-japanese-mount-fuji-background-poster-image_257307.jpg');
   background-position: center;
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: cover; */
+  background: #fff;
 }
 .mainAudioPlayerContainer {
   height: 52px;
@@ -34,6 +35,7 @@ html, body {margin: 0; height: 100%; overflow: hidden; background-color: #FFEFDD
   margin: 10px;
   padding-top: 15px;
   overflow-y: auto;
+  color: #000;
 }
 .listItem {
   margin: 5px;
