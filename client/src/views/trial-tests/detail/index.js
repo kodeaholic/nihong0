@@ -331,7 +331,7 @@ const QuizItem = (props) => {
   else
     return (
       <div className={`quiz-item-wrapper ${duplicated}`}>
-        {data.part === TEST_PART.reading && (
+        {(data.part === TEST_PART.reading || data.part === TEST_PART.grammar) && (
           <CRow className="mb-3">
             <CCol sm="12">
               {!disabled && (
@@ -920,7 +920,8 @@ const TrialTest = (props) => {
     const clone = quiz.map((item) => {
       let newItem = item
       newItem.question = htmlEntityEncode(newItem.question)
-      if (newItem.part === TEST_PART.reading) newItem.content = htmlEntityEncode(newItem.content)
+      if (newItem.part === TEST_PART.reading || newItem.part === TEST_PART.grammar)
+        newItem.content = htmlEntityEncode(newItem.content)
       if (newItem._id) delete newItem._id // remove ID
       return newItem
     })
