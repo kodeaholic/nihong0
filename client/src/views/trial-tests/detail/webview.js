@@ -378,7 +378,7 @@ const TrialTestWebView = (props) => {
       while (paras[0]) paras[0].parentNode.removeChild(paras[0])
     }
     /* load css on the fly */
-    const css = ['css/trial-tests/webview.css', 'css/trial-tests/switch.css']
+    const css = ['css/trial-tests/webview.css']
     css.forEach((item) => {
       const link = document.createElement('link')
       // set the attributes for link element
