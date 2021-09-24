@@ -388,7 +388,7 @@ span[data-sentence-index] {
   box-shadow: red 0px 5px 15px;
 }
 
-audio:hover,
+/* audio:hover,
 audio:focus,
 audio:active {
   -webkit-box-shadow: 15px 15px 20px rgba(0, 0, 0, 0.4);
@@ -397,7 +397,7 @@ audio:active {
   -webkit-transform: scale(1.05);
   -moz-transform: scale(1.05);
   transform: scale(1.05);
-}
+} */
 
 audio {
   -webkit-transition: all 0.5s linear;
