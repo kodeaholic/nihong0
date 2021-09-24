@@ -13,6 +13,8 @@ import PropTypes from 'prop-types'
 import { getTestPartName, TEST_PART } from 'src/constants/test.constants'
 import { v4 as uuidv4 } from 'uuid'
 import { msToTime } from 'src/helpers/time.helper'
+import AudioPlayer from 'react-h5-audio-player'
+import 'react-h5-audio-player/lib/styles.css'
 const Part = (props) => {
   const { part, updateScore, setScreen, status, updateStatus, duration, updateDuration } = props
   const [answeredQuiz, setAnsweredQuiz] = useState({})
@@ -78,9 +80,14 @@ const Part = (props) => {
   return (
     <>
       {!_.isEmpty(listeningAudioSrc) && (
-        <audio controls preload="metadata">
-          <source src={listeningAudioSrc} />
-        </audio>
+        <AudioPlayer
+          autoPlay={false}
+          src={listeningAudioSrc}
+          showJumpControls={false}
+          showSkipControls={false}
+          loop={false}
+          preload="auto"
+        />
       )}
       <div className="quiz-container">
         {parts.map((type, typeIndex) => {

@@ -399,7 +399,7 @@ audio:active {
   transform: scale(1.05);
 } */
 
-audio {
+/* audio {
   -webkit-transition: all 0.5s linear;
   -moz-transition: all 0.5s linear;
   -o-transition: all 0.5s linear;
@@ -413,7 +413,7 @@ audio {
   width: 100%;
   height: 54px;
   margin-bottom: 10px;
-}
+} */
 .scoreboard-wrapper {
   height: 90px;
   z-index: 1000;
@@ -466,4 +466,7 @@ audio {
   justify-content: center;
   display: flex;
   text-transform: uppercase;
+}
+.rhap_additional-controls > button {
+  /* display: none; */
 }
