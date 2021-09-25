@@ -109,12 +109,15 @@ const loginUserBySocialDetails = async (userSocialDetails) => {
       } else {
         // check for provider user id
         // if the current providerUserId empty => update all fields. If not, check matching. If match => update all fields else throw error fake login
-        if (!existingUser.providerUserId || existingUser.providerUserId === id) {
-          Object.assign(existingUser, userBody);
-          await existingUser.save();
-          return existingUser;
-        }
-        else throw new ApiError(httpStatus.UNAUTHORIZED, "Provider userId and email do not match");
+        // if (!existingUser.providerUserId || existingUser.providerUserId === id) {
+        //   Object.assign(existingUser, userBody);
+        //   await existingUser.save();
+        //   return existingUser;
+        // }
+        // else throw new ApiError(httpStatus.UNAUTHORIZED, "Provider userId and email do not match");
+        Object.assign(existingUser, userBody); // override provider
+        await existingUser.save();
+        return existingUser;
       }
     }
 
