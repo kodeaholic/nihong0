@@ -10,6 +10,7 @@ import {
   CCardFooter,
   CCardHeader,
   CCol,
+  CFormControl,
   CProgress,
   CRow,
   CTable,
@@ -23,6 +24,8 @@ import { CChartLine } from '@coreui/react-chartjs'
 import { getStyle, hexToRgba } from '@coreui/utils'
 import CIcon from '@coreui/icons-react'
 import { getTimeDiffFromTimestamp } from 'src/helpers/time.helper.js'
+import { _ } from 'core-js'
+import { toast } from 'react-toastify'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyAlEC53kiwYJByue5_vGhTfkXJutUwHODk',
@@ -41,9 +44,11 @@ const WidgetsBrand = lazy(() => import('../components/widgets/WidgetsBrand.js'))
 
 const Dashboard = () => {
   const [users, setUsers] = useState([])
+  const [search, setSearch] = useState('')
   const random = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1) + min)
   }
+  const setSearchDebounce = _.debounce(setSearch, 1000)
   useEffect(() => {
     console.log('Getting users from firestore ...')
     const unsubscribe = firebase
@@ -51,22 +56,27 @@ const Dashboard = () => {
       .collection('USERS')
       .orderBy('createdAt', 'desc')
       .onSnapshot((querySnapshot) => {
-        const items = querySnapshot.docs.map((filteredSnapshot) => {
-          const item = {
-            id: filteredSnapshot.id,
-            ...filteredSnapshot.data(),
-          }
-          return item
-        })
+        const items = querySnapshot.docs
+          .filter((documentSnapshot) => {
+            if (!_.isEmpty(search)) {
+              const data = documentSnapshot.data()
+              return data.email.includes(search.toLowerCase()) || data.name.includes(search)
+            } else return true
+          })
+          .map((filteredSnapshot) => {
+            const item = {
+              id: filteredSnapshot.id,
+              ...filteredSnapshot.data(),
+            }
+            return item
+          })
         setUsers(items)
       })
     return () => {
       unsubscribe && unsubscribe()
     }
-  }, [])
-  useEffect(() => {
-    if (users.length) console.log('Users count: ', users.length)
-  }, [users])
+  }, [search])
+  useEffect(() => {}, [users])
   return (
     <>
       {/* <WidgetsDropdown />
@@ -218,7 +228,16 @@ const Dashboard = () => {
       <CRow>
         <CCol xs>
           <CCard className="mb-4">
-            <CCardHeader>Thống kê người dùng</CCardHeader>
+            <CFormControl
+              type="text"
+              placeholder="Tìm kiếm"
+              defaultValue={search}
+              onChange={(e) => {
+                setSearchDebounce(e.target.value)
+              }}
+              id="search"
+              style={{ width: 'calc(100% - 30px)', marginLeft: '15px', marginTop: '15px' }}
+            />
             <CCardBody>
               {/* <CRow>
                 <CCol xs="12" md="6" xl="6">
@@ -408,6 +427,7 @@ const Dashboard = () => {
                     {/* <CTableHeaderCell>Usage</CTableHeaderCell>
                     <CTableHeaderCell className="text-center">Payment Method</CTableHeaderCell> */}
                     <CTableHeaderCell>Gia nhập</CTableHeaderCell>
+                    <CTableHeaderCell>Thao tác</CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
@@ -459,6 +479,63 @@ const Dashboard = () => {
                               <div className="small text-medium-emphasis">
                                 {getTimeDiffFromTimestamp(user.createdAt)}
                               </div>
+                            </CTableDataCell>
+                            <CTableDataCell>
+                              <CButtonGroup>
+                                <CButton
+                                  type="button"
+                                  color="success"
+                                  style={{ color: 'white' }}
+                                  onClick={() => {
+                                    const ok = window.confirm(
+                                      `Xác nhận xóa thông tin thiết bị cũ để người dùng đăng nhập trên thiết bị mới\nEmail---${user.email}\nTên người dùng---${user.name}`,
+                                    )
+                                    if (ok) {
+                                      firebase
+                                        .firestore()
+                                        .collection('USERS')
+                                        .doc(user.id)
+                                        .update({
+                                          device: firebase.firestore.FieldValue.delete(),
+                                        })
+                                        .then((res) => {
+                                          console.log(res)
+                                          toast.success(`Xóa thành công`, {
+                                            position: 'top-right',
+                                            autoClose: 2500,
+                                            hideProgressBar: true,
+                                            closeOnClick: true,
+                                            pauseOnHover: true,
+                                            draggable: true,
+                                            progress: undefined,
+                                          })
+                                        })
+                                        .catch((err) => {
+                                          console.log(err)
+                                          toast.error(`Không thành công`, {
+                                            position: 'top-right',
+                                            autoClose: 2500,
+                                            hideProgressBar: true,
+                                            closeOnClick: true,
+                                            pauseOnHover: true,
+                                            draggable: true,
+                                            progress: undefined,
+                                          })
+                                        })
+                                    }
+                                  }}
+                                >
+                                  Refresh thiết bị
+                                </CButton>
+                                <CButton
+                                  type="button"
+                                  color="info"
+                                  style={{ color: 'white' }}
+                                  onClick={() => {}}
+                                >
+                                  Thông tin
+                                </CButton>
+                              </CButtonGroup>
                             </CTableDataCell>
                           </CTableRow>
                         )
