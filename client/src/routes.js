@@ -59,6 +59,7 @@ const Widgets = React.lazy(() => import('./views/components/widgets/Widgets'))
 
 const Charts = React.lazy(() => import('./views/components/charts/Charts'))
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
+const Logs = React.lazy(() => import('./views/dashboard/logs'))
 const Kana = React.lazy(() => import('./views/characters/kana/kana'))
 const Joyokanji = React.lazy(() => import('./views/characters/joyokanji/joyokanji'))
 const Jinmeiyo = React.lazy(() => import('./views/characters/jinmeiyo/jinmeiyo'))
@@ -89,6 +90,7 @@ const NewsCategory = React.lazy(() => import('./views/news-category/detail/index
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Tổng quan', component: Dashboard },
+  { path: '/logs', name: 'Logs', component: Logs },
   { path: '/theme', name: 'Theme', component: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', component: Colors },
   { path: '/theme/typography', name: 'Typography', component: Typography },

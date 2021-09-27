@@ -28,6 +28,13 @@ const _nav = [
     //   text: 'NEW',
     // },
   },
+  {
+    _component: 'CNavItem',
+    as: NavLink,
+    anchor: 'Logs',
+    to: '/logs',
+    icon: <CIcon name="cil-speedometer" customClasses="nav-icon" />,
+  },
   // {
   //   _component: 'CNavTitle',
   //   anchor: 'Theme',
