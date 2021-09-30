@@ -40,7 +40,7 @@ app.use(compression());
 
 // enable cors
 const corsOptions = {
-  origin: ['http://localhost:3000', 'http://bd4142108316.ngrok.io'],
+  origin: ['http://localhost:3000', 'http://bd4142108316.ngrok.io', 'http://localhost:19006'],
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 app.use(cors(corsOptions));
