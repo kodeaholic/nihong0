@@ -35,39 +35,39 @@ const Logs = () => {
   const [logs, setLogs] = useState([])
   const [search, setSearch] = useState('')
   const setSearchDebounce = _.debounce(setSearch, 1000)
-  useEffect(() => {
-    console.log('Getting logs from firestore ...')
-    const unsubscribe = firebase
-      .firestore()
-      .collection('logs')
-      .orderBy('time', 'desc')
-      .onSnapshot((querySnapshot) => {
-        const items = querySnapshot.docs
-          .filter((documentSnapshot) => {
-            const data = documentSnapshot.data()
-            if (!_.isEmpty(search)) {
-              const user = _.get(data, 'user')
-              console.log(user)
-              return (
-                (user.email.includes(search.toLowerCase()) ||
-                  user.name.toLowerCase().includes(search.toLowerCase())) &&
-                data.time > Date.now() - 86400000 * 5
-              )
-            } else return data.time > Date.now() - 86400000 * 5
-          })
-          .map((filteredSnapshot) => {
-            const item = {
-              id: filteredSnapshot.id,
-              ...filteredSnapshot.data(),
-            }
-            return item
-          })
-        setLogs(items)
-      })
-    return () => {
-      unsubscribe && unsubscribe()
-    }
-  }, [search])
+  // useEffect(() => {
+  //   console.log('Getting logs from firestore ...')
+  //   const unsubscribe = firebase
+  //     .firestore()
+  //     .collection('logs')
+  //     .orderBy('time', 'desc')
+  //     .onSnapshot((querySnapshot) => {
+  //       const items = querySnapshot.docs
+  //         .filter((documentSnapshot) => {
+  //           const data = documentSnapshot.data()
+  //           if (!_.isEmpty(search)) {
+  //             const user = _.get(data, 'user')
+  //             console.log(user)
+  //             return (
+  //               (user.email.includes(search.toLowerCase()) ||
+  //                 user.name.toLowerCase().includes(search.toLowerCase())) &&
+  //               data.time > Date.now() - 86400000 * 5
+  //             )
+  //           } else return data.time > Date.now() - 86400000 * 5
+  //         })
+  //         .map((filteredSnapshot) => {
+  //           const item = {
+  //             id: filteredSnapshot.id,
+  //             ...filteredSnapshot.data(),
+  //           }
+  //           return item
+  //         })
+  //       setLogs(items)
+  //     })
+  //   return () => {
+  //     unsubscribe && unsubscribe()
+  //   }
+  // }, [search])
   return (
     <>
       <CRow>

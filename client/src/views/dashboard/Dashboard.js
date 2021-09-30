@@ -11,6 +11,8 @@ import {
   CCardHeader,
   CCol,
   CFormControl,
+  CFormSelect,
+  CInputGroup,
   CProgress,
   CRow,
   CTable,
@@ -26,6 +28,7 @@ import CIcon from '@coreui/icons-react'
 import { getTimeDiffFromTimestamp } from 'src/helpers/time.helper.js'
 import { _ } from 'core-js'
 import { toast } from 'react-toastify'
+import { userService } from 'src/services/api/userService.js'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyAlEC53kiwYJByue5_vGhTfkXJutUwHODk',
@@ -45,38 +48,27 @@ const WidgetsBrand = lazy(() => import('../components/widgets/WidgetsBrand.js'))
 const Dashboard = () => {
   const [users, setUsers] = useState([])
   const [search, setSearch] = useState('')
-  const random = (min, max) => {
-    return Math.floor(Math.random() * (max - min + 1) + min)
-  }
   const setSearchDebounce = _.debounce(setSearch, 1000)
+  const [reload, setReload] = useState(0)
+  const [type, setType] = useState('EMAIL')
+  const refresh = (filter) => {
+    userService.getItems(filter).then((res) => {
+      setUsers(res.results)
+    })
+  }
   useEffect(() => {
-    console.log('Getting users from firestore ...')
-    const unsubscribe = firebase
-      .firestore()
-      .collection('USERS')
-      .orderBy('createdAt', 'desc')
-      .onSnapshot((querySnapshot) => {
-        const items = querySnapshot.docs
-          .filter((documentSnapshot) => {
-            if (!_.isEmpty(search)) {
-              const data = documentSnapshot.data()
-              return data.email.includes(search.toLowerCase()) || data.name.includes(search)
-            } else return true
-          })
-          .map((filteredSnapshot) => {
-            const item = {
-              id: filteredSnapshot.id,
-              ...filteredSnapshot.data(),
-            }
-            return item
-          })
-        setUsers(items)
-      })
-    return () => {
-      unsubscribe && unsubscribe()
-    }
-  }, [search])
-  useEffect(() => {}, [users])
+    setTimeout(() => {
+      setReload((rl) => rl + 1)
+    }, 60000)
+  }, [reload])
+  useEffect(() => {
+    let filter = {}
+    if (search && type) {
+      if (type === 'EMAIL') filter.email = search
+      else filter.name = search
+      refresh(filter)
+    } else refresh()
+  }, [reload, search, type])
   return (
     <>
       {/* <WidgetsDropdown />
@@ -228,16 +220,34 @@ const Dashboard = () => {
       <CRow>
         <CCol xs>
           <CCard className="mb-4">
-            <CFormControl
-              type="text"
-              placeholder="Tìm kiếm"
-              defaultValue={search}
-              onChange={(e) => {
-                setSearchDebounce(e.target.value)
-              }}
-              id="search"
+            <CInputGroup
               style={{ width: 'calc(100% - 30px)', marginLeft: '15px', marginTop: '15px' }}
-            />
+            >
+              <CFormControl
+                type="text"
+                placeholder="Tìm kiếm"
+                defaultValue={search}
+                onChange={(e) => {
+                  setSearchDebounce(e.target.value)
+                }}
+                id="search"
+                style={{ width: 'calc(70% - 30px)', marginTop: '15px', borderRadius: 5 }}
+              />
+              <CFormSelect
+                defaultValue={type}
+                name="type"
+                onChange={(e) => setType(e.target.value)}
+                style={{
+                  width: 'calc(30% - 30px)',
+                  marginLeft: '15px',
+                  marginTop: '15px',
+                  borderRadius: 5,
+                }}
+              >
+                <option value="EMAIL">Tìm theo email</option>
+                <option value="NAME">Tìm theo tên</option>
+              </CFormSelect>
+            </CInputGroup>
             <CCardBody>
               {/* <CRow>
                 <CCol xs="12" md="6" xl="6">
@@ -482,7 +492,7 @@ const Dashboard = () => {
                             </CTableDataCell>
                             <CTableDataCell>
                               <CButtonGroup>
-                                <CButton
+                                {/* <CButton
                                   type="button"
                                   color="success"
                                   style={{ color: 'white' }}
@@ -526,12 +536,16 @@ const Dashboard = () => {
                                   }}
                                 >
                                   Refresh thiết bị
-                                </CButton>
+                                </CButton> */}
                                 <CButton
                                   type="button"
                                   color="info"
                                   style={{ color: 'white' }}
-                                  onClick={() => {}}
+                                  onClick={() => {
+                                    window.confirm(
+                                      `Email ${user.email}\nTên người dùng ${user.name}`,
+                                    )
+                                  }}
                                 >
                                   Thông tin
                                 </CButton>
