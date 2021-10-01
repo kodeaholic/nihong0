@@ -122,6 +122,19 @@ const Part = (props) => {
                               <div className="content" style={{ fontWeight: 'bold' }}>
                                 {selectedGroup.title}
                               </div>
+                              {!_.isEmpty(selectedGroup.exampleQuiz) && (
+                                <div
+                                  className="content"
+                                  style={{
+                                    fontWeight: 'bold',
+                                    border: '1px solid orange',
+                                    padding: 5,
+                                    borderRadius: 2,
+                                  }}
+                                >
+                                  {renderHTML(selectedGroup.exampleQuiz)}
+                                </div>
+                              )}
                             </>
                           )}
                           {item.content && (
@@ -328,7 +341,16 @@ const TrialTestWebView = (props) => {
             })
             const cloneOne = [...quizOne]
             const cloneTwo = [...quizTwo]
-            const quizGroups = res.quizGroups
+            let initialGroups = res.quizGroups
+            let clonedGroups = [...initialGroups]
+            let resultGroups = clonedGroups.map(function (item) {
+              let newItem = { ...item }
+              // console.log(htmlEntityDecode(newItem.exampleQuiz))
+              if (!_.isEmpty(newItem.exampleQuiz))
+                newItem.exampleQuiz = htmlEntityDecode(newItem.exampleQuiz)
+              return newItem
+            })
+            const quizGroups = resultGroups
             const groupsOne = quizGroups.filter((item) => {
               return item.part !== TEST_PART.listening
             })

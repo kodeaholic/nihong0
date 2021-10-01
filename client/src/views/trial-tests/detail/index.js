@@ -927,6 +927,15 @@ const TrialTest = (props) => {
     })
     return clone
   }
+  const transformQuizGroupToSave = () => {
+    const clone = groups.map((item) => {
+      let newItem = item
+      if (!_.isEmpty(newItem.exampleQuiz))
+        newItem.exampleQuiz = htmlEntityEncode(newItem.exampleQuiz)
+      return newItem
+    })
+    return clone
+  }
 
   const handleSubmit = () => {
     if (
@@ -938,6 +947,7 @@ const TrialTest = (props) => {
     ) {
       setLoading(true)
       const quizToSave = transformQuizToSave()
+      const quizGroupToSave = transformQuizGroupToSave()
       let data = {
         title,
         level,
@@ -950,7 +960,7 @@ const TrialTest = (props) => {
         readingContent: htmlEntityEncode(readingContent),
         listeningContent: htmlEntityEncode(listeningContent),
         listeningAudioSrc,
-        quizGroups: groups,
+        quizGroups: quizGroupToSave,
       }
       viewAction === 'add'
         ? trialTestService.createItem(data).then(savingCallback)
@@ -1004,7 +1014,15 @@ const TrialTest = (props) => {
               return newItem
             })
             setQuiz(resultQuizes)
-            setGroups(res.quizGroups)
+            let initialGroups = res.quizGroups
+            let clonedGroups = [...initialGroups]
+            let resultGroups = clonedGroups.map(function (item) {
+              let newItem = { ...item }
+              if (!_.isEmpty(newItem.exampleQuiz))
+                newItem.exampleQuiz = htmlEntityDecode(newItem.exampleQuiz)
+              return newItem
+            })
+            setGroups(resultGroups)
           }
         }
         await sleep(1500)
@@ -1476,6 +1494,78 @@ const TrialTest = (props) => {
                                         </CInputGroupText>
                                       )}
                                     </CInputGroup>
+                                  </CCol>
+                                </CRow>
+                                <CRow>
+                                  <CFormLabel
+                                    htmlFor={`group-example-quiz-${group.uuid}`}
+                                    className="col-sm-2 col-form-label"
+                                  >
+                                    Ví dụ (nếu có)
+                                  </CFormLabel>
+                                  <CCol sm="10">
+                                    {viewAction !== 'get' && (
+                                      <div
+                                        id={`group-example-quiz-${group.uuid}`}
+                                        style={{
+                                          border: '1px solid grey',
+                                          borderRadius: '5px 5px 5px 5px',
+                                          backgroundColor: '#fff',
+                                          paddingRight: '5px',
+                                          paddingLeft: '5px',
+                                          paddingTop: '5px',
+                                          marginTop: '7px',
+                                          cursor: 'text',
+                                          minHeight: 100,
+                                          width: '100%',
+                                          marginBottom: 7,
+                                        }}
+                                        onClick={(e) => {
+                                          const editor = window.CKEDITOR.replace(
+                                            `group-example-quiz-${group.uuid}`,
+                                            {
+                                              on: {
+                                                // instanceReady: function (evt) {
+                                                //   document.getElementById(evt.editor.id + '_top').style.display = 'none'
+                                                // },
+                                                change: function (e) {
+                                                  // xử lý data
+                                                  let content = editor.getData()
+                                                  let newGroup = { ...group }
+                                                  newGroup.exampleQuiz = content
+                                                  let index = _.findIndex(
+                                                    groups,
+                                                    (item) => item.uuid === newGroup.uuid,
+                                                  )
+                                                  let newGroups = [...groups]
+                                                  newGroups[index] = newGroup
+                                                  setGroups(newGroups)
+                                                },
+                                              },
+                                            },
+                                          )
+                                        }}
+                                      >
+                                        {group.exampleQuiz ? renderHTML(group.exampleQuiz) : ''}
+                                      </div>
+                                    )}
+                                    {viewAction === 'get' && !_.isEmpty(group.exampleQuiz) && (
+                                      <div
+                                        style={{
+                                          border: '1px solid grey',
+                                          borderRadius: '5px 5px 5px 5px',
+                                          backgroundColor: '#D8DBE0',
+                                          paddingRight: '5px',
+                                          paddingLeft: '5px',
+                                          paddingTop: '5px',
+                                          marginTop: '7px',
+                                          width: '100%',
+                                          height: 'auto',
+                                        }}
+                                      >
+                                        {group.exampleQuiz ? renderHTML(group.exampleQuiz) : ''}
+                                      </div>
+                                    )}
                                   </CCol>
                                 </CRow>
                                 <CRow>
