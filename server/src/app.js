@@ -40,7 +40,7 @@ app.use(compression());
 
 // enable cors
 const corsOptions = {
-  origin: ['http://localhost:3000', 'http://bd4142108316.ngrok.io'],
+  origin: ['http://localhost:3000', 'http://bd4142108316.ngrok.io', 'http://localhost:19006'],
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 app.use(cors(corsOptions));
@@ -61,7 +61,6 @@ app.use('/v1', routes);
 app.use("/svg", express.static(path.join(__dirname, '../svg')));
 app.use(express.static(path.join(__dirname, '../../client/build')));
 app.get('/', function (req, res) {
-  console.log('Yeah!')
   res.sendFile(path.join(__dirname, '../../client/build', 'index.html'));
 });
 

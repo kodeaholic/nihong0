@@ -96,7 +96,7 @@ const loginUserBySocialDetails = async (userSocialDetails) => {
   // This service function must return an user object and then controller will take care the rest
   const { provider, userInfo } = userSocialDetails
   switch (provider) {
-    case socialAuthenticationConstants.GOOGLE:
+    case socialAuthenticationConstants.GOOGLE: {
       const { user } = userInfo
       const { email, name, photo, id } = user
       if (!email || email.length <= 0) throw new ApiError(httpStatus.UNAUTHORIZED, "Can't login with the given social provider email");
@@ -109,13 +109,43 @@ const loginUserBySocialDetails = async (userSocialDetails) => {
       } else {
         // check for provider user id
         // if the current providerUserId empty => update all fields. If not, check matching. If match => update all fields else throw error fake login
-        if (!existingUser.providerUserId || existingUser.providerUserId === id) {
-          Object.assign(existingUser, userBody);
-          await existingUser.save();
-          return existingUser;
-        }
-        else throw new ApiError(httpStatus.UNAUTHORIZED, "Provider userId and email do not match");
+        // if (!existingUser.providerUserId || existingUser.providerUserId === id) {
+        //   Object.assign(existingUser, userBody);
+        //   await existingUser.save();
+        //   return existingUser;
+        // }
+        // else throw new ApiError(httpStatus.UNAUTHORIZED, "Provider userId and email do not match");
+        Object.assign(existingUser, userBody); // override provider
+        await existingUser.save();
+        return existingUser;
       }
+    }
+
+    case socialAuthenticationConstants.FACEBOOK: {
+      const { user } = userInfo
+      const { email, name, photo, id } = user
+      if (!email || email.length <= 0) throw new ApiError(httpStatus.UNAUTHORIZED, "Can't login with the given social provider email");
+      const existingUser = await userService.getUserByEmail(email);
+      const userBody = {isEmailVerified: true, email, name, password: 'nihongo365', photo, providerUserId: id, provider: socialAuthenticationConstants.FACEBOOK, socialUserDetails: JSON.stringify(userInfo) }
+      if (!existingUser) {
+        // create a new user account based on this email
+        const newUser = await User.create(userBody)
+        return newUser
+      } else {
+        // check for provider user id
+        // if the current providerUserId empty => update all fields. If not, check matching. If match => update all fields else throw error fake login
+        // if (!existingUser.providerUserId || existingUser.providerUserId === id) {
+        //   Object.assign(existingUser, userBody);
+        //   await existingUser.save();
+        //   return existingUser;
+        // }
+        // else throw new ApiError(httpStatus.UNAUTHORIZED, "Provider userId and email do not match");
+        Object.assign(existingUser, userBody); // override provider
+        await existingUser.save();
+        return existingUser;
+      }
+    }
+
     default:
       throw new ApiError(httpStatus.UNAUTHORIZED, "Can't login with this social provider");
   }

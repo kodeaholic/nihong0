@@ -19,7 +19,7 @@ div[id*='cke_question'] {
   width: 10%;
 }
 [id*='question-content']:after {
-  content: 'Nội dung đọc (nếu có)';
+  /* content: 'Nội dung (nếu có)'; */
 }
 div[id*='cke_question-content'] {
   width: 100%;

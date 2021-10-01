@@ -3,6 +3,56 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const { toJSON, paginate } = require('./plugins');
 const { roles } = require('../config/roles');
+
+const CompletedItem = mongoose.Schema(
+  {
+    content: {
+      type: String,
+      required: true,
+      trim: false,
+    },
+    time: {
+      type: Number,
+      required: true,
+    },
+    program: {
+      type: String,
+      required: true,
+      trim: false,
+    },
+    level: {
+      type: String,
+      required: true,
+      trim: false,
+    },
+    itemId: {
+      type: String,
+      required: true,
+      trim: false,
+    },
+  },
+  {
+    _id: false,
+  }
+);
+
+const Activity = mongoose.Schema(
+  {
+    content: {
+      type: String,
+      required: true,
+      trim: false,
+    },
+    time: {
+      type: Number,
+      required: true,
+    }
+  },
+  {
+    _id: false,
+  }
+);
+
 const userSchema = mongoose.Schema(
   {
     name: {
@@ -47,7 +97,7 @@ const userSchema = mongoose.Schema(
       type: String,
       required: false,
       trim: false,
-      default: ''
+      default: '',
     },
     provider: {
       type: String,
@@ -63,6 +113,14 @@ const userSchema = mongoose.Schema(
       type: String,
       required: false,
       trim: false,
+    },
+    completedItems: {
+      type: [CompletedItem],
+      required: false,
+    },
+    activities: {
+      type: [Activity],
+      required: false,
     }
   },
   {

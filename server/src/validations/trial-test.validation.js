@@ -18,6 +18,7 @@ const QuizGroupValidation = {
   uuid: Joi.string().required(),
   part: Joi.number().required(),
   title: Joi.string().required(),
+  exampleQuiz: Joi.string().allow(null, ''),
 };
 
 const createItem = {

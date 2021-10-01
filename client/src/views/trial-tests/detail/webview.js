@@ -13,6 +13,8 @@ import PropTypes from 'prop-types'
 import { getTestPartName, TEST_PART } from 'src/constants/test.constants'
 import { v4 as uuidv4 } from 'uuid'
 import { msToTime } from 'src/helpers/time.helper'
+import AudioPlayer from 'react-h5-audio-player'
+import 'react-h5-audio-player/lib/styles.css'
 const Part = (props) => {
   const { part, updateScore, setScreen, status, updateStatus, duration, updateDuration } = props
   const [answeredQuiz, setAnsweredQuiz] = useState({})
@@ -78,9 +80,14 @@ const Part = (props) => {
   return (
     <>
       {!_.isEmpty(listeningAudioSrc) && (
-        <audio controls preload="metadata">
-          <source src={listeningAudioSrc} />
-        </audio>
+        <AudioPlayer
+          autoPlay={false}
+          src={listeningAudioSrc}
+          showJumpControls={false}
+          showSkipControls={false}
+          loop={false}
+          preload="auto"
+        />
       )}
       <div className="quiz-container">
         {parts.map((type, typeIndex) => {
@@ -115,6 +122,19 @@ const Part = (props) => {
                               <div className="content" style={{ fontWeight: 'bold' }}>
                                 {selectedGroup.title}
                               </div>
+                              {!_.isEmpty(selectedGroup.exampleQuiz) && (
+                                <div
+                                  className="content"
+                                  style={{
+                                    fontWeight: 'bold',
+                                    border: '1px solid orange',
+                                    padding: 5,
+                                    borderRadius: 2,
+                                  }}
+                                >
+                                  {renderHTML(selectedGroup.exampleQuiz)}
+                                </div>
+                              )}
                             </>
                           )}
                           {item.content && (
@@ -321,7 +341,16 @@ const TrialTestWebView = (props) => {
             })
             const cloneOne = [...quizOne]
             const cloneTwo = [...quizTwo]
-            const quizGroups = res.quizGroups
+            let initialGroups = res.quizGroups
+            let clonedGroups = [...initialGroups]
+            let resultGroups = clonedGroups.map(function (item) {
+              let newItem = { ...item }
+              // console.log(htmlEntityDecode(newItem.exampleQuiz))
+              if (!_.isEmpty(newItem.exampleQuiz))
+                newItem.exampleQuiz = htmlEntityDecode(newItem.exampleQuiz)
+              return newItem
+            })
+            const quizGroups = resultGroups
             const groupsOne = quizGroups.filter((item) => {
               return item.part !== TEST_PART.listening
             })
@@ -378,7 +407,7 @@ const TrialTestWebView = (props) => {
       while (paras[0]) paras[0].parentNode.removeChild(paras[0])
     }
     /* load css on the fly */
-    const css = ['css/trial-tests/webview.css', 'css/trial-tests/switch.css']
+    const css = ['css/trial-tests/webview.css']
     css.forEach((item) => {
       const link = document.createElement('link')
       // set the attributes for link element
