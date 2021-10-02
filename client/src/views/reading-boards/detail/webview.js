@@ -78,9 +78,10 @@ const ReadingBoardWebView = (props) => {
               return newItem
             })
             setQuiz(resultQuizes)
-            sleep(1500).then(() => {
-              setLoading(false)
-            })
+            setLoading(false)
+            // sleep(1500).then(() => {
+            //   setLoading(false)
+            // })
           }
         }
       })
