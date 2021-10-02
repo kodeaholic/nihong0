@@ -10,7 +10,7 @@
     "dev": "yarn server-dev",
     "prod": "yarn server-prod",
     "own-server-build": "cd server && yarn cache clean --all && yarn install --network-concurrency 1",
-    "own-server-client-build": "cd client && yarn cache clean --all && yarn install --network-concurrency 1 && cross-env NODE_ENV=production OWN_SERVER=true yarn build",
+    "own-server-client-build": "cd client && yarn cache clean --all && yarn install --network-concurrency 1 && cross-env NODE_ENV=production OWN_SERVER=own yarn build",
     "own-server-start": "cd server && cross-env PORT=3001 yarn own-server-start",
     "own-server-postbuild": "concurrently --kill-others-on-fail \"yarn own-server-build\" \"yarn own-server-client-build\""
   },
