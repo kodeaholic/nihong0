@@ -26,10 +26,10 @@ if (config.env !== 'test') {
 app.use('/v1', helmet());
 
 // parse json request body
-app.use('/v1', express.json({limit: '200mb'}));
+app.use('/v1', express.json({ limit: '200mb' }));
 
 // parse urlencoded request body
-app.use(express.urlencoded({limit: '200mb', extended: true }));
+app.use(express.urlencoded({ limit: '200mb', extended: true }));
 
 // sanitize request data
 app.use('/v1', xss());
@@ -40,9 +40,26 @@ app.use(compression());
 
 // enable cors
 const corsOptions = {
-  origin: ['http://localhost:3000', 'http://bd4142108316.ngrok.io', 'http://localhost:19006'],
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-}
+  origin: [
+    'http://localhost:3000',
+    'http://bd4142108316.ngrok.io',
+    'http://localhost:19006',
+    'https://103.170.123.13:3001',
+    'http://103.170.123.13:3001',
+    'http://nihongo365.com',
+    'https://nihongo365.com',
+    'http://www.nihongo365.com',
+    'https://www.nihongo365.com',
+    '103.170.123.13',
+    '103.170.123.13:3001',
+    'nihongo365.com',
+    'www.nihongo365.com',
+    'app.nihongo365.com',
+    'https://app.nihongo365.com',
+    'http://app.nihongo365.com'
+  ],
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
@@ -58,7 +75,7 @@ if (config.env === 'production') {
 // v1 api routes
 app.use('/v1', routes);
 
-app.use("/svg", express.static(path.join(__dirname, '../svg')));
+app.use('/svg', express.static(path.join(__dirname, '../svg')));
 app.use(express.static(path.join(__dirname, '../../client/build')));
 app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname, '../../client/build', 'index.html'));
