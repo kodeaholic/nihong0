@@ -9,7 +9,7 @@ const router = express.Router();
 router
   .route('/')
   .post(auth('manageTest'), validate(validation.createItem), controller.createItem)
-  .get(auth('test'), validate(validation.getItems), controller.getItems);
+  .get(validate(validation.getItems), controller.getItems);
 router
   .route('/findByQuestion')
   .post(auth('manageTest'), validate(validation.findTestByQuestion), controller.findTestByQuestion)

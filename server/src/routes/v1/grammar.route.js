@@ -9,7 +9,7 @@ const router = express.Router();
 router
   .route('/')
   .post(auth('manageGrammar'), validate(validation.createItem), controller.createItem)
-  .get(auth('getGrammar'), validate(validation.getItems), controller.getItems);
+  .get(validate(validation.getItems), controller.getItems);
 router
   .route('/:itemId')
   .get(validate(validation.getItem), controller.getItem)

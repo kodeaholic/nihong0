@@ -9,10 +9,10 @@ const router = express.Router();
 router
   .route('/')
   .post(auth('manageNews'), validate(validation.createItem), controller.createItem)
-  .get(auth('getNews'), validate(validation.getItems), controller.getItems);
+  .get(validate(validation.getItems), controller.getItems);
 router
   .route('/:itemId')
-  .get(auth('getNews'), validate(validation.getItem), controller.getItem)
+  .get(validate(validation.getItem), controller.getItem)
   .patch(auth('manageNews'), validate(validation.updateItem), controller.updateItem)
   .delete(auth('manageNews'), validate(validation.deleteItem), controller.deleteItem);
 

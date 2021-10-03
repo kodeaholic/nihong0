@@ -9,11 +9,11 @@ const router = express.Router();
 router
   .route('/')
   .post(auth('setDictionary'), validate(validation.createItem), controller.createItem)
-  .get(auth('dictionary'), validate(validation.getItems), controller.getItems);
+  .get(validate(validation.getItems), controller.getItems);
 
 router
   .route('/:id')
-  .get(auth('dictionary'), validate(validation.getItem), controller.getItem)
+  .get(validate(validation.getItem), controller.getItem)
   .patch(auth('setDictionary'), validate(validation.updateItem), controller.updateItem)
   .delete(auth('setDictionary'), validate(validation.deleteItem), controller.deleteItem);
 

@@ -8,6 +8,6 @@ const router = express.Router();
 
 router
     .route('/')
-    .post(auth('search'), validate(validation.search), controller.search)
+    .post(validate(validation.search), controller.search)
 
 module.exports = router;

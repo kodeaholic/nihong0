@@ -9,11 +9,11 @@ const router = express.Router();
 router
   .route('/')
   .post(auth('manageCards'), validate(cardValidation.createCard), cardController.createCard)
-  .get(auth('getCards'), validate(cardValidation.getCards), cardController.getCards);
+  .get(validate(cardValidation.getCards), cardController.getCards);
 
 router
   .route('/:cardId')
-  .get(auth('getCards'), validate(cardValidation.getCard), cardController.getCard)
+  .get(validate(cardValidation.getCard), cardController.getCard)
   .patch(auth('manageCards'), validate(cardValidation.updateCard), cardController.updateCard)
   .delete(auth('manageCards'), validate(cardValidation.deleteCard), cardController.deleteCard);
 

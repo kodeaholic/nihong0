@@ -8,11 +8,11 @@ const router = express.Router();
 
 router
     .route('/')
-    .get(auth('getChapters'), validate(chapterValidation.getChapters), chapterController.getChapters)
+    .get(validate(chapterValidation.getChapters), chapterController.getChapters)
     .post(auth('admin'), validate(chapterValidation.createChapter), chapterController.createChapter)
 router
     .route('/:chapterId')
-    .get(auth('getChapters'), validate(chapterValidation.getChapter), chapterController.getChapter)
+    .get(validate(chapterValidation.getChapter), chapterController.getChapter)
     .patch(auth('admin'), validate(chapterValidation.updateChapter), chapterController.updateChapter)
     .delete(auth('admin'), validate(chapterValidation.deleteChapter), chapterController.deleteChapter);
 
