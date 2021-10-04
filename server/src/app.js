@@ -41,6 +41,7 @@ app.use(compression());
 // enable cors
 const corsOptions = {
   origin: [
+    'http://localhost:3001',
     'http://localhost:3000',
     'http://bd4142108316.ngrok.io',
     'http://localhost:19006',
