@@ -56,7 +56,7 @@ const corsOptions = {
     'www.nihongo365.com',
     'app.nihongo365.com',
     'https://app.nihongo365.com',
-    'http://app.nihongo365.com'
+    'http://app.nihongo365.com',
   ],
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
@@ -76,14 +76,21 @@ if (config.env === 'production') {
 app.use('/v1', routes);
 
 app.use('/svg', express.static(path.join(__dirname, '../svg')));
-app.use(express.static(path.join(__dirname, '../../client/build')));
-app.get('/', function (req, res) {
+app.use(
+  express.static(path.join(__dirname, '../../client/build'), {
+    index: false,
+  })
+);
+app.get('/admin.html', function (req, res) {
   res.sendFile(path.join(__dirname, '../../client/build', 'index.html'));
+});
+app.get('/', function (req, res) {
+  res.sendFile(path.join(__dirname, '../../client/build', 'landing-page.html'));
 });
 
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {
-  next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
+  res.sendFile(path.join(__dirname, '../../client/build', '404.html'));
 });
 
 // convert error to ApiError, if needed
