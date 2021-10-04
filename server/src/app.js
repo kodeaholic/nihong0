@@ -81,11 +81,11 @@ app.use(
     index: false,
   })
 );
-app.get('/admin.html', function (req, res) {
-  res.sendFile(path.join(__dirname, '../../client/build', 'index.html'));
+app.get('/home.html', function (req, res) {
+  res.sendFile(path.join(__dirname, '../../client/build', 'landing-page.html'));
 });
 app.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname, '../../client/build', 'landing-page.html'));
+  res.sendFile(path.join(__dirname, '../../client/build', 'index.html'));
 });
 
 // send back a 404 error for any unknown api request
