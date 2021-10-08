@@ -58,6 +58,9 @@ const corsOptions = {
     'app.nihongo365.com',
     'https://app.nihongo365.com',
     'http://app.nihongo365.com',
+    'localhost:3000',
+    'localhost:3001',
+    '192.168.1.244:3000'
   ],
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
