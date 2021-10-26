@@ -38,6 +38,12 @@ const getBoard = {
   }),
 };
 
+const getItemBySlug = {
+  params: Joi.object().keys({
+    slug: Joi.string(),
+  }),
+};
+
 const updateBoard = {
   params: Joi.object().keys({
     boardId: Joi.required().custom(objectId),
@@ -69,6 +75,7 @@ module.exports = {
   createBoard,
   getBoards,
   getBoard,
+  getItemBySlug,
   updateBoard,
   deleteBoard,
   checkTagsForCards

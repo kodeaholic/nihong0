@@ -40,6 +40,15 @@ const getBoardById = async (id) => {
 };
 
 /**
+ * Get item by slug
+ * @param {String} slug
+ * @returns {Promise<Board>}
+ */
+const getItemBySlug = async (slug) => {
+  return Board.findOne({ slug: slug }).populate('cards');
+};
+
+/**
  * Update board by id
  * @param {ObjectId} boardId
  * @param {Object} updateBody
@@ -88,6 +97,7 @@ module.exports = {
   createBoard,
   queryBoards,
   getBoardById,
+  getItemBySlug,
   updateBoardById,
   deleteBoardById,
   checkTagsForCards

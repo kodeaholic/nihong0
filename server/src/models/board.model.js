@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { toJSON, paginate } = require('./plugins');
+const slug = require('mongoose-slug-updater');
 const Schema = mongoose.Schema
 
 const Quiz = mongoose.Schema(
@@ -31,7 +32,6 @@ const Quiz = mongoose.Schema(
             default: 'A',
             required: true,
         }
-        
     }, {
         _id: false,
     }
@@ -50,7 +50,7 @@ const BoardSchema = mongoose.Schema(
             required: false,
             trim: false,
         },
-        level: { 
+        level: {
             type: String,
             required: false,
             trim: false,
@@ -68,13 +68,15 @@ const BoardSchema = mongoose.Schema(
         quiz: {
             type: [Quiz],
             require: false
-        }
+        },
+        slug: { type: String, slug: ["title", "level"], unique: true, slugPaddingSize: 4 }
     },
     {
         timestamps: true,
-    }        
+    }
 );
 // add plugin that converts mongoose to json
+BoardSchema.plugin(slug);
 BoardSchema.plugin(toJSON);
 BoardSchema.plugin(paginate);
 /**
@@ -95,5 +97,11 @@ BoardSchema.statics.isTitleTakenForCreating = async function (title, level) {
  * @typedef Board
  */
 const Board = mongoose.model('Board', BoardSchema);
-
+// (async function() {
+// 	const documents = await Board.find();
+// 	documents.forEach(async (document) => {
+// 		await Board.updateOne({ _id: document._id }, { $set: { title: document.title.trim() } });
+//     const doc = await Board.findOne(document._id);
+// 	});
+// })();
 module.exports = Board;

@@ -20,4 +20,8 @@ router
 router
   .route('/checkTagsForCards')
   .post(auth('getBoards'), validate(boardValidation.checkTagsForCards), boardController.checkTagsForCards);
+
+router
+  .route('/find/:slug')
+  .get(validate(boardValidation.getItemBySlug), boardController.getItemBySlug)
 module.exports = router;

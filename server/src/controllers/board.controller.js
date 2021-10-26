@@ -25,6 +25,14 @@ const getBoard = catchAsync(async (req, res) => {
   res.send(board);
 });
 
+const getItemBySlug = catchAsync(async (req, res) => {
+  const item = await boardService.getItemBySlug(req.params.slug);
+  if (!item) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Bài không tồn tại hoặc đã bị xoá');
+  }
+  res.send(item);
+});
+
 const updateBoard = catchAsync(async (req, res) => {
   const board = await boardService.updateBoardById(req.params.boardId, req.body);
   res.send(board);
@@ -44,6 +52,7 @@ module.exports = {
   createBoard,
   getBoards,
   getBoard,
+  getItemBySlug,
   updateBoard,
   deleteBoard,
   checkTagsForCards
